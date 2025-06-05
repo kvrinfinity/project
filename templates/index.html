@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LearnX - Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <h1>LearnX</h1>
+    <a href="{{ url_for('login') }}">Login</a>
+  </nav>
+  <section class="hero">
+    <h2>Unlimited Learning, One Membership</h2>
+    <p>Join LearnX to access top courses in Aptitude, DSA & OS.</p>
+    <a href="{{ url_for('membership') }}" class="btn">Join Membership</a>
+  </section>
+</body>
+</html>

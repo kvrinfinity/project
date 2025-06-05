@@ -1,8 +1,20 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard - LearnX</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <h1>LearnX</h1>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="#">Courses</a>
+    <a href="{{ url_for('login') }}">Logout</a>
+  </nav>
 
-{% block title %}Welcome{% endblock %}
-
-{% block content %}
-<h2>Welcome, {{ name }}!</h2>
-<a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
-{% endblock %}
+  <div class="dashboard">
+    <h2>Welcome to Your Dashboard</h2>
+    <p>Access your content and track progress here.</p>
+  </div>
+</body>
+</html>

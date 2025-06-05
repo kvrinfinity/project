@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Membership - LearnX</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="payment-box">
+    <h2>Buy Membership - ₹499</h2>
+    <button id="rzp-button">Pay with Razorpay</button>
+  </div>
+
+  <script>
+    var options = {
+      "key": "rzp_test_YxpzTkgO3dittJ",
+      "amount": "2000",
+      "currency": "INR",
+      "name": "KVR Infinity",
+      "description": "Membership Plan",
+      "handler": function (response) {
+        alert("Payment successful! ID: " + response.razorpay_payment_id);
+      },
+      "prefill": {
+        "name": "",
+        "email": ""
+      },
+      "theme": {
+        "color": "#3399cc"
+      }
+    };
+    var rzp = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function(e){
+      rzp.open();
+      e.preventDefault();
+    }
+  </script>
+</body>
+</html>

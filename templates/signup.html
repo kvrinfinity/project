@@ -7,16 +7,19 @@
 </head>
 <body>
   <form action="/add_user" method="post">
-    <h2>Sign Up</h2>
+    <h2>Create Account</h2>
+
     {% if msg %}
-      <p class="message">{{ msg }}</p>
+      <p style="color: red;">{{ msg }}</p>
     {% endif %}
+
     <input type="text" name="fname" placeholder="First Name" required />
     <input type="text" name="lname" placeholder="Last Name" required />
     <input type="email" name="email" placeholder="Email" required />
     <input type="password" name="password" placeholder="Password" required />
+
     <button type="submit">Sign Up</button>
-    <p>Already have an account? <a href="/">Login</a></p>
+    <p>Already have an account? <a href="/login">Login</a></p>
   </form>
 </body>
 </html>
