@@ -1,0 +1,63 @@
+body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #000000, #3b0000);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .payment-box {
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 50px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .payment-box h2 {
+      font-size: 39px;
+      margin-bottom: 50px;
+    }
+
+    #rzp-button {
+      background-color: #e50914;
+      color: white;
+      border: none;
+      padding: 18px 35px;
+      font-size: 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #rzp-button:hover {
+      background-color: #f40612;
+    }
+
+    @media (max-width: 768px) {
+      .payment-box h2 {
+        font-size: 24px;
+      }
+
+      #rzp-button {
+        font-size: 18px;
+        padding: 14px 25px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .payment-box h2 {
+        font-size: 20px;
+      }
+
+      #rzp-button {
+        font-size: 16px;
+        padding: 12px 20px;
+      }
+    }

@@ -1,18 +1,254 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LearnX - Home</title>
+  <title>KVR Infinity - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  
+  <style>
+    .netflix-font {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 35px;
+      color: #e50914; 
+      letter-spacing: 2px;
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar">
-    <h1>LearnX</h1>
-    <a href="{{ url_for('login') }}">Login</a>
+    <h1 class="netflix-font">KVR Infinity</h1>
+    <a href="{{ url_for('login') }}" class="bold-text">Login</a>
   </nav>
+
   <section class="hero">
-    <h2>Unlimited Learning, One Membership</h2>
-    <p>Join LearnX to access top courses in Aptitude, DSA & OS.</p>
+    <h2>Endless Learning, One Membership</h2>
+    <p>Join KVR to access top courses in Aptitude, DSA & OS.</p><br>
     <a href="{{ url_for('membership') }}" class="btn">Join Membership</a>
   </section>
+
+  <section class="steps-section">
+    <div class="step">
+      <i class="fas fa-pen icon"></i>
+      <h3>1. Register Yourself</h3>
+      <p>Begin your journey by signing up on our platform. Fill in your details and showcase your enthusiasm for learning.</p>
+    </div>
+    
+    <div class="step">
+      <i class="fas fa-graduation-cap icon"></i>
+      <h3>2. Crack the Scholarship Interview</h3>
+      <p>Prove your potential! If you're capable and eager to excel, you'll get a chance to qualify for our exclusive scholarship.</p>
+    </div>
+    
+    <div class="step">
+      <i class="fas fa-id-card icon"></i>
+      <h3>3. Start Learning with Membership</h3>
+      <p>Once selected, get the membership at ₹1499/- and unlock all premium courses to boost your skills.</p>
+    </div>
+  </section>
+
+  <section class="stats-section">
+  <div class="stat-card">
+    <h2 class="blue counter" data-target="3423">0</h2>
+    <p>Student enrolled</p>
+  </div>
+  <div class="stat-card">
+    <h2 class="green counter" data-target="1879">0</h2>
+    <p>Students Selected</p>
+  </div>
+  <div class="stat-card">
+    <h2 class="orange counter" data-target="652">0</h2>
+    <p>Processing</p>
+  </div>
+  <div class="stat-card">
+    <h2 class="red counter" data-target="892">0</h2>
+    <p>Rejected</p>
+  </div>
+</section>
+<h2>Explore top <span style="color: red;">courses</span></h2>
+
+  <div class="courses-container">
+
+    <!-- AI & ML -->
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c1.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>AI & ML Jobs</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>AI & ML Jobs</h3>
+        <p>AI & ML Jobs: Career Paths & Salaries</p>
+        <p>💼🚀 AI and ML are some of the hottest career fields today.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+
+    <!-- ChatGPT Clones -->
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c2.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>ChatGPT & Deepseek Clones</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>ChatGPT & Deepseek Clones</h3>
+        <p>Build your own ChatGPT clone and understand AI chat frameworks.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+
+    <!-- Prompt Engineering -->
+    <div class="course-card">
+      <div class="course-front">
+      <img src="{{ url_for('static', filename='c3.png') }}" alt="Entrepreneurship">        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>Prompt Engineering</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>Prompt Engineering</h3>
+        <p>Master the art of crafting effective prompts for AI tools.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+
+    <!-- Entrepreneurship -->
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c4.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>Entrepreneurship</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>Entrepreneurship</h3>
+        <p>Learn how to ideate, launch, and scale your own startup.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="category-section">
+    <p>CHOOSE FROM ANY THESE</p>
+    <h2>Courses <span>categories</span></h2>
+
+    <div class="category-buttons">
+      <button class="category-button">Aptitude</button>
+      <button class="category-button">Computers</button>
+      <button class="category-button">English & Communications</button>
+      <button class="category-button">Future Jobs</button>
+      <button class="category-button">Online Internships</button>
+      <button class="category-button">Placement Preparation</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+  <div class="footer-top">
+    <div class="footer-section">
+      <h3>Get in touch</h3>
+      <div class="contact-item">
+        <span class="icon">📞</span>
+        <div>
+          <p>Call us directly?</p>
+          <strong>+91 74166 19903</strong>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="icon">📍</span>
+        <div>
+          <p>Address</p>
+          <strong>G10, HQ BL Commerce, 125, 7th Cross Road, BTM, 2nd Stage, Bengaluru, Karnataka, India - 560076</strong>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="icon">@</span>
+        <div>
+          <p>Email</p>
+          <strong>care@kvrinfinity.in</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h3>Need some help?</h3>
+      <p>FAQs</p>
+      <p>Contact</p>
+    </div>
+
+    <div class="footer-section">
+      <h3>Popular subjects</h3>
+      <p>Data Analayis</p>
+      <p>Prompt Engineering</p>
+      <p>Aptitude</p>
+      <p>Entrepreneurship</p>
+      <p>Machine Learning</p>
+    </div>
+
+    <div class="footer-section">
+      <h3>Need some help?</h3>
+      <div class="social-item">
+        <span class="icon"><i class="fa-brands fa-youtube"></i></span>
+        <span>Youtube</span>
+        <span>50 Subscribe</span>
+      </div>
+      <div class="social-item">
+        <span class="icon"><i class="fa-brands fa-facebook"></i></span>
+        <span>Facebook</span>
+        <span>100 Subscribe</span>
+      </div>
+      <div class="social-item">
+        <span class="icon"><i class="fa-brands fa-instagram"></i></span>
+        <span>Instagram</span>
+        <span>50 Followers</span>
+      </div>
+      <div class="social-item">
+        <span class="icon"><i class="fa-brands fa-linkedin"></i></span>
+        <span>Linked In</span>
+        <span>100 Followers</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2025 KVR Infinity. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms of use</a>
+      <a href="#">Privacy policy</a>
+      <a href="#">Cookies policy</a>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+<script>
+  const counters = document.querySelectorAll('.counter');
+
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = +counter.getAttribute('data-target');
+      const current = +counter.innerText;
+
+      // Speed: Higher = slower count
+      const increment = target / 60;
+
+      if (current < target) {
+        counter.innerText = Math.ceil(current + increment);
+        setTimeout(updateCount, 10);
+      } else {
+        counter.innerText = target + "+"; // Add + after completion
+      }
+    };
+
+    updateCount();
+  });
+</script>
+
+  
 </body>
 </html>

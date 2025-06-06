@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import os
 import sqlite3
 import database
+import random
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -36,6 +37,11 @@ def home():
 def signUp():
     return render_template('signup.html')
 
+def get_refcode():
+    code = random.randint(10000, 99999)
+    reff_code = 'kvr'+str(code)
+    return reff_code
+
 @app.route('/add_user', methods=['POST'])
 def add_user():
     fname = request.form.get('fname')
@@ -51,8 +57,21 @@ def add_user():
         connection.close()
         return render_template('signUp.html', msg="User already exists")
     else:
-        cursor.execute("INSERT INTO USERS(first_name, last_name, email, password) VALUES (?, ?, ?, ?)",
-                       (fname, lname, email, password))
+        reff_code = get_refcode()
+        check_reff = cursor.execute("SELECT * FROM USERS WHERE ref_code = ?", (reff_code,)).fetchall()
+
+        while len(check_reff) > 0:
+            reff_code = get_refcode()
+            check_reff = cursor.execute("SELECT * FROM USERS WHERE ref_code = ?", (reff_code,)).fetchall()
+        
+        print(reff_code)
+        # Now insert the new user
+        cursor.execute("""
+            INSERT INTO USERS(fname, lname, email, password, ref_code) 
+            VALUES (?, ?, ?, ?, ?)
+            """, (fname, lname, email, password, reff_code,))
+        ans = cursor.execute('select fname,ref_code from USERS where fname=?',(fname,)).fetchall()
+        print(ans)
         connection.commit()
         connection.close()
         return render_template('login.html')
