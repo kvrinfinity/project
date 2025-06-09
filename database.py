@@ -18,3 +18,5 @@ ans = cursor.execute('SELECT * FROM USERS').fetchone()
 print(ans)
 conn.commit()
 conn.close()
+
+#mongodb+srv://nishankamath:<db_password>@kvr-test.hax50hy.mongodb.net/?retryWrites=true&w=majority&appName=kvr-testZ

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Courses by Main Section</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fafafa;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 30px;
+    }
+    h2.section-title {
+      margin-top: 40px;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+      color: #007bff;
+      text-transform: capitalize;
+    }
+    .course-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .course-card {
+      background: #f8f9fa;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      width: 260px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: box-shadow 0.3s ease;
+    }
+    .course-card:hover {
+      box-shadow: 0 4px 15px rgb(0 0 0 / 0.2);
+    }
+    .course-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+    }
+    .course-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 12px;
+      min-height: 48px; /* keeps cards uniform height */
+    }
+    .action-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+    .action-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Courses</h1>
+
+    {% if grouped_courses %}
+      {% for section, courses in grouped_courses.items() %}
+        <h2 class="section-title">{{ section }}</h2>
+        <div class="course-list">
+          {% for course in courses %}
+            <div class="course-card">
+              <img src="{{ course.image_url }}" alt="{{ course.course_name }}" />
+              <div class="course-name">{{ course.course_name }}</div>
+
+              {% if user_enrolled_courses and course._id|string in user_enrolled_courses %}
+                <!-- User enrolled: show Go to Course -->
+                <a class="action-btn" href="{{ url_for('course_detail', id=course._id) }}">Go to Course</a>
+              {% else %}
+                <!-- User not enrolled: show Enroll button -->
+                <form method="POST" action="{{ url_for('enroll_course', course_id=course._id) }}">
+                  <button class="action-btn" type="submit">Enroll Course</button>
+                </form>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No courses available.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

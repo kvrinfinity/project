@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel - Add Course</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    input[type="submit"],
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button {
+      margin-bottom: 16px;
+    }
+
+    input[type="submit"]:hover,
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .chapter, .final-exam-question {
+      padding: 15px;
+      margin-bottom: 30px;
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #444;
+      display: block;
+    }
+
+    .video-group,
+    .quiz-group,
+    .final-exam-group {
+      background: white;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .video-group > input,
+    .quiz-group > input,
+    .final-exam-group > input,
+    .final-exam-group > select {
+      margin-bottom: 10px;
+    }
+
+    .remove-btn {
+      background: #dc3545;
+      color: white;
+      padding: 5px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      float: right;
+      margin-top: -35px;
+      margin-right: 5px;
+    }
+
+    .remove-btn:hover {
+      background: #a71d2a;
+    }
+
+    @media screen and (max-width: 768px) {
+      .container {
+        margin: 15px;
+        padding: 15px;
+      }
+
+      input[type="submit"],
+      button {
+        width: 100%;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      h2 {
+        font-size: 20px;
+      }
+
+      input[type="text"],
+      textarea,
+      select {
+        font-size: 14px;
+      }
+
+      input[type="submit"],
+      button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Add New Course</h2>
+  <form method="POST" enctype="multipart/form-data" action="/admin">
+    
+    <label>Main Section</label>
+    <select name="main_section" required>
+      <option value="" disabled selected>Select Section</option>
+      <option value="aptitude">Aptitude</option>
+      <option value="english and communication">English and Communication</option>
+      <option value="computers">Computers</option>
+    </select>
+
+    <label>Course Name</label>
+    <input type="text" name="course_name" placeholder="Course Name" required />
+
+    <label>Course Image</label>
+    <input type="file" name="course_image" accept="image/*" required />
+
+    <div id="chapters">
+      <!-- First Chapter block added by default -->
+      <div class="chapter" data-chapter-index="0">
+        <label>Chapter Name</label>
+        <input type="text" name="chapter_name[]" placeholder="Chapter Name" required />
+
+        <label>Videos</label>
+        <div class="videos-container" id="videos_container_0">
+          <!-- First video input set -->
+          <div class="video-group">
+            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove Video</button>
+            <input type="text" name="video_title_0[]" placeholder="Video Title" required />
+            <input type="file" name="video_file_0[]" accept="video/*" required />
+          </div>
+        </div>
+        <button type="button" onclick="addVideoInput(0)">➕ Add Video</button>
+
+        <label>Quiz Questions</label>
+        <div class="quiz-container" id="quiz_container_0">
+          <!-- First quiz question set -->
+          <div class="quiz-group">
+            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove Question</button>
+            <input type="text" name="quiz_question_0[]" placeholder="Question" required />
+            <input type="text" name="quiz_option_a_0[]" placeholder="Option a" required />
+            <input type="text" name="quiz_option_b_0[]" placeholder="Option b" required />
+            <input type="text" name="quiz_option_c_0[]" placeholder="Option c" required />
+            <input type="text" name="quiz_option_d_0[]" placeholder="Option d" required />
+            <select name="quiz_answer_0[]" required>
+              <option value="" disabled selected>Select Correct Answer</option>
+              <option value="a">a</option>
+              <option value="b">b</option>
+              <option value="c">c</option>
+              <option value="d">d</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" onclick="addQuizInput(0)">➕ Add Question</button>
+      </div>
+    </div>
+
+    <button type="button" onclick="addChapter()">➕ Add Another Chapter</button>
+
+    <h3>Final Exam Questions</h3>
+    <div id="final_exam_questions">
+      <div class="final-exam-question" data-final-index="0">
+        <div class="final-exam-group">
+          <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">Remove Question</button>
+          <input type="text" name="final_question[]" placeholder="Final Exam Question" required />
+          <input type="text" name="final_option_a[]" placeholder="Option a" required />
+          <input type="text" name="final_option_b[]" placeholder="Option b" required />
+          <input type="text" name="final_option_c[]" placeholder="Option c" required />
+          <input type="text" name="final_option_d[]" placeholder="Option d" required />
+          <select name="final_answer[]" required>
+            <option value="" disabled selected>Select Correct Answer</option>
+            <option value="a">a</option>
+            <option value="b">b</option>
+            <option value="c">c</option>
+            <option value="d">d</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <button type="button" onclick="addFinalExamQuestion()">➕ Add Final Exam Question</button>
+
+    <input type="submit" value="Submit Course" />
+  </form>
+</div>
+
+<script>
+  let chapterIndex = 1; // first chapter is 0
+  let finalExamIndex = 1;
+
+  function createVideoInput(chapterIdx) {
+    const div = document.createElement('div');
+    div.className = 'video-group';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = 'Remove Video';
+    removeBtn.onclick = () => div.remove();
+
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.name = `video_title_${chapterIdx}[]`;
+    titleInput.placeholder = 'Video Title';
+    titleInput.required = true;
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.name = `video_file_${chapterIdx}[]`;
+    fileInput.accept = 'video/*';
+    fileInput.required = true;
+
+    div.appendChild(removeBtn);
+    div.appendChild(titleInput);
+    div.appendChild(fileInput);
+
+    return div;
+  }
+
+  function addVideoInput(chapterIdx) {
+    const container = document.getElementById(`videos_container_${chapterIdx}`);
+    container.appendChild(createVideoInput(chapterIdx));
+  }
+
+  function createQuizInput(chapterIdx) {
+    const div = document.createElement('div');
+    div.className = 'quiz-group';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = 'Remove Question';
+    removeBtn.onclick = () => div.remove();
+
+    const qInput = document.createElement('input');
+    qInput.type = 'text';
+    qInput.name = `quiz_question_${chapterIdx}[]`;
+    qInput.placeholder = 'Question';
+    qInput.required = true;
+
+    const oAInput = document.createElement('input');
+    oAInput.type = 'text';
+    oAInput.name = `quiz_option_a_${chapterIdx}[]`;
+    oAInput.placeholder = 'Option a';
+    oAInput.required = true;
+
+    const oBInput = document.createElement('input');
+    oBInput.type = 'text';
+    oBInput.name = `quiz_option_b_${chapterIdx}[]`;
+    oBInput.placeholder = 'Option b';
+    oBInput.required = true;
+
+    const oCInput = document.createElement('input');
+    oCInput.type = 'text';
+    oCInput.name = `quiz_option_c_${chapterIdx}[]`;
+    oCInput.placeholder = 'Option c';
+    oCInput.required = true;
+
+    const oDInput = document.createElement('input');
+    oDInput.type = 'text';
+    oDInput.name = `quiz_option_d_${chapterIdx}[]`;
+    oDInput.placeholder = 'Option d';
+    oDInput.required = true;
+
+    const ansSelect = document.createElement('select');
+    ansSelect.name = `quiz_answer_${chapterIdx}[]`;
+    ansSelect.required = true;
+    ansSelect.innerHTML = `
+      <option value="" disabled selected>Select Correct Answer</option>
+      <option value="a">a</option>
+      <option value="b">b</option>
+      <option value="c">c</option>
+      <option value="d">d</option>
+    `;
+
+    div.appendChild(removeBtn);
+    div.appendChild(qInput);
+    div.appendChild(oAInput);
+    div.appendChild(oBInput);
+    div.appendChild(oCInput);
+    div.appendChild(oDInput);
+    div.appendChild(ansSelect);
+
+    return div;
+  }
+
+  function addQuizInput(chapterIdx) {
+    const container = document.getElementById(`quiz_container_${chapterIdx}`);
+    container.appendChild(createQuizInput(chapterIdx));
+  }
+
+  function createChapter() {
+    const div = document.createElement('div');
+    div.className = 'chapter';
+    div.dataset.chapterIndex = chapterIndex;
+
+    div.innerHTML = `
+      <label>Chapter Name</label>
+      <input type="text" name="chapter_name[]" placeholder="Chapter Name" required />
+
+      <label>Videos</label>
+      <div class="videos-container" id="videos_container_${chapterIndex}"></div>
+      <button type="button" onclick="addVideoInput(${chapterIndex})">➕ Add Video</button>
+
+      <label>Quiz Questions</label>
+      <div class="quiz-container" id="quiz_container_${chapterIndex}"></div>
+      <button type="button" onclick="addQuizInput(${chapterIndex})">➕ Add Question</button>
+    `;
+
+    // Add initial video input and quiz question input
+    const videosContainer = div.querySelector(`#videos_container_${chapterIndex}`);
+    videosContainer.appendChild(createVideoInput(chapterIndex));
+
+    const quizContainer = div.querySelector(`#quiz_container_${chapterIndex}`);
+    quizContainer.appendChild(createQuizInput(chapterIndex));
+
+    return div;
+  }
+
+  function addChapter() {
+    const chaptersDiv = document.getElementById('chapters');
+    const newChapter = createChapter();
+    chaptersDiv.appendChild(newChapter);
+    chapterIndex++;
+  }
+
+  function createFinalExamQuestion() {
+    const div = document.createElement('div');
+    div.className = 'final-exam-question';
+    div.dataset.finalIndex = finalExamIndex;
+
+    div.innerHTML = `
+      <div class="final-exam-group">
+        <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">Remove Question</button>
+        <input type="text" name="final_question[]" placeholder="Final Exam Question" required />
+        <input type="text" name="final_option_a[]" placeholder="Option a" required />
+        <input type="text" name="final_option_b[]" placeholder="Option b" required />
+        <input type="text" name="final_option_c[]" placeholder="Option c" required />
+        <input type="text" name="final_option_d[]" placeholder="Option d" required />
+        <select name="final_answer[]" required>
+          <option value="" disabled selected>Select Correct Answer</option>
+          <option value="a">a</option>
+          <option value="b">b</option>
+          <option value="c">c</option>
+          <option value="d">d</option>
+        </select>
+      </div>
+    `;
+
+    return div;
+  }
+
+  function addFinalExamQuestion() {
+    const container = document.getElementById('final_exam_questions');
+    container.appendChild(createFinalExamQuestion());
+    finalExamIndex++;
+  }
+</script>
+
+</body>
+</html>
