@@ -77,7 +77,29 @@ def membership():
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    top_courses = list(courses_col.aggregate([
+        {
+            "$addFields": {
+                "enrollments_count": {
+                    "$size": { "$ifNull": ["$enrolled_users", []] }
+                },
+                "chapters": {
+                    "$size": { "$ifNull": ["$chaptername", []] }
+                }
+            }
+        },
+        { "$sort": { "enrollments_count": -1 } },
+        { "$limit": 6 }
+    ]))
+
+    for course in top_courses:
+        if 'course_image_id' in course:
+            course['image_url'] = f"/image/{course['course_image_id']}"
+        else:
+            course['image_url'] = "/static/default.jpg"
+
+    return render_template('home.html', top_courses=top_courses)
+
 
 def get_refcode():
     while True:
@@ -333,15 +355,24 @@ def enroll_course(course_id):
         return redirect(url_for('login'))
 
     enrolled_courses = user.get('enrolled_courses', [])
-    if ObjectId(course_id) not in enrolled_courses:
-        enrolled_courses.append(ObjectId(course_id))
+    course_obj_id = ObjectId(course_id)
+
+    if course_obj_id not in enrolled_courses:
+        enrolled_courses.append(course_obj_id)
         db.users.update_one({"email": user_email}, {"$set": {"enrolled_courses": enrolled_courses}})
+
+        # ✅ Increment the enrollment count
+        db.courses.update_one(
+            {"_id": course_obj_id},
+            {"$inc": {"enrollment_count": 1}}
+        )
+
         flash("Successfully enrolled in the course!", "success")
     else:
         flash("Already enrolled in this course.", "info")
 
-    # Redirect to course_detail page instead of rendering directly
     return redirect(url_for('course_detail', id=course_id))
+
 
 
 @app.route('/update_progress', methods=['POST'])

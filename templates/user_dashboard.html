@@ -72,23 +72,6 @@
       color: var(--primary);
     }
 
-    nav.navbar .profile {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      overflow: hidden;
-      cursor: pointer;
-      border: 2px solid var(--nav-link-color);
-      transition: border-color 0.3s ease;
-    }
-    nav.navbar .profile img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    nav.navbar .profile:hover {
-      border-color: var(--primary);
-    }
 
     /* Container */
     .container {
@@ -304,6 +287,22 @@
         width: 260px;
       }
     }
+    .user-icon {
+  position: absolute;
+  top: -0.75px; /* Adjust as needed */
+  right: 30px; /* Match navbar padding */
+  width: 36px;
+  height: 36px;
+  background: #a259ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  margin-top: 12px;
+  z-index: 1;
+}
 
     @media (max-width: 480px) {
       nav.navbar {
@@ -339,10 +338,15 @@
       <a href="#">About Us</a>
     </div>
     <a href="{{ url_for('user_dashboard') }}">
-      <div class="profile">
-        <img src="{{ url_for('static', filename='avatar.png') }}" alt="Profile" />
-      </div>
-    </a>
+    <div class="profile">
+      <div class="user-icon">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#222"/>
+        <circle cx="20" cy="15" r="7" fill="#fff"/>
+        <ellipse cx="20" cy="29" rx="12" ry="7" fill="#fff"/>
+      </svg>
+    </div>
+  </div></a>
   </nav>
 
   <div class="container">

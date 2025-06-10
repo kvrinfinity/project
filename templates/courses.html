@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Courses by Main Section</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='courses.css') }}">
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,9 +12,9 @@
       padding: 20px;
     }
     .container {
-      max-width: 1100px;
+      max-width: 95%;
       margin: 0 auto;
-      padding: 20px;
+      padding: 50px;
       background: white;
       border-radius: 12px;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -25,9 +26,9 @@
     }
     h2.section-title {
       margin-top: 40px;
-      border-bottom: 2px solid #007bff;
+      
       padding-bottom: 5px;
-      color: #007bff;
+      color: #0d0d0d;
       text-transform: capitalize;
     }
     .course-list {
@@ -37,9 +38,10 @@
       margin-top: 20px;
     }
     .course-card {
-      background: #f8f9fa;
+      /*background: linear-gradient() #f1f1f1;*/
+       background: linear-gradient(135deg, #f6f6f6, #e5e2e2);
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      box-shadow: 0 5px 8px rgba(1, 0, 0, 0.1);
       width: 260px;
       padding: 15px;
       display: flex;
@@ -67,7 +69,7 @@
       min-height: 48px; /* keeps cards uniform height */
     }
     .action-btn {
-      background-color: #007bff;
+      background-color: #9f0404;
       color: white;
       border: none;
       padding: 10px 20px;
@@ -81,15 +83,29 @@
       width: 100%;
     }
     .action-btn:hover {
-      background-color: #0056b3;
+      background-color: #19a249;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Courses</h1>
+  <nav class="navbar">
+    <h1>KVR Infinity</h1>
+    <div class="nav-links">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="#">Courses</a>
+      <a href="#">About Us</a>
+       <a href="#">Blog</a>
+      
+    </div>
+    </nav>
+   
+</section>
 
-    {% if grouped_courses %}
+
+  <div class="container">
+  <h1>Top Picks to Boost <span style="color: red;">Your Skills</span></h1>
+  
+   {% if grouped_courses %}
       {% for section, courses in grouped_courses.items() %}
         <h2 class="section-title">{{ section }}</h2>
         <div class="course-list">
@@ -97,6 +113,7 @@
             <div class="course-card">
               <img src="{{ course.image_url }}" alt="{{ course.course_name }}" />
               <div class="course-name">{{ course.course_name }}</div>
+              
 
               {% if user_enrolled_courses and course._id|string in user_enrolled_courses %}
                 <!-- User enrolled: show Go to Course -->
@@ -104,7 +121,7 @@
               {% else %}
                 <!-- User not enrolled: show Enroll button -->
                 <form method="POST" action="{{ url_for('enroll_course', course_id=course._id) }}">
-                  <button class="action-btn" type="submit">Enroll Course</button>
+                  <button class="action-btn" type="submit">Start Learning</button>
                 </form>
               {% endif %}
             </div>

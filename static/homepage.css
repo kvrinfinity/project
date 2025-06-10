@@ -116,12 +116,19 @@ h2 {
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 10px rgba(0,0,0,0.3);
   transition: transform 0.3s ease;
 }
 
+.course-card img{
+  width: 95%;
+  height: 50%;
+  border-radius: 8px;
+}
 .course-card:hover {
   transform: scale(1.05);
+  box-shadow: none;
+  background-color: #ffffff;
 }
 
 
@@ -200,10 +207,11 @@ h2 {
 .course-details-hover {
   flex: 2;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #d3caff;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border-radius: 12px;
 }
 
 .course-front span {
@@ -229,6 +237,7 @@ h2 {
   text-align: center;
   transform: rotateY(180deg);
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  border-radius: 12px;
 }
 
 .course-details-hover h3 {
