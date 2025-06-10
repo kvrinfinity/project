@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz - {{ chapter_name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background-color: #f0f4ff;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      margin: auto;
+    }
+    h2 {
+      color: #333;
+      text-align: center;
+    }
+    .question-block {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto 0;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result-box {
+      max-width: 700px;
+      margin: 20px auto;
+      background: #e8f5e9;
+      padding: 15px;
+      border-left: 4px solid #2e7d32;
+      color: #2e7d32;
+      text-align: center;
+      font-weight: bold;
+    }
+    .fail-box {
+      background: #fdecea;
+      border-left-color: #d32f2f;
+      color: #d32f2f;
+    }
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      form {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Quiz: {{ chapter_name }}</h2>
+
+  <form action="{{ url_for('submit_quiz') }}" method="POST">
+    {% for q in quiz %}
+      <div class="question-block">
+        <p><strong>Q{{ loop.index }}: {{ q.question }}</strong></p>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="a" {% if score is defined %} disabled {% endif %} required> A. {{ q.option_a }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="b" {% if score is defined %} disabled {% endif %}> B. {{ q.option_b }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="c" {% if score is defined %} disabled {% endif %}> C. {{ q.option_c }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="d" {% if score is defined %} disabled {% endif %}> D. {{ q.option_d }}</label>
+      </div>
+    {% endfor %}
+    <input type="hidden" name="course_id" value="{{ course_id }}">
+    <input type="hidden" name="chapter_name" value="{{ chapter_name }}">
+    <input type="hidden" name="total_questions" value="{{ quiz|length }}">
+
+    {% if score is not defined %}
+      <button type="submit">Submit Quiz</button>
+    {% endif %}
+  </form>
+
+  {% if score is defined %}
+    <div class="result-box {% if not passed %}fail-box{% endif %}" style="max-width:700px; margin:auto; margin-top:20px; text-align:center;">
+      {% if passed %}
+        🎉 You passed! Score: {{ score }} / {{ total }}
+      {% else %}
+        ❌ You scored {{ score }} / {{ total }}. You need at least 80% to pass.
+      {% endif %}
+      <br /><br />
+      <button id="retake-btn">Retake Quiz</button>
+    </div>
+
+    <script>
+      document.getElementById('retake-btn').addEventListener('click', function() {
+        const chapterName = "{{ chapter_name }}";
+        const courseId = "{{ course_id }}";
+        const url = "{{ url_for('render_quiz', chapter_name='__chapter__', course_id='__course__') }}"
+                    .replace('__chapter__', encodeURIComponent(chapterName))
+                    .replace('__course__', encodeURIComponent(courseId));
+        window.location.href = url;
+      });
+    </script>
+  {% endif %}
+</body>
+
+</html>

@@ -1,23 +1,211 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard - LearnX</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+  <title>Dashboard - KVR Infinity</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
 </head>
 <body>
-  <nav class="navbar">
+
+   <nav class="navbar">
     <h1>KVR Infinity</h1>
     <div class="nav-links">
       <a href="{{ url_for('home') }}">Home</a>
-      <a href="#">Courses</a>
+      <a href="{{ url_for('courses') }}">Courses</a>
       <a href="#">About Us</a>
+       <a href="#">Blog</a>
+      
+    </div>
+    </nav>
+    <a href="{{ url_for('user_dashboard') }}">
+    <div class="profile">
+      <div class="user-icon">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#222"/>
+        <circle cx="20" cy="15" r="7" fill="#fff"/>
+        <ellipse cx="20" cy="29" rx="12" ry="7" fill="#fff"/>
+      </svg>
+    </div>
+  </div></a>
+</nav>
+</section>
+<h2>Explore top <span style="color: red;">courses</span></h2>
+
+<div class="slider-wrapper">
+  <button class="slider-btn left">&#8249;</button>
+
+  <div class="slider" id="courseSlider">
+    <!-- AI & ML -->
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c1.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>AI & ML Jobs</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>AI & ML Jobs</h3>
+        <p>AI & ML Jobs: Career Paths & Salaries</p>
+        <p>💼🚀 AI and ML are some of the hottest career fields today.</p>
+        <button>View Detail</button>
+      </div>
     </div>
 
-    <!-- Avatar/Profile -->
-    <div class="profile">
-      <img src="{{ url_for('static', filename='avatar.png') }}" alt="Profile">
+    <!-- ChatGPT Clones -->
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c2.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>ChatGPT & Deepseek Clones</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>ChatGPT & Deepseek Clones</h3>
+        <p>Build your own ChatGPT clone and understand AI chat frameworks.</p>
+        <button>View Detail</button>
+      </div>
     </div>
-  </nav>
-  
+
+    <!-- Prompt Engineering -->
+    <div class="course-card">
+      <div class="course-front">
+      <img src="{{ url_for('static', filename='c3.png') }}" alt="Entrepreneurship">        
+      <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>Prompt Engineering</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>Prompt Engineering</h3>
+        <p>Master the art of crafting effective prompts for AI tools.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+
+    <!-- Entrepreneurship -->
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c4.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>Entrepreneurship</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>Entrepreneurship</h3>
+        <p>Learn how to ideate, launch, and scale your own startup.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+
+    <!-- AI & ML -->
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c1.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>AI & ML Jobs</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>AI & ML Jobs</h3>
+        <p>AI & ML Jobs: Career Paths & Salaries</p>
+        <p>💼🚀 AI and ML are some of the hottest career fields today.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+
+    <!-- ChatGPT Clones -->
+     <div class = "column">
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c2.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>ChatGPT & Deepseek Clones</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>ChatGPT & Deepseek Clones</h3>
+        <p>Build your own ChatGPT clone and understand AI chat frameworks.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+    </div>
+
+    <!-- Prompt Engineering -->
+      <div class = "column">
+    <div class="course-card">
+      <div class="course-front">
+      <img src="{{ url_for('static', filename='c3.png') }}" alt="Entrepreneurship">        
+      <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>Prompt Engineering</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>Prompt Engineering</h3>
+        <p>Master the art of crafting effective prompts for AI tools.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+    </div>
+
+    <!-- Entrepreneurship -->
+      <div class = "column">
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ url_for('static', filename='c4.png') }}" alt="Entrepreneurship">
+        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
+        <h3>Entrepreneurship</h3>
+        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>Entrepreneurship</h3>
+        <p>Learn how to ideate, launch, and scale your own startup.</p>
+        <button>View Detail</button>
+      </div>
+    </div>
+    </div>
+    <button class="slider-btn right">&#8250;</button>
+</div>
+</div>
+</div>
+
+
+<script>
+  const slider = document.getElementById('courseSlider');
+  const btnLeft = document.querySelector('.slider-btn.left');
+  const btnRight = document.querySelector('.slider-btn.right');
+
+  btnLeft.addEventListener('click', () => {
+    slider.scrollBy({ left: -300, behavior: 'smooth' });
+  });
+
+  btnRight.addEventListener('click', () => {
+    slider.scrollBy({ left: 300, behavior: 'smooth' });
+  });
+</script>
+
+
+
+
+<script>
+  const counters = document.querySelectorAll('.counter');
+
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = +counter.getAttribute('data-target');
+      const current = +counter.innerText;
+
+      // Speed: Higher = slower count
+      const increment = target / 60;
+
+      if (current < target) {
+        counter.innerText = Math.ceil(current + increment);
+        setTimeout(updateCount, 10);
+      } else {
+        counter.innerText = target + "+"; // Add + after completion
+      }
+    };
+
+    updateCount();
+  });
+</script>
 </body>
 </html>

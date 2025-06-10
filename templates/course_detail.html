@@ -1,211 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>{{ course.course_name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
       --primary: #007bff;
-      --background: #f7f9fc;
+      --bg: #f9fbff;
       --text-dark: #222;
       --text-light: #666;
       --card-bg: #fff;
-      --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--background);
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
       color: var(--text-dark);
-      line-height: 1.6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 30%;
+      background: #fff;
       padding: 20px;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .course-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .course-header img {
-      width: 100%;
-      max-height: 350px;
-      object-fit: cover;
-      border-radius: 15px;
       box-shadow: var(--shadow);
-      margin-top: 15px;
+      overflow-y: auto;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .main-content {
+      width: 70%;
+      padding: 20px;
+      overflow-y: auto;
     }
 
     .chapter {
-      background: var(--card-bg);
-      padding: 25px;
-      border-radius: 12px;
       margin-bottom: 25px;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s;
     }
 
-    .chapter:hover {
-      transform: translateY(-3px);
-    }
-
-    h1, h2, h3 {
+    .chapter-title {
+      font-size: 1.2rem;
+      font-weight: bold;
       color: var(--primary);
+      margin-bottom: 10px;
     }
 
-    .video {
-      margin: 15px 0;
-    }
-
-    video {
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-      margin-top: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .quiz-block {
-      margin-top: 20px;
-    }
-
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    li {
-      margin-bottom: 15px;
-      padding: 10px;
-      background: #f0f4ff;
-      border-left: 4px solid var(--primary);
+    .video, .quiz, .exam {
+      background: #eef2ff;
+      padding: 12px 18px;
       border-radius: 8px;
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
     }
 
-    .final-exam {
-      background-color: #fff8e1;
-      border: 1px solid #ffe082;
-      padding: 20px;
-      border-radius: 12px;
+    .video:hover, .quiz:hover, .exam:hover {
+      background-color: #dce2ff;
+    }
+
+    .video-title, .quiz-title {
+      display: flex;
+      align-items: center;
+    }
+
+    .video-title i, .quiz-title i {
+      margin-right: 10px;
+      color: #6c63ff;
+    }
+
+    .status {
+      font-weight: bold;
+      color: green;
+    }
+
+    .incomplete {
+      color: #999;
+    }
+
+    .quiz-score {
+      font-weight: bold;
+      color: #ff5722;
+    }
+
+    iframe, .content-box {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+      background-color: #fff;
       box-shadow: var(--shadow);
+      padding: 20px;
     }
 
-    /* Responsive Layout */
     @media (max-width: 768px) {
       body {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .sidebar, .main-content {
+        width: 100%;
+        height: auto;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .main-content {
         padding: 10px;
-      }
-
-      .container {
-        padding: 10px;
-      }
-
-      .course-header img {
-        max-height: 250px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
-
-      h3 {
-        font-size: 18px;
-      }
-
-      video {
-        max-height: 200px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 20px;
-      }
-
-      .chapter, .quiz-block {
-        padding: 15px;
-      }
-
-      li {
-        font-size: 14px;
-      }
-
-      video {
-        max-height: 180px;
       }
     }
   </style>
-</head>
-<body>
 
-<div class="container">
-  <div class="course-header">
-    <h1>{{ course.course_name }}</h1>
-    {% if course.image_url %}
-      <img src="{{ course.image_url }}" alt="{{ course.course_name }}">
+  <script>
+    function loadContent(type, id) {
+      const container = document.getElementById("main-display");
+
+      if (type === 'video') {
+        container.innerHTML = `<video id="course-video" width="100%" controls autoplay>
+          <source src="/video/${id}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>`;
+      }
+
+      if (type === 'quiz') {
+        fetch(`/quiz/${id}?course_id={{ course._id }}`)
+          .then(res => res.text())
+          .then(html => container.innerHTML = html);
+      }
+
+      if (type === 'exam') {
+        fetch(`/exam/${id}`)
+          .then(res => res.text())
+          .then(html => container.innerHTML = html);
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="sidebar">
+    <h2>{{ course.course_name }}</h2>
+
+    {% for chapter in course.chapters %}
+      <div class="chapter">
+        <div class="chapter-title">{{ chapter.chapter_name }}</div>
+
+        {% for video in chapter.videos %}
+          <div class="video" onclick="loadContent('video', '{{ video.file_id }}')">
+            <div class="video-title"><i>🎬</i> {{ video.title }}</div>
+            {% if video.completed %}
+              <span class="status">✔️</span>
+            {% else %}
+              <span class="incomplete">⏳</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        {% if chapter.quiz %}
+          <div class="quiz" onclick="loadContent('quiz', '{{ chapter.chapter_name }}')">
+            <div class="quiz-title"><i>📝</i> Quiz</div>
+            {% if chapter.quiz_completed %}
+              <span class="quiz-score">{{ chapter.quiz_score }}/{{ chapter.quiz_total }}</span>
+            {% else %}
+              <span class="incomplete">Not attempted</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    {% if course.final_exam %}
+      <div class="exam" onclick="loadContent('exam', '{{ course._id }}')">
+        <div class="quiz-title"><i>🎓</i> Final Exam</div>
+      </div>
     {% endif %}
   </div>
 
-  {% for chapter in course.chapters %}
-    <div class="chapter">
-      <h2>📘 {{ chapter.chapter_name }}</h2>
-
-      {% if chapter.videos %}
-        <h3>🎬 Videos</h3>
-        {% for video in chapter.videos %}
-          <div class="video">
-            <strong>{{ video.title }}</strong>
-            <video controls>
-              <source src="{{ video.stream_url }}" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        {% endfor %}
-      {% endif %}
-
-      {% if chapter.quiz %}
-        <h3>📝 Quiz</h3>
-        <div class="quiz-block">
-          <ul>
-            {% for q in chapter.quiz %}
-              <li>
-                <strong>Q:</strong> {{ q.question }}<br>
-                <strong>Options:</strong> {{ ", ".join(q.options) }}<br>
-                <strong>Answer:</strong> {{ q.answer }}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endif %}
+  <div class="main-content" id="main-display">
+    <div class="content-box">
+      <p>Select a video, quiz, or exam to begin.</p>
     </div>
-  {% endfor %}
-
-  {% if course.final_exam %}
-    <div class="final-exam">
-      <h2>🏁 Final Exam</h2>
-      <ul>
-        {% for q in course.final_exam %}
-          <li>{{ q.question }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
-</div>
-
+  </div>
 </body>
 </html>

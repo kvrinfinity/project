@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Final Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background-color: #f0f4ff;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .question-block {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 5px 0;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      margin: 20px auto 0 auto;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result-box {
+      margin-top: 30px;
+      background: #e8f5e9;
+      padding: 15px;
+      border-left: 4px solid #2e7d32;
+      color: #2e7d32;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 5px;
+    }
+
+    .retake-btn {
+      margin-top: 15px;
+      background-color: #dc3545;
+      width: 100%;
+      max-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .retake-btn:hover {
+      background-color: #a71d2a;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      form {
+        padding: 15px;
+      }
+
+      label {
+        font-size: 14px;
+      }
+
+      button, .retake-btn {
+        font-size: 14px;
+        max-width: 100%;
+      }
+
+      .result-box {
+        font-size: 16px;
+        max-width: 100%;
+        padding: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      label {
+        font-size: 13px;
+      }
+
+      button, .retake-btn {
+        font-size: 13px;
+        padding: 10px;
+      }
+
+      .result-box {
+        font-size: 14px;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Final Exam</h2>
+
+  <form action="{{ url_for('submit_final_exam') }}" method="POST">
+    {% for q in exam %}
+      <div class="question-block">
+        <p><strong>Q{{ loop.index }}: {{ q.question }}</strong></p>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="a" {% if score is defined %} disabled {% endif %} required> A. {{ q.option_a }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="b" {% if score is defined %} disabled {% endif %}> B. {{ q.option_b }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="c" {% if score is defined %} disabled {% endif %}> C. {{ q.option_c }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="d" {% if score is defined %} disabled {% endif %}> D. {{ q.option_d }}</label>
+        <input type="hidden" name="question_text_{{ loop.index0 }}" value="{{ q.question }}">
+      </div>
+    {% endfor %}
+    <input type="hidden" name="course_id" value="{{ course_id }}">
+    <input type="hidden" name="total_questions" value="{{ exam|length }}">
+
+    {% if score is not defined %}
+      <button type="submit">Submit Exam</button>
+    {% endif %}
+  </form>
+
+  {% if score is defined %}
+    <div class="result-box">
+  ✅ Your score: <strong>{{ score }}</strong> / {{ total }}<br>
+  {% if retake %}
+      <script>
+          const retakeUrl = "{{ url_for('render_final_exam', course_id=course_id) }}";
+      </script>
+
+      <button onclick="window.location.href=retakeUrl">Retake Exam</button>
+  {% endif %}
+    </div>
+  {% endif %}
+</body>
+</html>

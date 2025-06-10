@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exam Score</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px;
+      background-color: #f7f9fc;
+      text-align: center;
+    }
+
+    .score-box {
+      background: white;
+      display: inline-block;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <div class="score-box">
+    <h2>🎉 Exam Completed!</h2>
+    <p class="score">Your Score: {{ score }} / {{ total }}</p>
+    {% set percentage = (score / total) * 100 %}
+    {% if percentage >= 80 %}
+      <p class="status">✅ Congratulations, you passed!</p>
+      <button onclick="window.location.href='/courses'">Back to Courses</button>
+    {% else %}
+      <p class="status fail">❌ You did not pass. Please retake the exam.</p>
+      <button onclick="window.location.href='/exam/{{ course_id }}'">Retake Exam</button>
+    {% endif %}
+  </div>
+</body>
+</html>

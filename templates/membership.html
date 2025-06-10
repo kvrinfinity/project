@@ -7,14 +7,48 @@
 </head>
 <body>
   <div class="payment-box">
-    <h2>Buy Membership - ₹2000</h2>
+    <h2>Buy Membership - ₹<span id="amount-display">1000</span></h2>
+
+    <input type="text" id="referral-input" placeholder="Enter Referral Code" />
+    <button onclick="applyReferral()">Apply Code</button>
+    <p id="referral-msg" style="color: red;"></p>
+
     <button id="rzp-button">Pay with Razorpay</button>
   </div>
 
   <script>
+    let finalAmount = 1000;
+
+    function applyReferral() {
+      const code = document.getElementById("referral-input").value;
+
+      fetch('/apply_referral', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ref_code: code })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const msg = document.getElementById("referral-msg");
+        if (data.valid) {
+          msg.style.color = "green";
+          msg.textContent = "Referral code applied! 70% discount.";
+          finalAmount = 300;
+          document.getElementById("amount-display").textContent = finalAmount;
+        } else {
+          msg.style.color = "red";
+          msg.textContent = "Invalid referral code.";
+          finalAmount = 1000;
+          document.getElementById("amount-display").textContent = finalAmount;
+        }
+      });
+    }
+
     var options = {
       "key": "rzp_test_YxpzTkgO3dittJ",
-      "amount": "2000",
+      "amount": finalAmount,
       "currency": "INR",
       "name": "KVR Infinity",
       "description": "Membership Plan",
