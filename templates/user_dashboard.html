@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --primary: #850014;
+      --primary: #8e061a;
       --primary-dark: white;
       --bg: #f7f9fc;
       --text-dark: #222;
@@ -68,7 +68,7 @@
     }
 
     nav.navbar .nav-links a:hover {
-      color: var(--primary);
+      color: pink;
     }
 
     .main-wrapper {
@@ -88,7 +88,7 @@
     .sidebar h1 {
       font-size: 2rem;
       margin-bottom: 20px;
-      color: rgb(214, 108, 108);
+      color: rgb(228, 99, 99);
     }
 
     .referral, .wallet-box {
@@ -299,6 +299,30 @@
         width: 90vw;
       }
     }
+  .sidebar .action-box {
+  margin-top: 20px;
+}
+
+.action-box .action-item {
+  background: #eaeaea;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.action-box .action-item:hover {
+  background: #f4b2b2;
+}
+
+.action-box .action-item span {
+  font-size: 1rem;
+  color: var(--text-dark);
+}
+
     
   </style>
 </head>
@@ -335,6 +359,20 @@
 
       
       <div class="wallet-box">Wallet Balance: <strong>₹{{ wallet_balance }}/-</strong></div>
+        <div class="action-box">
+    <div class="action-item" onclick="yourFunction('validity')">
+  <span>🗓 Validity</span>
+</div>
+<div id="validity-date" style="color: red; font-weight: bold; margin: 5px 0 15px 15px;"></div>
+
+    <div class="action-item" onclick="yourFunction('receipt')">
+      <span>📄 Download Receipt</span>
+    </div>
+    <div class="action-item" onclick="yourFunction('logout')">
+      <span>🚪 Logout</span>
+    </div>
+  </div>
+
     
     </div>
 
@@ -376,5 +414,32 @@
       </div>
     </div>
   </div>
+<script>
+function yourFunction(action) {
+  const validityElement = document.getElementById("validity-date");
+
+  if (action === 'validity') {
+    if (validityElement.textContent.trim() !== "") {
+      // Hide the date on second click
+      validityElement.textContent = "";
+    } else {
+      // Show a random "Valid Until" future date
+      const today = new Date();
+      const randomDays = Math.floor(Math.random() * 365);
+      const futureDate = new Date(today.getTime() + randomDays * 24 * 60 * 60 * 1000);
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      const formattedDate = futureDate.toLocaleDateString('en-GB', options);
+      validityElement.textContent = "Valid Until: " + formattedDate;
+    }
+  } else if (action === 'receipt') {
+    alert("Download receipt clicked");
+  } else if (action === 'logout') {
+    alert("Logging out...");
+  }
+}
+</script>
+
+
+
 </body>
 </html>

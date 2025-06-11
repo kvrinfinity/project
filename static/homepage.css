@@ -7,7 +7,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #ffffff;
+  background-color: #ffe8e8;
   color: #242424;
 }
 
@@ -224,7 +224,7 @@ h2 {
 }
 
 .course-front span {
-  background-color: #c1bebe;
+  background-color: #fffefe;
  
   padding: 4px 10px;
   border-radius: 5px;
