@@ -1,5 +1,6 @@
 from collections import defaultdict
-from flask import Flask, Response, render_template, request, redirect, url_for, session, flash, jsonify
+import datetime
+from flask import Flask, Response, abort, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import random
 from pymongo import MongoClient
@@ -44,6 +45,8 @@ client = MongoClient(uri)
 db = client['company']
 courses_col = db['courses']
 results_col = db['final_exam_results']
+bundles_col = db["bundles"]
+users_col = db['users']
 fs = GridFS(db)
 
 @app.route('/')
@@ -77,6 +80,7 @@ def membership():
 
 @app.route('/home')
 def home():
+    # Fetch top 6 courses with enrollment and chapter count
     top_courses = list(courses_col.aggregate([
         {
             "$addFields": {
@@ -92,13 +96,130 @@ def home():
         { "$limit": 6 }
     ]))
 
+    # Add image URL for each course
     for course in top_courses:
         if 'course_image_id' in course:
             course['image_url'] = f"/image/{course['course_image_id']}"
         else:
             course['image_url'] = "/static/default.jpg"
 
-    return render_template('home.html', top_courses=top_courses)
+    # Fetch all bundles (or top N bundles)
+    bundles = list(bundles_col.find())  # You can apply sorting/filtering here
+
+    # Add image URL and course count for each bundle
+    for bundle in bundles:
+        bundle['course_ids'] = bundle.get('course_ids', [])
+        bundle['course_count'] = len(bundle['course_ids'])
+        if 'image_id' in bundle:
+            bundle['image_url'] = f"/image/{bundle['image_id']}"
+        else:
+            bundle['image_url'] = "/static/default-bundle.png"
+
+    return render_template('home.html', top_courses=top_courses, bundles=bundles)
+
+def update_bundle_progress(user_email, course_id):
+    user = users_col.find_one({'email': user_email})
+    if not user:
+        return
+
+    for bundle_id in user.get('enrolled_bundles', []):
+        bundle = bundles_col.find_one({'_id': ObjectId(bundle_id)})
+        if course_id in bundle.get('course_ids', []):
+            progress = user.get('bundle_progress', {})
+            bprog = progress.get(bundle_id, {'completed_courses': 0, 'courses_done': []})
+            if course_id not in bprog['courses_done']:
+                bprog['courses_done'].append(course_id)
+                bprog['completed_courses'] += 1
+                progress[bundle_id] = bprog
+
+                users_col.update_one({'email': user_email}, {'$set': {'bundle_progress': progress}})
+
+@app.route('/enroll_bundle/<bundle_id>', methods=['POST'])
+def enroll_bundle(bundle_id):
+    user_email = session.get('user_email')
+    if not user_email:
+        flash("Login to enroll", "error")
+        return redirect(url_for('login'))
+
+    user = users_col.find_one({'email': user_email})
+    if user:
+        if 'enrolled_bundles' not in user:
+            user['enrolled_bundles'] = []
+        if bundle_id not in user['enrolled_bundles']:
+            user['enrolled_bundles'].append(bundle_id)
+
+            # Add progress tracking
+            progress = user.get('bundle_progress', {})
+            progress[bundle_id] = {
+                'completed_courses': 0,
+                'courses_done': []
+            }
+
+            users_col.update_one({'email': user_email}, {
+                '$set': {'enrolled_bundles': user['enrolled_bundles'],
+                         'bundle_progress': progress}
+            })
+            flash("Enrolled in bundle!", "success")
+    return redirect(url_for('bundle_detail', bundle_id=bundle_id))
+
+@app.route('/bundle/<bundle_id>')
+def bundle_detail(bundle_id):
+    try:
+        # Convert to ObjectId
+        bundle_obj_id = ObjectId(bundle_id)
+    except:
+        flash("Invalid bundle ID", "error")
+        return redirect(url_for('home'))
+
+    # Fetch bundle from DB
+    bundle = bundles_col.find_one({'_id': bundle_obj_id})
+    if not bundle:
+        flash("Bundle not found", "error")
+        return redirect(url_for('home'))
+
+    # Add image URL for bundle
+    bundle['image_url'] = f"/image/{bundle.get('image_id')}" if bundle.get('image_id') else "/static/default-bundle.png"
+
+    # Get all course ObjectIds
+    course_ids = bundle.get('course_ids', [])
+    course_object_ids = [ObjectId(cid) for cid in course_ids]
+    courses = list(courses_col.find({'_id': {'$in': course_object_ids}}))
+
+    # Check user and fetch progress
+    user_email = session.get('user_email')
+    user_enrolled = False
+    progress = {}
+
+    if user_email:
+        user = users_col.find_one({'email': user_email})
+        if user:
+            enrolled_bundles = user.get('enrolled_bundles', [])
+            bundle_progress = user.get('bundle_progress', {})
+            user_enrolled = str(bundle_id) in enrolled_bundles
+            progress = bundle_progress.get(str(bundle_id), {
+                'completed_courses': 0,
+                'courses_done': {}
+            })
+
+    # Add course info + progress
+    for course in courses:
+        course['image_url'] = f"/image/{course.get('course_image_id')}" if course.get('course_image_id') else "/static/default.jpg"
+        course['chapters_count'] = len(course.get('chapters', []))
+        course['enrollments_count'] = len(course.get('enrolled_users', [])) if isinstance(course.get('enrolled_users'), list) else 0
+
+        course_id_str = str(course['_id'])
+        completed_chapters = progress.get('courses_done', {}).get(course_id_str, [])
+        course['completed_chapters'] = len(completed_chapters)
+
+    return render_template(
+        'bundle_detail.html',
+        bundle=bundle,
+        courses=courses,
+        user_enrolled=user_enrolled,
+        progress=progress
+    )
+
+
 
 
 def get_refcode():
@@ -197,90 +318,258 @@ def payment_success():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
-        course_name = request.form['course_name']
-        main_section = request.form['main_section']
+        # ---------- BUNDLE CREATION ----------
+        if 'bundle_name' in request.form:
+            bundle_name = request.form['bundle_name']
+            bundle_description = request.form.get('bundle_description', '')
+            selected_course_ids = request.form.getlist('selected_courses')
 
-        course_image_file = request.files['course_image']
-        image_id = fs.put(course_image_file, filename=secure_filename(course_image_file.filename))
+            course_object_ids = [ObjectId(cid) for cid in selected_course_ids if cid]
 
-        chapters = []
-        chapter_names = request.form.getlist('chapter_name[]')
+            image_file = request.files['bundle_image']
+            if image_file and image_file.filename:
+                image_id = fs.put(image_file, filename=secure_filename(image_file.filename), content_type=image_file.content_type)
+            else:
+                flash("Bundle image is required.", "error")
+                return redirect('/admin')
 
-        for i, chapter_name in enumerate(chapter_names):
-            videos = []
-            video_titles = request.form.getlist(f'video_title_{i}[]')
-            video_files = request.files.getlist(f'video_file_{i}[]')
-
-            for title, video_file in zip(video_titles, video_files):
-                if title.strip() and video_file and video_file.filename:
-                    file_id = fs.put(video_file, filename=secure_filename(video_file.filename))
-                    videos.append({
-                        "title": title.strip(),
-                        "file_id": file_id
-                    })
-
-            quiz_questions = request.form.getlist(f'quiz_question_{i}[]')
-            quiz_option_a = request.form.getlist(f'quiz_option_a_{i}[]')
-            quiz_option_b = request.form.getlist(f'quiz_option_b_{i}[]')
-            quiz_option_c = request.form.getlist(f'quiz_option_c_{i}[]')
-            quiz_option_d = request.form.getlist(f'quiz_option_d_{i}[]')
-            quiz_answers = request.form.getlist(f'quiz_answer_{i}[]')
-
-            quiz = []
-            for q, a, b, c, d, ans in zip(quiz_questions, quiz_option_a, quiz_option_b, quiz_option_c, quiz_option_d, quiz_answers):
-                if q.strip():
-                    quiz.append({
-                        "question": q.strip(),
-                        "options": {
-                            "a": a.strip(),
-                            "b": b.strip(),
-                            "c": c.strip(),
-                            "d": d.strip()
-                        },
-                        "answer": ans.strip().lower()
-                    })
-
-            chapters.append({
-                "chapter_name": chapter_name.strip(),
-                "videos": videos,
-                "quiz": quiz
+            bundles_col.insert_one({
+                'bundle_name': bundle_name,
+                'description': bundle_description,
+                'course_ids': course_object_ids,
+                'image_id': image_id,
             })
 
-        # Final Exam
-        final_exam_questions = []
-        final_exam_qs = request.form.getlist('final_question[]')
-        final_exam_opt_a = request.form.getlist('final_option_a[]')
-        final_exam_opt_b = request.form.getlist('final_option_b[]')
-        final_exam_opt_c = request.form.getlist('final_option_c[]')
-        final_exam_opt_d = request.form.getlist('final_option_d[]')
-        final_exam_answers = request.form.getlist('final_answer[]')
+            flash('Bundle created successfully!', 'success')
+            return redirect('/admin')
 
-        for q, a, b, c, d, ans in zip(final_exam_qs, final_exam_opt_a, final_exam_opt_b, final_exam_opt_c, final_exam_opt_d, final_exam_answers):
-            if q.strip():
-                final_exam_questions.append({
-                    "question": q.strip(),
-                    "options": {
-                        "a": a.strip(),
-                        "b": b.strip(),
-                        "c": c.strip(),
-                        "d": d.strip()
-                    },
-                    "answer": ans.strip().lower()
-                })
+        # ---------- COURSE CREATION ----------
+        course_name = request.form['course_name']
+        main_section = request.form['main_section']
+        description = request.form.getlist('description[]')
 
-        course_data = {
-            "course_name": course_name,
-            "main_section": main_section,
-            "course_image_id": image_id,
-            "chapters": chapters,
-            "final_exam": final_exam_questions
-        }
+        image_file = request.files['course_image']
+        image_id = fs.put(image_file, filename=secure_filename(image_file.filename), content_type=image_file.content_type)
 
-        courses_col.insert_one(course_data)
+        chapters = []
+        for i, chapter_name in enumerate(request.form.getlist('chapter_name[]')):
+            v_ts = request.form.getlist(f'video_title_{i}[]')
+            v_fs = request.files.getlist(f'video_file_{i}[]')
+            videos = []
+            for t, vf in zip(v_ts, v_fs):
+                if t and vf.filename:
+                    fid = fs.put(vf, filename=secure_filename(vf.filename))
+                    videos.append({'title': t, 'file_id': fid})
+
+            qs = request.form.getlist(f'quiz_question_{i}[]')
+            qa = request.form.getlist(f'quiz_option_a_{i}[]')
+            qb = request.form.getlist(f'quiz_option_b_{i}[]')
+            qc = request.form.getlist(f'quiz_option_c_{i}[]')
+            qd = request.form.getlist(f'quiz_option_d_{i}[]')
+            qans = request.form.getlist(f'quiz_answer_{i}[]')
+
+            quiz = [
+                {'question': qu, 'options': {'a': a, 'b': b, 'c': c, 'd': d}, 'answer': ans}
+                for qu, a, b, c, d, ans in zip(qs, qa, qb, qc, qd, qans) if qu
+            ]
+
+            chapters.append({'chapter_name': chapter_name, 'videos': videos, 'quiz': quiz})
+
+        fqs = request.form.getlist('final_question[]')
+        fa = request.form.getlist('final_option_a[]')
+        fb = request.form.getlist('final_option_b[]')
+        fc = request.form.getlist('final_option_c[]')
+        fd = request.form.getlist('final_option_d[]')
+        fans = request.form.getlist('final_answer[]')
+
+        final_exam = [
+            {'question': qu, 'options': {'a': a, 'b': b, 'c': c, 'd': d}, 'answer': ans}
+            for qu, a, b, c, d, ans in zip(fqs, fa, fb, fc, fd, fans) if qu
+        ]
+
+        courses_col.insert_one({
+            'course_name': course_name,
+            'main_section': main_section,
+            'description': description,
+            'course_image_id': image_id,
+            'chapters': chapters,
+            'final_exam': final_exam
+        })
+
         flash('Course added successfully!', 'success')
         return redirect('/admin')
 
-    return render_template('admin.html')
+    # ---------- GET Request ----------
+    all_courses = list(courses_col.find())
+    all_bundles = list(bundles_col.find())
+
+    # Attach image URL to each bundle
+
+    for bundle in all_bundles:
+      if 'image_id' in bundle:
+        bundle['image_url'] = f"/image/{bundle['image_id']}"
+      else:
+        bundle['image_url'] = "/static/default.jpg"
+
+
+    return render_template('admin.html', courses=all_courses, bundles=all_bundles)
+
+
+@app.route('/delete_bundle/<bundle_id>', methods=['POST'])
+def delete_bundle(bundle_id):
+    bundle = bundles_col.find_one({'_id': ObjectId(bundle_id)})
+    if bundle:
+        image_id = bundle.get('image_id')
+        if image_id:
+            try:
+                fs.delete(ObjectId(image_id))
+            except:
+                pass
+        bundles_col.delete_one({'_id': ObjectId(bundle_id)})
+        flash("Bundle deleted successfully.", "success")
+    else:
+        flash("Bundle not found.", "error")
+    return redirect('/admin')
+from bson import ObjectId
+
+
+@app.route('/image/<image_id>')
+def serve_image(image_id):
+    try:
+        file = fs.get(ObjectId(image_id))  # GridFS file
+        return send_file(
+            io.BytesIO(file.read()), 
+            mimetype=file.content_type, 
+            as_attachment=False, 
+            download_name=file.filename
+        )
+    except Exception as e:
+        print("Image load error:", e)
+        return Response("Image not found", status=404)
+
+@app.route('/delete_course', methods=['POST'])
+def delete_course():
+    course_id = request.form['course_id']
+    courses_col.delete_one({'_id': ObjectId(course_id)})
+    flash('Course deleted successfully!', 'success')
+    return redirect('/admin')
+
+
+
+@app.route('/admin/edit/<course_id>', methods=['GET', 'POST'])
+def edit_course(course_id):
+    course = courses_col.find_one({'_id': ObjectId(course_id)})
+    if not course:
+        flash('Course not found.', 'error')
+        return redirect('/admin')
+
+    if request.method == 'POST':
+        main_section = request.form['main_section']
+        course_name = request.form['course_name']
+        description = request.form.getlist('description[]')
+
+        # Optional: handle image upload
+        if 'course_image' in request.files and request.files['course_image'].filename != '':
+            # Delete old image
+            if 'course_image_id' in course:
+                fs.delete(course['course_image_id'])
+            img_file = request.files['course_image']
+            img_id = fs.put(img_file, filename=secure_filename(img_file.filename))
+            course['course_image_id'] = img_id
+
+        # Update fields
+        course['main_section'] = main_section
+        course['course_name'] = course_name
+        course['description'] = description
+
+        courses_col.replace_one({'_id': course['_id']}, course)
+        flash('Course updated successfully.', 'success')
+        return redirect('/admin')
+
+    return render_template('edit_course.html', course=course)
+
+@app.route('/admin/edit_quiz/<course_id>', methods=['GET', 'POST'])
+def edit_quiz(course_id):
+    course = courses_col.find_one({'_id': ObjectId(course_id)})
+
+    if request.method == 'POST':
+        questions = []
+        num_questions = len(request.form.getlist('question'))
+
+        for i in range(num_questions):
+            question_text = request.form.getlist('question')[i]
+            options = request.form.getlist(f'option{i}')
+            answer = request.form.getlist('answer')[i]
+
+            questions.append({
+                'question': question_text,
+                'options': options,
+                'answer': answer
+            })
+
+        courses_col.update_one({'_id': ObjectId(course_id)}, {'$set': {'quiz': questions}})
+        flash('Quiz updated successfully.', 'success')
+        return redirect('/admin')
+
+    return render_template('edit_quiz.html', course=course)
+
+@app.route('/admin/edit_exam/<course_id>', methods=['GET', 'POST'])
+def edit_exam(course_id):
+    course = courses_col.find_one({'_id': ObjectId(course_id)})
+
+    if request.method == 'POST':
+        final_exam = []
+        num_questions = len(request.form.getlist('question'))
+
+        for i in range(num_questions):
+            question_text = request.form.getlist('question')[i]
+            options = request.form.getlist(f'option{i}')
+            answer = request.form.getlist('answer')[i]
+
+            final_exam.append({
+                'question': question_text,
+                'options': options,
+                'answer': answer
+            })
+
+        courses_col.update_one({'_id': ObjectId(course_id)}, {'$set': {'final_exam': final_exam}})
+        flash('Final exam updated successfully.', 'success')
+        return redirect('/admin')
+
+    return render_template('edit_exam.html', course=course)
+
+@app.route('/admin/edit_videos/<course_id>', methods=['GET', 'POST'])
+def edit_videos(course_id):
+    course = courses_col.find_one({'_id': ObjectId(course_id)})
+
+    if request.method == 'POST':
+        chapters = []
+        total_chapters = int(request.form.get('total_chapters', 0))
+
+        for i in range(total_chapters):
+            chapter_title = request.form.get(f'chapter_title_{i}')
+            total_videos = int(request.form.get(f'total_videos_{i}', 0))
+            videos = []
+
+            for j in range(total_videos):
+                video_title = request.form.get(f'video_title_{i}_{j}')
+                video_url = request.form.get(f'video_url_{i}_{j}')
+                videos.append({
+                    'title': video_title,
+                    'url': video_url
+                })
+
+            chapters.append({
+                'title': chapter_title,
+                'videos': videos
+            })
+
+        courses_col.update_one({'_id': ObjectId(course_id)}, {'$set': {'chapters': chapters}})
+        flash('Videos updated successfully.', 'success')
+        return redirect('/admin')
+
+    return render_template('edit_videos.html', course=course)
+
 
 
 @app.route('/courses')

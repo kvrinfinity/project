@@ -6,27 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --primary: #850014; /* light maroon */
-      --primary-dark: #750012;
+      --primary: #850014;
+      --primary-dark: white;
       --bg: #f7f9fc;
       --text-dark: #222;
-      --text-light: #666;
-      --card-bg: #fff;
+      --text-light: #241f1f;
+      --card-bg: #ffffff;
       --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       --progress-bg: #e0e0e0;
       --progress-fill: var(--primary);
-      --nav-bg: #f3d5d8;
+      --nav-bg: #9f0404;
       --nav-link-color: var(--primary-dark);
       --nav-link-hover: #d9989d;
       --button-bg: var(--primary);
-      --button-hover-bg: #7d3f48;
+      --button-hover-bg: #dc5b5b;
       --button-color: #fff;
     }
 
-    /* Reset & base */
     * {
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
@@ -37,7 +37,6 @@
       flex-direction: column;
     }
 
-    /* Navbar */
     nav.navbar {
       background: var(--nav-bg);
       color: var(--nav-link-color);
@@ -72,38 +71,67 @@
       color: var(--primary);
     }
 
-
-    /* Container */
-    .container {
-      max-width: 1200px;
-      margin: 30px auto 60px;
-      padding: 0 20px;
-      flex-grow: 1;
+    .main-wrapper {
+      display: flex;
+      flex: 1;
+      height: 100%;
     }
 
-    /* Header */
-    .header {
-      margin-bottom: 30px;
+    .sidebar {
+      width: 25%;
+      background: var(--card-bg);
+      padding: 30px 20px;
+      box-shadow: var(--shadow);
+      border-right: 1px solid #e0e0e0;
     }
 
-    .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 8px;
-      color: var(--primary);
+    .sidebar h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: rgb(214, 108, 108);
     }
 
-    .referral {
+    .referral, .wallet-box {
       font-size: 1rem;
       color: var(--text-light);
-    }
-    .referral strong {
-      color: var(--primary-dark);
+      margin-bottom: 15px;
     }
 
-    /* Sections */
+    .referral strong, .wallet-box strong {
+      color: #9f0404;
+    }
+
+  .referral button {
+  background: rgb(255, 176, 176);
+  border: none;
+  color: rgb(177, 11, 11);
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.referral button:hover {
+  color: rgb(231, 220, 220);
+}
+
+  
+
+    .wallet-box strong {
+      color: green;
+    }
+
+    .content {
+      width: 70%;
+      padding: 30px 20px;
+      overflow-y: auto;
+    }
+
     .section {
       margin-bottom: 50px;
     }
+
     .section h2 {
       font-size: 1.8rem;
       color: var(--primary);
@@ -113,7 +141,6 @@
       padding-bottom: 6px;
     }
 
-    /* Ongoing courses horizontal scroll container */
     .ongoing-courses-wrapper {
       display: flex;
       gap: 20px;
@@ -121,36 +148,32 @@
       padding-bottom: 10px;
       scroll-behavior: smooth;
     }
-    /* Hide scrollbar for WebKit */
+
     .ongoing-courses-wrapper::-webkit-scrollbar {
       height: 8px;
     }
-    .ongoing-courses-wrapper::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
+
     .ongoing-courses-wrapper::-webkit-scrollbar-thumb {
       background: var(--primary);
       border-radius: 10px;
     }
 
-    /* Each course card */
     .course-card {
-      background: var(--card-bg);
+      background: linear-gradient(145deg, #fdfdfd, #dfdede);
       box-shadow: var(--shadow);
       border-radius: 12px;
       width: 300px;
-      flex: 0 0 auto; /* don't shrink */
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
       transition: box-shadow 0.3s ease, transform 0.2s ease;
     }
+
     .course-card:hover {
       box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       transform: translateY(-5px);
     }
 
-    /* Course image */
     .course-card img {
       width: 100%;
       height: 160px;
@@ -159,7 +182,6 @@
       border-top-right-radius: 12px;
     }
 
-    /* Course content */
     .course-content {
       padding: 15px 20px;
       flex-grow: 1;
@@ -167,12 +189,14 @@
       flex-direction: column;
       justify-content: space-between;
     }
+
     .course-title {
       font-size: 1.3rem;
       font-weight: 700;
       margin-bottom: 8px;
-      color: var(--primary-dark);
+      color: #9f0404;;
     }
+
     .course-main-section {
       font-size: 1rem;
       color: var(--text-light);
@@ -181,40 +205,6 @@
       line-height: 1.3;
     }
 
-    /* Progress bar container */
-    .progress-bar-container {
-      height: 14px;
-      background: var(--progress-bg);
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--progress-fill);
-      border-radius: 8px 0 0 8px;
-      transition: width 0.3s ease;
-    }
-
-    /* Progress percentage text */
-    .progress-text {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--primary-dark);
-      margin-bottom: 12px;
-      text-align: right;
-    }
-
-    .wallet-box {
-  margin-top: 10px;
-  font-size: 1.1rem;
-  color: var(--text-light);
-}
-.wallet-box strong {
-  color: green;
-}
-
-    /* Button */
     .btn {
       background-color: var(--button-bg);
       border: none;
@@ -230,17 +220,18 @@
       display: inline-block;
       user-select: none;
     }
+
     .btn:hover {
       background-color: var(--button-hover-bg);
     }
 
-    /* Completed courses cards */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 25px;
-      max-width: 1200px;
+      max-width: 100%;
     }
+
     .card {
       background: var(--card-bg);
       box-shadow: var(--shadow);
@@ -250,85 +241,68 @@
       color: var(--text-dark);
       transition: box-shadow 0.3s ease, transform 0.2s ease;
     }
+
     .card:hover {
       box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       transform: translateY(-5px);
     }
+
     .card-title {
       font-size: 1.3rem;
       font-weight: 700;
       margin-bottom: 10px;
       color: var(--primary-dark);
     }
+
     .card-desc {
       font-size: 1rem;
       color: var(--text-light);
       line-height: 1.4;
     }
 
-    /* Responsive */
+    .user-icon {
+      position: absolute;
+      top: -0.75px;
+      right: 30px;
+      width: 36px;
+      height: 36px;
+      background: #a259ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      box-sizing: border-box;
+      margin-top: 12px;
+      z-index: 1;
+    }
+
     @media (max-width: 768px) {
-      .header h1 {
-        font-size: 2rem;
+      .main-wrapper {
+        flex-direction: column;
       }
-      .section h2 {
-        font-size: 1.4rem;
+
+      .sidebar, .content {
+        width: 100%;
       }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
       .cards {
         grid-template-columns: 1fr;
       }
-      ul.course-list li {
-        padding: 18px 20px;
-      }
-      .ongoing-courses-wrapper {
-        gap: 15px;
-      }
-      .course-card {
-        width: 260px;
-      }
-    }
-    .user-icon {
-  position: absolute;
-  top: -0.75px; /* Adjust as needed */
-  right: 30px; /* Match navbar padding */
-  width: 36px;
-  height: 36px;
-  background: #a259ff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #fff;
-  box-sizing: border-box;
-  margin-top: 12px;
-  z-index: 1;
-}
 
-    @media (max-width: 480px) {
-      nav.navbar {
-        flex-direction: column;
-        height: auto;
-        padding: 10px 20px;
-      }
-      nav.navbar .nav-links {
-        margin-top: 10px;
-      }
-      nav.navbar .nav-links a {
-        margin-left: 10px;
-        font-size: 0.9rem;
-      }
-      .header h1 {
-        font-size: 1.6rem;
-      }
-      .referral {
-        font-size: 0.9rem;
-      }
       .course-card {
         width: 90vw;
       }
     }
+    
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <h1>KVR Infinity</h1>
@@ -338,68 +312,69 @@
       <a href="#">About Us</a>
     </div>
     <a href="{{ url_for('user_dashboard') }}">
-    <div class="profile">
-      <div class="user-icon">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="20" fill="#222"/>
-        <circle cx="20" cy="15" r="7" fill="#fff"/>
-        <ellipse cx="20" cy="29" rx="12" ry="7" fill="#fff"/>
-      </svg>
-    </div>
-  </div></a>
+      <div class="profile">
+        <div class="user-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="20" fill="#222"/>
+            <circle cx="20" cy="15" r="7" fill="#fff"/>
+            <ellipse cx="20" cy="29" rx="12" ry="7" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+    </a>
   </nav>
 
-  <div class="container">
-    <div class="header">
+  <div class="main-wrapper">
+    <div class="sidebar">
       <h1>Welcome, {{ user.fname }} 👋</h1>
-      <div class="referral">Your Referral Code: <strong>{{ user.ref_code }}</strong></div>
-    </div>
-    <div class="wallet-box">
-            Wallet Balance: <strong>₹{{ wallet_balance }}/-</strong>
-    </div>
-
-    <div class="section">
-      <h2>Ongoing Courses</h2>
-      {% if ongoing_courses %}
-      <div class="ongoing-courses-wrapper">
-        {% for course in ongoing_courses %}
-        <div class="course-card">
-            <img src="{{ course.image_url }}" alt="{{ course.course_name }} image" />
-          <div class="course-content">
-            <div class="course-title">{{ course.course_name }}</div>
-            <div class="course-main-section">{{ course.main_section[:100] }}{% if course.main_section|length > 100 %}...{% endif %}</div>
-
-            <a href="{{ url_for('course_detail', id=course._id) }}" class="btn">View Details</a>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p>You have no ongoing courses.</p>
-      {% endif %}
-    </div>
-
-    <div class="section">
-  <h2>✅ Completed Courses</h2>
-  {% if completed_courses %}
-  <div class="ongoing-courses-wrapper">
-    {% for course in completed_courses %}
-    <div class="course-card">
-        <img src="{{ course.image_url }}" alt="{{ course.course_name }} image" />
-      <div class="course-content">
-        <div class="course-title">{{ course.course_name }}</div>
-        <div class="course-main-section">{{ course.main_section[:100] }}{% if course.main_section|length > 100 %}...{% endif %}</div>
-
-        <a href="{{ url_for('course_detail', id=course._id) }}" class="btn">View Details</a>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <p>You haven’t completed any courses yet. Keep going!</p>
-  {% endif %}
+      <div class="referral">
+  <span>Your Referral Code:</span>
+  <button class="btn">{{ user.ref_code }}</button>
 </div>
 
+
+      
+      <div class="wallet-box">Wallet Balance: <strong>₹{{ wallet_balance }}/-</strong></div>
+    
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <h2>Ongoing Courses</h2>
+        {% if ongoing_courses %}
+        <div class="ongoing-courses-wrapper">
+          {% for course in ongoing_courses %}
+          <div class="course-card">
+              <img src="{{ course.image_url }}" alt="{{ course.course_name }} image" />
+            <div class="course-content">
+              <div class="course-title">{{ course.course_name }}</div>
+              <div class="course-main-section">{{ course.main_section[:100] }}{% if course.main_section|length > 100 %}...{% endif %}</div>
+              <a href="{{ url_for('course_detail', id=course._id) }}" class="btn">View Details</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p>You have no ongoing courses.</p>
+        {% endif %}
+      </div>
+
+      <div class="section">
+        <h2>✅ Completed Courses</h2>
+        {% if completed %}
+        <div class="cards">
+          {% for course in completed %}
+          <a href="{{ url_for('course_detail', id=course._id) }}" class="card">
+            <div class="card-title">{{ course.course_name }}</div>
+            <div class="card-desc">{{ course.description[:120] }}{% if course.description|length > 120 %}...{% endif %}</div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p>You haven’t completed any courses yet. Keep going!</p>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </body>
 </html>

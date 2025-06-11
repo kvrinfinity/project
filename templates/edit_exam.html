@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Final Exam - {{ course.course_name }}</title>
+  <link rel="stylesheet" href="/static/admin.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Edit Final Exam - {{ course.course_name }}</h2>
+    <form method="POST">
+      {% for q in course.final_exam %}
+      <div class="exam-block">
+        <input type="text" name="question" value="{{ q.question }}" required>
+        <div class="options">
+          {% for o in q.options %}
+          <input type="text" name="option{{ loop.index0 }}" value="{{ o }}" required>
+          {% endfor %}
+        </div>
+        <input type="text" name="answer" value="{{ q.answer }}" required placeholder="Correct Answer">
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn">Update Final Exam</button>
+    </form>
+  </div>
+</body>
+</html>

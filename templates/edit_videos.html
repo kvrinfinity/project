@@ -1,0 +1,63 @@
+<!-- edit_videos.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Course Videos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/admin.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Edit Videos - {{ course.course_name }}</h2>
+    <form method="POST">
+      <input type="hidden" name="total_chapters" value="{{ course.chapters|length }}">
+      <div id="chapters_container">
+        {% for chapter_index, chapter in enumerate(course.chapters) %}
+        <div class="chapter-block">
+          <h3>Chapter {{ chapter_index + 1 }}</h3>
+          <input type="text" name="chapter_title_{{ chapter_index }}" value="{{ chapter.title }}" placeholder="Chapter Title" required>
+          <input type="hidden" name="total_videos_{{ chapter_index }}" value="{{ chapter.videos|length }}">
+          <div class="videos-container">
+  {% for video_index, video in enumerate(chapter.videos) %}
+  <div class="video-block">
+    <input type="text" name="video_title_{{ chapter_index }}_{{ video_index }}" value="{{ video.title }}" placeholder="Video Title" required>
+    <input type="url" name="video_url_{{ chapter_index }}_{{ video_index }}" value="{{ video.url }}" placeholder="Video URL" required>
+  </div>
+  {% endfor %}
+
+  {% if add_video_for == chapter_index %}
+  <div class="video-block">
+    <input type="text" name="video_title_{{ chapter_index }}_{{ chapter.videos|length }}" placeholder="Video Title" required>
+    <input type="url" name="video_url_{{ chapter_index }}_{{ chapter.videos|length }}" placeholder="Video URL" required>
+  </div>
+  {% endif %}
+</div>
+
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn">Save All</button>
+    </form>
+  </div>
+
+  <script>
+    function addVideo(chapterIndex) {
+      const chapterBlock = document.querySelectorAll('.chapter-block')[chapterIndex];
+      const videosContainer = chapterBlock.querySelector('.videos-container');
+      const currentCount = videosContainer.querySelectorAll('.video-block').length;
+
+      const videoBlock = document.createElement('div');
+      videoBlock.className = 'video-block';
+      videoBlock.innerHTML = `
+        <input type="text" name="video_title_${chapterIndex}_${currentCount}" placeholder="Video Title" required>
+        <input type="url" name="video_url_${chapterIndex}_${currentCount}" placeholder="Video URL" required>
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✖</button>
+      `;
+      videosContainer.appendChild(videoBlock);
+
+      const totalVideosField = document.querySelector(`input[name='total_videos_${chapterIndex}']`);
+      totalVideosField.value = currentCount + 1;
+    }
+  </script>
+</body>
+</html>

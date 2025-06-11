@@ -51,16 +51,38 @@
 
   </div>
 </div>
-{% endfor %}
+  {% endfor %}
+  </div>
+    <button class="slider-btn right">&#8250;</button>
+</div>
 
-        
-    
+<div class="slider-wrapper">
+  <h2>📦 Build Your Career with Bundles</h2>
+  <button class="slider-btn left">&#8249;</button>
 
+  <div class="slider" id="bundleSlider">
+    {% for bundle in bundles %}
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ bundle.image_url }}" alt="{{ bundle.bundle_name }}" width="200" />
+        <span>Bundle</span>
+        <h3>{{ bundle.bundle_name }}</h3>
+        <p>📘 {{ bundle.course_ids|length }} Courses</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>{{ bundle.bundle_name }}</h3>
+<a href="{{ url_for('bundle_detail', bundle_id=bundle._id|string) }}">
+          <button>Explore Bundle</button>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
   </div>
 
-   
-    <button class="slider-btn right">&#8249;</button>   
+  <button class="slider-btn right">&#8250;</button>
 </div>
+
+
 
 
 <script>
