@@ -27,6 +27,32 @@
     <a href="{{ url_for('membership') }}" class="btn">Join Membership</a>
   </section>
 
+<div class="curve-wrapper">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+    <defs>
+      <!-- Gradient fill -->
+      <linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ff4b5c" />
+        <stop offset="100%" stop-color="#ff6b81" />
+      </linearGradient>
+
+      <!-- Soft glow shadow along the curve -->
+      <filter id="glowShadow" x="-10%" y="-50%" width="120%" height="300%">
+        <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="rgba(255, 75, 92, 0.6)" />
+      </filter>
+    </defs>
+
+    <!-- Curve path -->
+    <path d="M0,20 C480,5 960,5 1440,20"
+          stroke="url(#curveGradient)"
+          stroke-width="2"
+          fill="none"
+          filter="url(#glowShadow)" />
+  </svg>
+</div>
+
+
+
 <h2>Explore top <span style="color: red;">courses</span></h2>
 
   <div class="courses-container">
@@ -35,10 +61,7 @@
     <div class="course-card">
       <div class="course-front">
         <img src="{{ url_for('static', filename='c1.png') }}" alt="Entrepreneurship">
-        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
-        <h3>AI & ML Jobs</h3>
-        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
-      </div>
+    </div>
       <div class="course-details-hover">
         <h3>AI & ML Jobs</h3>
         <p>AI & ML Jobs: Career Paths & Salaries</p>
@@ -51,9 +74,7 @@
     <div class="course-card">
       <div class="course-front">
         <img src="{{ url_for('static', filename='c2.png') }}" alt="Entrepreneurship">
-        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
-        <h3>ChatGPT & Deepseek Clones</h3>
-        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+
       </div>
       <div class="course-details-hover">
         <h3>ChatGPT & Deepseek Clones</h3>
@@ -65,9 +86,7 @@
     <!-- Prompt Engineering -->
     <div class="course-card">
       <div class="course-front">
-      <img src="{{ url_for('static', filename='c3.png') }}" alt="Entrepreneurship">        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
-        <h3>Prompt Engineering</h3>
-        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+      <img src="{{ url_for('static', filename='c3.png') }}" alt="Entrepreneurship">     
       </div>
       <div class="course-details-hover">
         <h3>Prompt Engineering</h3>
@@ -80,9 +99,7 @@
     <div class="course-card">
       <div class="course-front">
         <img src="{{ url_for('static', filename='c4.png') }}" alt="Entrepreneurship">
-        <span>All levels</span> <strong style="color:blue;">₹1,499.00</strong>
-        <h3>Entrepreneurship</h3>
-        <p>👨‍🎓 1879 Students &nbsp;&nbsp; 📚 0 Lessons</p>
+        
       </div>
       <div class="course-details-hover">
         <h3>Entrepreneurship</h3>
@@ -113,6 +130,45 @@
       <p>Once selected, get the membership at ₹1499/- and unlock all premium courses to boost your skills.</p>
     </div>
   </section>
+
+  <section class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <button class="faq-question">What is KVR Infinity?</button>
+    <div class="faq-answer">
+      <p>KVR Infinity is an online education platform providing quality learning resources across India.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question">How do I join a course?</button>
+    <div class="faq-answer">
+      <p>You can register using our website and browse the available courses under the 'Courses' section.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question">Is there a support team?</button>
+    <div class="faq-answer">
+      <p>Yes, our support team is available 24/7 to help you with your queries.</p>
+    </div>
+  </div>
+</section>
+<script>
+  const faqQuestions = document.querySelectorAll('.faq-question');
+
+  faqQuestions.forEach(question => {
+    question.addEventListener('click', () => {
+      const answer = question.nextElementSibling;
+
+      // Toggle visibility
+      answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+    });
+  });
+</script>
+
+
 
   <footer class="footer">
   <div class="footer-top">

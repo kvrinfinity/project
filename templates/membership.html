@@ -6,8 +6,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='membership.css') }}">
 </head>
 <body>
+  <div class="background-text">KVR Infinity</div>
+
   <div class="payment-box">
-    <h2>Buy Membership - ₹<span id="amount-display">1000</span></h2>
+    <h2>Buy Membership - ₹<span id="amount-display">10000</span></h2>
 
     <input type="text" id="referral-input" placeholder="Enter Referral Code" />
     <button onclick="applyReferral()">Apply Code</button>
@@ -17,7 +19,7 @@
   </div>
 
   <script>
-    let finalAmount = 1000;
+    let finalAmount = 10000;
 
     function applyReferral() {
       const code = document.getElementById("referral-input").value;
@@ -40,7 +42,7 @@
         } else {
           msg.style.color = "red";
           msg.textContent = "Invalid referral code.";
-          finalAmount = 1000;
+          finalAmount = 10000;
           document.getElementById("amount-display").textContent = finalAmount;
         }
       });

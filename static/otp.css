@@ -1,6 +1,6 @@
-/* membership.css */
+/* styles.css for OTP Page */
 
-/* Variables */
+/* Theme Variables */
 :root {
   --primary-color: #ba0000;
   --secondary-color: #2575fc;
@@ -13,7 +13,7 @@
   --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Base */
+/* Base Layout */
 body {
   margin: 0;
   padding: 0;
@@ -24,19 +24,11 @@ body {
   justify-content: center;
   align-items: center;
   color: var(--text-color);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Payment Container */
-.payment-box {
-  background-color: var(--form-bg);
-  padding: 2.5rem 3rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  animation: fadeInUp 0.7s ease-out;
-}
+/* Optional: Animated Background Text */
 .background-text {
   position: absolute;
   top: 50%;
@@ -54,10 +46,25 @@ body {
 }
 
 @keyframes slideText {
-  0% { left: -100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
+/* Centered Form Wrapper */
+.center-wrapper {
+  background-color: var(--form-bg);
+  padding: 2.5rem 3rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 100%;
+  max-width: 400px;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease-out;
+}
 
 @keyframes fadeInUp {
   from {
@@ -70,74 +77,79 @@ body {
   }
 }
 
-/* Heading */
-.payment-box h2 {
+form h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
   color: var(--primary-color);
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
   font-weight: 600;
 }
 
-/* Input */
-#referral-input {
-  width: 100%;
-  max-width: 300px;
-  padding: 0.75rem 1rem;
-  margin: 0.5rem auto 1rem;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
-  font-size: 1rem;
-  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-}
-
-#referral-input:focus {
-  border-color: var(--primary-color);
-  outline: none;
-  box-shadow: 0 0 6px rgba(106, 17, 203, 0.2);
-}
-
-/* Buttons */
-button {
+input[type="text"] {
   display: block;
   width: 100%;
   max-width: 300px;
-  margin: 0.5rem auto;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem auto 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 1.25rem;
+  letter-spacing: 0.4rem;
+  text-align: center;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 6px rgba(106, 17, 203, 0.3);
+}
+
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
   padding: 0.75rem;
   background: var(--primary-color);
   border: none;
   border-radius: var(--border-radius);
-  color: white;
+  color: #fff;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: background var(--transition-speed), transform var(--transition-speed);
 }
 
-button:hover {
+button[type="submit"]:hover {
   background: var(--secondary-color);
   transform: translateY(-2px);
 }
 
-/* Referral message */
-#referral-msg {
+/* Error Message */
+form p[style*="color: red"] {
+  text-align: center;
   font-size: 0.95rem;
-  margin-bottom: 1rem;
+  color: #e74c3c !important;
 }
 
-/* Responsive */
+/* Responsive Adjustments */
 @media screen and (max-width: 480px) {
-  .payment-box {
-    padding: 2rem 1.5rem;
+  .center-wrapper {
+    padding: 2rem;
     margin: 1rem;
   }
 
-  .payment-box h2 {
+  form h2 {
     font-size: 1.5rem;
   }
 
-  #referral-input,
+  input,
   button {
     font-size: 1rem;
     max-width: 100%;
+  }
+
+  .background-text {
+    font-size: 3rem;
   }
 }

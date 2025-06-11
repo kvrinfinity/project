@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>OTP Verification</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='otp.css') }}">
 </head>
 <body>
+    <div class="background-text">KVR Infinity</div>
+
   <div class="center-wrapper">
     <form action="/verify_otp" method="POST">
       <h2>Verify Your Email</h2>
       {% if msg %}
         <p style="color: red;">{{ msg }}</p>
       {% endif %}
-      <input type="text" name="otp" placeholder="Enter 4-digit OTP" maxlength="4" required />
+      <input type="text" name="otp" placeholder="Enter 4-digit OTP" maxlength="5" required />
       <button type="submit">Verify</button>
     </form>
   </div>

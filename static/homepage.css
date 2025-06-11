@@ -8,13 +8,13 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #ffffff;
-  color: #333;
+  color: #242424;
 }
 
 
 /* Navbar */
 .navbar {
-  background-color:  #010000;
+  background-color:  #9f0404;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -26,7 +26,7 @@ body {
 }
 
 .navbar h1 {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
    margin-right: auto;
 }
@@ -47,7 +47,7 @@ body {
 }
 
 .nav-links a:hover {
-  color: #facc15;
+  color: #e9aead;
 }
 .profile {
   display: flex;
@@ -83,9 +83,11 @@ body {
 
 /* Section Title */
 h2 {
-  text-align: center;
+ /* text-align: center;*/
   margin: 40px 0 20px;
   font-size: 32px;
+  border-left: 4px solid red;
+  margin-left: 25px;
 }
 
 /* Slider Wrapper */
@@ -115,9 +117,11 @@ h2 {
   width: 260px;
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 10px 10px rgba(0,0,0,0.3);
+  background:white;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   transition: transform 0.3s ease;
+  margin-left: 20px;
+  gap: 10px;
 }
 
 .course-card img{
@@ -127,9 +131,11 @@ h2 {
 }
 .course-card:hover {
   transform: scale(1.05);
-  box-shadow: none;
-  background-color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  /* Optional: brighter gradient on hover */
+  background: linear-gradient(145deg, #fdfdfd, #eaeaea);
 }
+
 
 
 /* Slider Buttons */
@@ -162,6 +168,7 @@ h2 {
   justify-content: center;
   gap: 30px;
   padding: 20px;
+  
 }
 
 /* Course Card */
@@ -172,10 +179,12 @@ h2 {
   position: relative;
   flex: 0 0 auto;
   border-radius: 12px;
-  background: #fff;
+  background: linear-gradient(145deg, #fdfdfd, #eaeaea); /* Subtle gradient */
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
 }
+
 
 .course-front,
 .course-details-hover {
@@ -191,7 +200,7 @@ h2 {
 }
 
 .course-front {
-  background-color: white;
+  background-color:linear-gradient(145deg, #fdfdfd, #eaeaea);
   padding: 20px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -215,10 +224,11 @@ h2 {
 }
 
 .course-front span {
-  background-color: #eee;
+  background-color: #c1bebe;
+ 
   padding: 4px 10px;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .course-front h3 {
@@ -226,13 +236,13 @@ h2 {
 }
 
 .course-front p {
-  font-size: 14px;
+  font-size: 15px;
   color: #555;
 }
 
 /* Hover Side */
 .course-details-hover {
-  background-color: #ffffff;
+  background-color: #e0e0e0;
   padding: 20px;
   text-align: center;
   transform: rotateY(180deg);
@@ -251,7 +261,7 @@ h2 {
 }
 
 .course-details-hover button {
-  background-color: #a259ff;
+  background-color: #ba0000;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -261,7 +271,7 @@ h2 {
 }
 
 .course-details-hover button:hover {
-  background-color: #7c35cc;
+  background-color: #3567cc;
 }
 
 /* Flip Animation on Hover */
