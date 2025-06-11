@@ -380,20 +380,26 @@
     </div>
 
     <div class="section">
-      <h2>✅ Completed Courses</h2>
-      {% if completed %}
-      <div class="cards">
-        {% for course in completed %}
-        <a href="{{ url_for('course_detail', id=course._id) }}" class="card">
-          <div class="card-title">{{ course.course_name }}</div>
-          <div class="card-desc">{{ course.description[:120] }}{% if course.description|length > 120 %}...{% endif %}</div>
-        </a>
-        {% endfor %}
+  <h2>✅ Completed Courses</h2>
+  {% if completed_courses %}
+  <div class="ongoing-courses-wrapper">
+    {% for course in completed_courses %}
+    <div class="course-card">
+        <img src="{{ course.image_url }}" alt="{{ course.course_name }} image" />
+      <div class="course-content">
+        <div class="course-title">{{ course.course_name }}</div>
+        <div class="course-main-section">{{ course.main_section[:100] }}{% if course.main_section|length > 100 %}...{% endif %}</div>
+
+        <a href="{{ url_for('course_detail', id=course._id) }}" class="btn">View Details</a>
       </div>
-      {% else %}
-      <p>You haven’t completed any courses yet. Keep going!</p>
-      {% endif %}
     </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>You haven’t completed any courses yet. Keep going!</p>
+  {% endif %}
+</div>
+
   </div>
 </body>
 </html>

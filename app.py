@@ -167,19 +167,32 @@ def verify_otp():
 def apply_referral():
     data = request.get_json()
     ref_code = data.get('ref_code')
+    just_validate = data.get('just_validate', False)
 
     referrer = db.users.find_one({'ref_code': ref_code})
     if referrer:
-        # Update wallet balance
-        db.users.update_one(
-            {'_id': referrer['_id']},
-            {'$inc': {'wallet': 1000}}
-        )
-        print('valid')
-        return jsonify({'valid': True})
-    else:
-        print('invalid')
-        return jsonify({'valid': False})
+        if just_validate:
+            return jsonify({'valid': True})
+    return jsonify({'valid': False})
+
+    
+@app.route('/payment_success', methods=['POST'])
+def payment_success():
+    data = request.get_json()
+    ref_code = data.get('ref_code')
+    razorpay_payment_id = data.get('razorpay_payment_id')
+
+    # (Optional) verify Razorpay payment here via their API
+
+    if ref_code:
+        referrer = db.users.find_one({'ref_code': ref_code})
+        if referrer:
+            db.users.update_one(
+                {'_id': referrer['_id']},
+                {'$inc': {'wallet': 1000}}
+            )
+    return jsonify({'success': True})
+
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -311,7 +324,6 @@ def course_detail(id):
         'course_id': ObjectId(id)
     })
 
-    # Process each chapter
     for chapter in course.get("chapters", []):
         for video in chapter.get("videos", []):
             video_id = str(video.get("file_id"))
@@ -321,15 +333,19 @@ def course_detail(id):
                 video['completed'] = True
 
         # Quiz status
-        quiz_scores = enrollment.get("quiz_scores", {}) if enrollment else {}
+        quiz_scores = enrollment.get("quiz_progress", {}) if enrollment else {}
         chapter_name = chapter.get("chapter_name")
-        chapter["quiz_completed"] = chapter_name in quiz_scores
-        chapter["quiz_score"] = quiz_scores.get(chapter_name)
-        chapter["quiz_total"] = len(chapter.get("quiz", []))
+        quiz_data = quiz_scores.get(chapter_name, {})
+        chapter["quiz_completed"] = quiz_data.get('passed', False)
+        chapter["quiz_score"] = quiz_data.get('score', 0)
+        chapter["quiz_total"] = quiz_data.get('total', 0)
 
-    # Final exam score
+    # Final exam status
+    final_exam_data = enrollment.get('final_exam_progress', {}) if enrollment else {}
     course["final_exam"] = course.get("final_exam", [])
-    course["final_exam_score"] = enrollment.get("final_exam_score") if enrollment else None
+    course["final_exam_completed"] = final_exam_data.get('passed', False)
+    course["final_exam_score"] = final_exam_data.get('score', 0)
+    course["final_exam_total"] = final_exam_data.get('total', 0)
 
     return render_template("course_detail.html", course=course)
 
@@ -477,8 +493,9 @@ def render_final_exam(course_id):
     if not course or "final_exam" not in course:
         return "Final exam not found", 404
 
-    # Initial render: no score, no retake flag
-    return render_template('final_exam.html', course_id=course_id, exam=course["final_exam"])
+    exam_data = course["final_exam"]
+    return render_template('final_exam.html', course_id=course_id, exam=exam_data)
+
 
 
 @app.route('/submit_final_exam', methods=['POST'])
@@ -575,27 +592,87 @@ def user_dashboard():
         flash("User not found.", "error")
         return redirect(url_for('login'))
 
+    # Ongoing Courses
     enrolled_course_ids = [ObjectId(c) if not isinstance(c, ObjectId) else c for c in user.get('enrolled_courses', [])]
     ongoing_courses = list(db.courses.find({'_id': {'$in': enrolled_course_ids}}))
 
-    for course in ongoing_courses:
+    # Completed Courses
+    completed_ids = [ObjectId(c) if not isinstance(c, ObjectId) else c for c in user.get('completed_courses', [])]
+    completed_courses = list(db.courses.find({'_id': {'$in': completed_ids}}))
+
+    # Image URLs for both sets
+    for course in ongoing_courses + completed_courses:
         if 'course_image_id' in course:
             course['image_url'] = f"/image/{course['course_image_id']}"
         else:
             course['image_url'] = "/static/default.jpg"
 
-    # Handle wallet balance
     wallet_balance = user.get('wallet', 0)
 
     return render_template(
         'user_dashboard.html',
         user=user,
         ongoing_courses=ongoing_courses,
-        completed_courses=[],  # Replace with your actual completed course logic
+        completed_courses=completed_courses,
         referral_code=user.get('ref_code', 'N/A'),
         wallet_balance=wallet_balance
     )
 
+
+def check_course_completion(user_email, course_id):
+    user = db.users.find_one({'email': user_email})
+    course = db.courses.find_one({'_id': ObjectId(course_id)})
+    enrollment = db.enrollments.find_one({'user_id': user['_id'], 'course_id': ObjectId(course_id)})
+
+    if not course or not enrollment:
+        return False
+
+    # 1. Check all videos
+    for chapter in course.get("chapters", []):
+        for video in chapter.get("videos", []):
+            video_id = str(video.get("file_id"))
+            if enrollment.get("video_progress", {}).get(video_id, 0) < 90:
+                return False
+
+    # 2. Check all quizzes
+    for chapter in course.get("chapters", []):
+        if chapter.get("quiz"):
+            chapter_name = chapter.get("chapter_name")
+            if not enrollment.get("quiz_results", {}).get(chapter_name):
+                return False
+
+    # 3. Check final exam
+    if course.get("final_exam"):
+        if not enrollment.get("final_exam_result"):
+            return False
+
+    # Mark as completed if not already in list
+    if ObjectId(course_id) not in user.get("completed_courses", []):
+        db.users.update_one(
+            {'_id': user['_id']},
+            {'$addToSet': {'completed_courses': ObjectId(course_id)}}
+        )
+    return True
+
+@app.route('/api/complete_video', methods=['POST'])
+def complete_video():
+    data = request.json
+    user_email = session.get('user_email')
+
+    user = db.users.find_one({'email': user_email})
+    enrollment = db.enrollments.find_one({
+        'user_id': user['_id'],
+        'course_id': ObjectId(data['course_id'])
+    })
+
+    db.enrollments.update_one(
+        {'_id': enrollment['_id']},
+        {'$set': {f"video_progress.{data['video_id']}": 100}}
+    )
+
+    check_course_completion(user_email, data['course_id'])
+
+    return jsonify({"success": True})
 
 if __name__ == '__main__':
     app.run(debug=True)

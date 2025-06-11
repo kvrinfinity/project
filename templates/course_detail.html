@@ -50,7 +50,7 @@
       margin-bottom: 10px;
     }
 
-    .video, .quiz, .exam {
+    .video-item, .quiz, .exam {
       background: #eef2ff;
       padding: 12px 18px;
       border-radius: 8px;
@@ -61,7 +61,7 @@
       cursor: pointer;
     }
 
-    .video:hover, .quiz:hover, .exam:hover {
+    .video-item:hover, .quiz:hover, .exam:hover {
       background-color: #dce2ff;
     }
 
@@ -119,32 +119,11 @@
         padding: 10px;
       }
     }
-  </style>
 
-  <script>
-    function loadContent(type, id) {
-      const container = document.getElementById("main-display");
-
-      if (type === 'video') {
-        container.innerHTML = `<video id="course-video" width="100%" controls autoplay>
-          <source src="/video/${id}" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>`;
-      }
-
-      if (type === 'quiz') {
-        fetch(`/quiz/${id}?course_id={{ course._id }}`)
-          .then(res => res.text())
-          .then(html => container.innerHTML = html);
-      }
-
-      if (type === 'exam') {
-        fetch(`/exam/${id}`)
-          .then(res => res.text())
-          .then(html => container.innerHTML = html);
-      }
+    .video-status {
+      font-size: 16px;
     }
-  </script>
+  </style>
 </head>
 
 <body>
@@ -156,13 +135,9 @@
         <div class="chapter-title">{{ chapter.chapter_name }}</div>
 
         {% for video in chapter.videos %}
-          <div class="video" onclick="loadContent('video', '{{ video.file_id }}')">
-            <div class="video-title"><i>🎬</i> {{ video.title }}</div>
-            {% if video.completed %}
-              <span class="status">✔️</span>
-            {% else %}
-              <span class="incomplete">⏳</span>
-            {% endif %}
+          <div class="video-item" data-id="{{ video.file_id }}" onclick="loadContent('video', '{{ video.file_id }}')">
+            <span class="video-title">🎥 {{ video.title }}</span>
+            <span class="video-status">{% if video.completed %}✔️{% else %}⏳{% endif %}</span>
           </div>
         {% endfor %}
 
@@ -170,7 +145,7 @@
           <div class="quiz" onclick="loadContent('quiz', '{{ chapter.chapter_name }}')">
             <div class="quiz-title"><i>📝</i> Quiz</div>
             {% if chapter.quiz_completed %}
-              <span class="quiz-score">{{ chapter.quiz_score }}/{{ chapter.quiz_total }}</span>
+              <span class="quiz-score">{{ chapter.quiz_score }}/{{ chapter.quiz_total }} ✔️</span>
             {% else %}
               <span class="incomplete">Not attempted</span>
             {% endif %}
@@ -182,6 +157,11 @@
     {% if course.final_exam %}
       <div class="exam" onclick="loadContent('exam', '{{ course._id }}')">
         <div class="quiz-title"><i>🎓</i> Final Exam</div>
+        {% if course.final_exam_completed %}
+          <span class="quiz-score">{{ course.final_exam_score }}/{{ course.final_exam_total }} ✔️</span>
+        {% else %}
+          <span class="incomplete">Not attempted</span>
+        {% endif %}
       </div>
     {% endif %}
   </div>
@@ -191,5 +171,84 @@
       <p>Select a video, quiz, or exam to begin.</p>
     </div>
   </div>
+
+  <script>
+    function loadContent(type, id) {
+      const container = document.getElementById("main-display");
+
+      if (type === 'video') {
+        container.innerHTML = `<video id="course-video" width="100%" controls autoplay>
+          <source src="/video/${id}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>`;
+
+        setTimeout(() => {
+          const videoEl = document.getElementById("course-video");
+          if (videoEl) {
+            videoEl.addEventListener("ended", () => {
+              fetch("/api/complete_video", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  course_id: "{{ course._id }}",
+                  video_id: id
+                })
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  const videoItems = document.querySelectorAll('.video-item');
+                  videoItems.forEach(item => {
+                    if (item.dataset.id === id) {
+                      const status = item.querySelector(".video-status");
+                      if (status) status.textContent = "✔️";
+                    }
+                  });
+                }
+              });
+            });
+          }
+        }, 300); // Wait for video to load
+      }
+
+      if (type === 'quiz') {
+        fetch(`/quiz/${id}?course_id={{ course._id }}`)
+          .then(res => res.text())
+          .then(html => {
+            container.innerHTML = html;
+
+            const form = container.querySelector("form");
+            if (form) {
+              form.addEventListener("submit", () => {
+                setTimeout(() => {
+                  const quizSpan = document.querySelector(`.quiz[onclick*='${id}'] .quiz-score`);
+                  if (quizSpan) quizSpan.textContent = "✔️";
+                }, 1000);
+              });
+            }
+          });
+      }
+
+      if (type === 'exam') {
+        fetch(`/exam/${id}`)
+          .then(res => res.text())
+          .then(html => {
+            container.innerHTML = html;
+
+            const form = container.querySelector("form");
+            if (form) {
+              form.addEventListener("submit", () => {
+                setTimeout(() => {
+                  const examSpan = document.querySelector(`.exam[onclick*='${id}'] .quiz-score`);
+                  if (examSpan) examSpan.textContent = "✔️";
+                }, 1000);
+              });
+            }
+          });
+      }
+    }
+  </script>
 </body>
 </html>

@@ -147,10 +147,23 @@
     {% for q in exam %}
       <div class="question-block">
         <p><strong>Q{{ loop.index }}: {{ q.question }}</strong></p>
-        <label><input type="radio" name="q{{ loop.index0 }}" value="a" {% if score is defined %} disabled {% endif %} required> A. {{ q.option_a }}</label>
-        <label><input type="radio" name="q{{ loop.index0 }}" value="b" {% if score is defined %} disabled {% endif %}> B. {{ q.option_b }}</label>
-        <label><input type="radio" name="q{{ loop.index0 }}" value="c" {% if score is defined %} disabled {% endif %}> C. {{ q.option_c }}</label>
-        <label><input type="radio" name="q{{ loop.index0 }}" value="d" {% if score is defined %} disabled {% endif %}> D. {{ q.option_d }}</label>
+        <label>
+  <input type="radio" name="q{{ loop.index0 }}" value="a" {% if score is defined %} disabled {% endif %} required>
+  A. {{ q.options.a }}
+</label>
+<label>
+  <input type="radio" name="q{{ loop.index0 }}" value="b" {% if score is defined %} disabled {% endif %}>
+  B. {{ q.options.b }}
+</label>
+<label>
+  <input type="radio" name="q{{ loop.index0 }}" value="c" {% if score is defined %} disabled {% endif %}>
+  C. {{ q.options.c }}
+</label>
+<label>
+  <input type="radio" name="q{{ loop.index0 }}" value="d" {% if score is defined %} disabled {% endif %}>
+  D. {{ q.options.d }}
+</label>
+
         <input type="hidden" name="question_text_{{ loop.index0 }}" value="{{ q.question }}">
       </div>
     {% endfor %}

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Membership - KVR</title>
+  <meta charset="UTF-8">
+  <title>Membership - KVR Infinity</title>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='membership.css') }}">
 </head>
@@ -20,6 +21,7 @@
 
   <script>
     let finalAmount = 10000;
+    let referralCode = "";
 
     function applyReferral() {
       const code = document.getElementById("referral-input").value;
@@ -29,7 +31,7 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ref_code: code })
+        body: JSON.stringify({ ref_code: code, just_validate: true })
       })
       .then(res => res.json())
       .then(data => {
@@ -38,38 +40,57 @@
           msg.style.color = "green";
           msg.textContent = "Referral code applied! 70% discount.";
           finalAmount = 300;
-          document.getElementById("amount-display").textContent = finalAmount;
+          referralCode = code;
         } else {
           msg.style.color = "red";
           msg.textContent = "Invalid referral code.";
           finalAmount = 10000;
-          document.getElementById("amount-display").textContent = finalAmount;
+          referralCode = "";
         }
+        document.getElementById("amount-display").textContent = finalAmount;
       });
     }
 
-    var options = {
-      "key": "rzp_test_YxpzTkgO3dittJ",
-      "amount": finalAmount,
-      "currency": "INR",
-      "name": "KVR Infinity",
-      "description": "Membership Plan",
-      "handler": function (response) {
-        alert("Payment successful! ID: " + response.razorpay_payment_id);
-      },
-      "prefill": {
-        "name": "",
-        "email": ""
-      },
-      "theme": {
-        "color": "#3399cc"
-      }
-    };
-    var rzp = new Razorpay(options);
-    document.getElementById('rzp-button').onclick = function(e){
+    function initiateRazorpay() {
+      const options = {
+        "key": "rzp_test_YxpzTkgO3dittJ",  // Replace with your actual Razorpay test/live key
+        "amount": finalAmount * 100,  // Razorpay uses paise
+        "currency": "INR",
+        "name": "KVR Infinity",
+        "description": "Membership Plan",
+        "handler": function (response) {
+          fetch('/payment_success', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              ref_code: referralCode
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            alert("Payment successful! ID: " + response.razorpay_payment_id);
+            window.location.href = "/login";
+          });
+        },
+        "prefill": {
+          "name": "",
+          "email": ""
+        },
+        "theme": {
+          "color": "#3399cc"
+        }
+      };
+      const rzp = new Razorpay(options);
       rzp.open();
-      e.preventDefault();
     }
+
+    document.getElementById('rzp-button').onclick = function(e){
+      e.preventDefault();
+      initiateRazorpay();
+    };
   </script>
 </body>
 </html>
