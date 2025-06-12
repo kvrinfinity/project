@@ -117,6 +117,9 @@ Your payment of ₹{amount_paid} was successful!
 
 Membership: All Courses Access  
 Receipt ID: {receipt_id}  
+GSTIN     : 37AAFCI5145J1ZD
+EMAIL     : care@kvrinfinity.in
+MOBILE    : +91-81061 47247
 Date: {datetime.now().strftime("%d-%m-%Y %H:%M:%S")}
 
 Thank you for becoming a premium member of KVR Infinity!
@@ -454,6 +457,10 @@ from flask import Flask, render_template, request, redirect, flash, session
 from bson import ObjectId
 from werkzeug.utils import secure_filename
 
+from flask import request, redirect, render_template, flash, Response, abort
+from bson import ObjectId
+from werkzeug.utils import secure_filename
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
@@ -462,10 +469,9 @@ def admin():
             bundle_name = request.form['bundle_name']
             bundle_description = request.form.get('bundle_description', '')
             selected_course_ids = request.form.getlist('selected_courses')
-
             course_object_ids = [ObjectId(cid) for cid in selected_course_ids if cid]
 
-            image_file = request.files['bundle_image']
+            image_file = request.files.get('bundle_image')
             if image_file and image_file.filename:
                 image_id = fs.put(image_file, filename=secure_filename(image_file.filename), content_type=image_file.content_type)
             else:
@@ -483,12 +489,16 @@ def admin():
             return redirect('/admin')
 
         # ---------- COURSE CREATION ----------
-        if 'course_name' in request.form:
+        elif 'course_name' in request.form:
             course_name = request.form['course_name']
             main_section = request.form['main_section']
             description = request.form.getlist('description[]')
 
-            image_file = request.files['course_image']
+            image_file = request.files.get('course_image')
+            if not image_file or not image_file.filename:
+                flash("Course image is required.", "error")
+                return redirect('/admin')
+
             image_id = fs.put(image_file, filename=secure_filename(image_file.filename), content_type=image_file.content_type)
 
             chapters = []
@@ -540,13 +550,27 @@ def admin():
             return redirect('/admin')
 
         # ---------- FITNESS TEST CREATION ----------
-        if 'test_name' in request.form:
+        elif 'test_name' in request.form:
             test_name = request.form['test_name']
-            test_image = request.files['test_image']
+            test_image = request.files.get('test_image')
+            test_video = request.files.get('fitness_video')
+
+            image_id = None
+            video_id = None
+
             if test_image and test_image.filename:
-                image_id = fs.put(test_image, filename=secure_filename(test_image.filename), content_type=test_image.content_type)
-            else:
-                image_id = None
+                image_id = fs.put(
+                    test_image,
+                    filename=secure_filename(test_image.filename),
+                    content_type=test_image.content_type
+                )
+
+            if test_video and test_video.filename:
+                video_id = fs.put(
+                    test_video,
+                    filename=secure_filename(test_video.filename),
+                    content_type=test_video.content_type
+                )
 
             ft_questions = request.form.getlist('ft_question[]')
             ft_a = request.form.getlist('ft_option_a[]')
@@ -558,7 +582,7 @@ def admin():
 
             questions = []
             for q, a, b, c, d, ans, comp in zip(ft_questions, ft_a, ft_b, ft_c, ft_d, ft_ans, ft_company):
-                if q:
+                if q and ans:
                     questions.append({
                         'question': q,
                         'options': {'a': a, 'b': b, 'c': c, 'd': d},
@@ -566,12 +590,18 @@ def admin():
                         'company': comp
                     })
 
-            fitness_tests_col.insert_one({
+            if not questions:
+                flash("No valid questions provided.", "error")
+                return redirect('/admin')
+
+            result = fitness_tests_col.insert_one({
                 'test_name': test_name,
                 'image_id': image_id,
+                'video_id': video_id,
                 'questions': questions
             })
 
+            print(f"✅ Fitness test inserted with ID: {result.inserted_id}")
             flash("Fitness test created successfully!", "success")
             return redirect('/admin')
 
@@ -580,7 +610,6 @@ def admin():
     all_bundles = list(bundles_col.find())
     all_fitness_tests = list(fitness_tests_col.find())
 
-    # Attach image URLs
     for bundle in all_bundles:
         bundle['image_url'] = f"/image/{bundle['image_id']}" if 'image_id' in bundle else "/static/default.jpg"
 
@@ -593,6 +622,8 @@ def admin():
         bundles=all_bundles,
         fitness_tests=all_fitness_tests
     )
+
+
 
 @app.route('/delete_fitness_test/<test_id>', methods=['POST'])
 def delete_fitness_test(test_id):
@@ -635,13 +666,19 @@ def submit_fitness_test(test_id):
         if user_answer == correct_answer:
             score += 1
 
+    percentage = (score / total_questions) * 100
+    is_pass = percentage >= 80
+
     return render_template(
         'take_fitness_test.html',
         test=test,
         score=score,
         total=total_questions,
-        user_answers=user_answers
+        user_answers=user_answers,
+        is_pass=is_pass,
+        percentage=percentage
     )
+
 @app.route('/delete_bundle/<bundle_id>', methods=['POST'])
 def delete_bundle(bundle_id):
     bundle = bundles_col.find_one({'_id': ObjectId(bundle_id)})
@@ -681,6 +718,13 @@ def delete_course():
     flash('Course deleted successfully!', 'success')
     return redirect('/admin')
 
+@app.route('/fitness_test_video/<video_id>')
+def get_fitness_test_video(video_id):
+    try:
+        video = fs.get(ObjectId(video_id))
+        return Response(video.read(), mimetype=video.content_type)
+    except:
+        abort(404)
 
 
 @app.route('/admin/edit/<course_id>', methods=['GET', 'POST'])

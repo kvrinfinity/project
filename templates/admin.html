@@ -316,27 +316,32 @@
   </div>
   <div class="container">
     <h2>Add Fitness Test</h2>
-<form action="/admin" method="POST" enctype="multipart/form-data">
+    <form method="POST" action="/admin" enctype="multipart/form-data">
   <div>
-    <label for="fitness_test_name">Test Name:</label>
-    <input type="text" name="fitness_test_name" required>
+    <label for="test_name">Test Name:</label>
+    <input type="text" name="test_name" required>
   </div>
 
   <div>
-    <label for="fitness_image">Test Image:</label>
-    <input type="file" name="fitness_image" accept="image/*" required>
+    <label for="test_image">Test Image:</label>
+    <input type="file" name="test_image" accept="image/*" required>
+  </div>
+
+  <div>
+    <label for="fitness_video">Test Video (optional):</label>
+    <input type="file" name="fitness_video" accept="video/*">
   </div>
 
   <div id="fitness-questions">
     <h3>Questions</h3>
     <div class="fitness-question-block">
-      <input type="text" name="fitness_question[]" placeholder="Question" required>
-      <input type="text" name="fitness_option_a[]" placeholder="Option A" required>
-      <input type="text" name="fitness_option_b[]" placeholder="Option B" required>
-      <input type="text" name="fitness_option_c[]" placeholder="Option C" required>
-      <input type="text" name="fitness_option_d[]" placeholder="Option D" required>
-      <input type="text" name="fitness_answer[]" placeholder="Correct Option (a/b/c/d)" required>
-      <input type="text" name="fitness_company[]" placeholder="Company Name" required>
+      <input type="text" name="ft_question[]" placeholder="Question" required>
+      <input type="text" name="ft_option_a[]" placeholder="Option A" required>
+      <input type="text" name="ft_option_b[]" placeholder="Option B" required>
+      <input type="text" name="ft_option_c[]" placeholder="Option C" required>
+      <input type="text" name="ft_option_d[]" placeholder="Option D" required>
+      <input type="text" name="ft_answer[]" placeholder="Correct Option (a/b/c/d)" required>
+      <input type="text" name="ft_company[]" placeholder="Company Name" required>
       <hr>
     </div>
   </div>
@@ -345,24 +350,26 @@
   <button type="submit">✅ Submit Fitness Test</button>
 </form>
 
-<script>
+
+  <script>
   function addFitnessQuestion() {
     const container = document.getElementById('fitness-questions');
     const block = document.createElement('div');
     block.className = 'fitness-question-block';
     block.innerHTML = `
-      <input type="text" name="fitness_question[]" placeholder="Question" required>
-      <input type="text" name="fitness_option_a[]" placeholder="Option A" required>
-      <input type="text" name="fitness_option_b[]" placeholder="Option B" required>
-      <input type="text" name="fitness_option_c[]" placeholder="Option C" required>
-      <input type="text" name="fitness_option_d[]" placeholder="Option D" required>
-      <input type="text" name="fitness_answer[]" placeholder="Correct Option (a/b/c/d)" required>
-      <input type="text" name="fitness_company[]" placeholder="Company Name" required>
+      <input type="text" name="ft_question[]" placeholder="Question" required>
+      <input type="text" name="ft_option_a[]" placeholder="Option A" required>
+      <input type="text" name="ft_option_b[]" placeholder="Option B" required>
+      <input type="text" name="ft_option_c[]" placeholder="Option C" required>
+      <input type="text" name="ft_option_d[]" placeholder="Option D" required>
+      <input type="text" name="ft_answer[]" placeholder="Correct Option (a/b/c/d)" required>
+      <input type="text" name="ft_company[]" placeholder="Company Name" required>
       <hr>
     `;
     container.appendChild(block);
   }
 </script>
+
 
   </div>
   <div class="container">

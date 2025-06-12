@@ -118,8 +118,26 @@
 
     {% if score is defined %}
   <div class="result-box" style="display: block;">
-    ✅ You scored <strong>{{ score }}</strong> out of {{ total }}
+    {% if is_pass %}
+      ✅ You scored <strong>{{ score }}</strong> out of {{ total }}<br>
+      🎉 You are <strong>fit</strong> in {{ test.test_name }}!
+    {% else %}
+      ❌ You scored <strong>{{ score }}</strong> out of {{ total }} ({{ percentage|round(2) }}%)<br>
+      You did not pass the fitness test. Please watch the video below and retake the test.
+    {% endif %}
   </div>
+
+  {% if not is_pass and test.video_id %}
+    <div style="margin-top: 30px; text-align: center;">
+      <video width="100%" height="auto" controls style="border-radius: 10px;">
+        <source src="{{ url_for('get_fitness_test_video', video_id=test.video_id) }}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <form action="{{ url_for('take_fitness_test', test_id=test._id) }}" method="get">
+        <button type="submit" style="margin-top: 20px;">Retake Test</button>
+      </form>
+    </div>
+  {% endif %}
 {% endif %}
 
 
