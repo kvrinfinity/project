@@ -28,6 +28,32 @@
   </div></a>
 </nav>
 </section>
+<h2>Take a <span style="color: red;">Fitness Test💪</span></h2>
+
+<div class="slider-wrapper">
+  <button class="slider-btn left" onclick="scrollFitness(-1)">&#8249;</button>
+
+  <div class="slider" id="fitnessSlider">
+    {% for test in fitness_tests %}
+    <div class="course-card">
+      <div class="course-front">
+        <img src="{{ test.image_url }}" alt="{{ test.test_name }}" />
+        <span>Test</span>
+        <h3>{{ test.test_name }}</h3>
+        <p>🧠 {{ test.questions | length }} Questions</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>{{ test.test_name }}</h3>
+        <a href="{{ url_for('take_fitness_test', test_id=test._id|string) }}">
+          <button>Take Test</button>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <button class="slider-btn right" onclick="scrollFitness(1)">&#8250;</button>
+</div>
 <h2>Explore top <span style="color: red;">courses🎓</span></h2>
 
 <div class="slider-wrapper">
@@ -40,13 +66,15 @@
     <img src="{{ course.image_url }}" alt="{{ course.course_name }}">
     <span>All levels</span>
     <h3>{{ course.course_name }}</h3>
-    <p>👨‍🎓 {{ course.get('enrollments_count', 0) }} Students &nbsp;&nbsp; 📘 {{ course.get('chapters', 0) }} Chapters</p>
+    <p>👨‍🎓 {{ course.get('enrollment_count', 0) }} Students &nbsp;&nbsp; 📘 {{ course.chapters_count }} Chapters</p>
+
+
   
   </div>
   <div class="course-details-hover">
     <h3>{{ course.course_name }}</h3>
-    <a href="{{ url_for('course_detail', id=course._id|string) }}">
-      <button>View Detail</button>
+    <a href="{{ url_for('course_detail', course_id=course._id) }}" class="action-btn">
+      <button>View Details</button>
     </a>
 
   </div>
@@ -71,8 +99,9 @@
       </div>
       <div class="course-details-hover">
         <h3>{{ bundle.bundle_name }}</h3>
-<a href="{{ url_for('bundle_detail', bundle_id=bundle._id|string) }}">
-          <button>Explore Bundle</button>
+<a href="{{ url_for('bundle_detail', bundle_id=bundle._id|string) }}"><button>View Bundle</button></a>
+
+         
         </a>
       </div>
     </div>

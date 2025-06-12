@@ -117,7 +117,12 @@
 
               {% if user_enrolled_courses and course._id|string in user_enrolled_courses %}
                 <!-- User enrolled: show Go to Course -->
-                <a class="action-btn" href="{{ url_for('course_detail', id=course._id) }}">Go to Course</a>
+                  <a href="{{ url_for('course_detail', course_id=course._id) }}" class="btn">
+                      <button>View Details</button>
+                    </a>
+
+
+
               {% else %}
                 <!-- User not enrolled: show Enroll button -->
                 <form method="POST" action="{{ url_for('enroll_course', course_id=course._id) }}">

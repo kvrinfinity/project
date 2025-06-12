@@ -314,7 +314,72 @@
     </div>
     {% endfor %}
   </div>
+  <div class="container">
+    <h2>Add Fitness Test</h2>
+<form action="/admin" method="POST" enctype="multipart/form-data">
+  <div>
+    <label for="fitness_test_name">Test Name:</label>
+    <input type="text" name="fitness_test_name" required>
+  </div>
 
+  <div>
+    <label for="fitness_image">Test Image:</label>
+    <input type="file" name="fitness_image" accept="image/*" required>
+  </div>
+
+  <div id="fitness-questions">
+    <h3>Questions</h3>
+    <div class="fitness-question-block">
+      <input type="text" name="fitness_question[]" placeholder="Question" required>
+      <input type="text" name="fitness_option_a[]" placeholder="Option A" required>
+      <input type="text" name="fitness_option_b[]" placeholder="Option B" required>
+      <input type="text" name="fitness_option_c[]" placeholder="Option C" required>
+      <input type="text" name="fitness_option_d[]" placeholder="Option D" required>
+      <input type="text" name="fitness_answer[]" placeholder="Correct Option (a/b/c/d)" required>
+      <input type="text" name="fitness_company[]" placeholder="Company Name" required>
+      <hr>
+    </div>
+  </div>
+
+  <button type="button" onclick="addFitnessQuestion()">➕ Add More Questions</button>
+  <button type="submit">✅ Submit Fitness Test</button>
+</form>
+
+<script>
+  function addFitnessQuestion() {
+    const container = document.getElementById('fitness-questions');
+    const block = document.createElement('div');
+    block.className = 'fitness-question-block';
+    block.innerHTML = `
+      <input type="text" name="fitness_question[]" placeholder="Question" required>
+      <input type="text" name="fitness_option_a[]" placeholder="Option A" required>
+      <input type="text" name="fitness_option_b[]" placeholder="Option B" required>
+      <input type="text" name="fitness_option_c[]" placeholder="Option C" required>
+      <input type="text" name="fitness_option_d[]" placeholder="Option D" required>
+      <input type="text" name="fitness_answer[]" placeholder="Correct Option (a/b/c/d)" required>
+      <input type="text" name="fitness_company[]" placeholder="Company Name" required>
+      <hr>
+    `;
+    container.appendChild(block);
+  }
+</script>
+
+  </div>
+  <div class="container">
+    <h2>All Fitness Tests</h2>
+    {% for test in fitness_tests %}
+        <div style="border: 1px solid gray; padding: 10px; margin-bottom: 10px;">
+            <h3>{{ test.test_name }}</h3>
+            {% if test.image_url %}
+                <img src="{{ test.image_url }}" alt="Test Image" style="width: 200px;"><br>
+            {% endif %}
+            <form action="{{ url_for('delete_fitness_test', test_id=test._id|string) }}" method="POST">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+
+        </div>
+    {% endfor %}
+  </div>
 <script>
   let chapterIndex = 1; // first chapter is 0
   let finalExamIndex = 1;

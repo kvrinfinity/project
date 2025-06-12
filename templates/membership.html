@@ -10,7 +10,7 @@
   <div class="background-text">KVR Infinity</div>
 
   <div class="payment-box">
-    <h2>Buy Membership - ₹<span id="amount-display">10000</span></h2>
+    <h2>Buy Membership - ₹<span id="amount-display">100</span></h2>
 
     <input type="text" id="referral-input" placeholder="Enter Referral Code" />
     <button onclick="applyReferral()">Apply Code</button>
@@ -20,7 +20,7 @@
   </div>
 
   <script>
-    let finalAmount = 10000;
+    let finalAmount = 100;
     let referralCode = "";
 
     function applyReferral() {
@@ -39,12 +39,12 @@
         if (data.valid) {
           msg.style.color = "green";
           msg.textContent = "Referral code applied! 70% discount.";
-          finalAmount = 300;
+          finalAmount = 30;
           referralCode = code;
         } else {
           msg.style.color = "red";
           msg.textContent = "Invalid referral code.";
-          finalAmount = 10000;
+          finalAmount = 10;
           referralCode = "";
         }
         document.getElementById("amount-display").textContent = finalAmount;
@@ -53,8 +53,8 @@
 
     function initiateRazorpay() {
       const options = {
-        "key": "rzp_test_YxpzTkgO3dittJ",  // Replace with your actual Razorpay test/live key
-        "amount": finalAmount * 100,  // Razorpay uses paise
+        "key": "rzp_live_jYhBkBtYSBbXoc",  // ✅ LIVE Razorpay Key
+        "amount": finalAmount * 100,       // Amount in paise
         "currency": "INR",
         "name": "KVR Infinity",
         "description": "Membership Plan",
@@ -72,7 +72,9 @@
           .then(res => res.json())
           .then(data => {
             alert("Payment successful! ID: " + response.razorpay_payment_id);
-            window.location.href = "/login";
+            if (data.redirect) {
+              window.location.href = data.redirect;
+            }
           });
         },
         "prefill": {
@@ -87,7 +89,7 @@
       rzp.open();
     }
 
-    document.getElementById('rzp-button').onclick = function(e){
+    document.getElementById('rzp-button').onclick = function(e) {
       e.preventDefault();
       initiateRazorpay();
     };

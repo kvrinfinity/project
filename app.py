@@ -1,5 +1,6 @@
 from collections import defaultdict
 import datetime
+from email.mime.application import MIMEApplication
 from flask import Flask, Response, abort, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import random
@@ -12,6 +13,12 @@ import io
 import smtplib
 import random
 from email.mime.text import MIMEText
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from datetime import datetime
+from email.mime.multipart import MIMEMultipart
 
 def generate_otp():
     return str(random.randint(1000, 9999))
@@ -19,9 +26,9 @@ def generate_otp():
 def send_otp_email(to_email, otp):
     subject = "Your OTP for Email Verification"
     body = f"Your OTP is: {otp}"
-    sender_email = "nishankamath@gmail.com"
+    sender_email = "no-reply@kvrinfinity.in"
         
-    sender_password = "hxui wjwz adsz vycn" 
+    sender_password = "dhsa xczp azcg mpbr" 
 
     message = MIMEText(body)
     message['Subject'] = subject
@@ -47,6 +54,7 @@ courses_col = db['courses']
 results_col = db['final_exam_results']
 bundles_col = db["bundles"]
 users_col = db['users']
+fitness_tests_col = db['fitness_test']
 fs = GridFS(db)
 
 @app.route('/')
@@ -78,6 +86,117 @@ def signUp():
 def membership():
     return render_template('membership.html')
 
+@app.route('/payment_success', methods=['POST'])
+def payment_success():
+    data = request.get_json()
+    payment_id = data.get('razorpay_payment_id')
+    referral_code = data.get('ref_code')
+
+    # 🔐 Get user details
+    user_email = session.get('user_email', 'default@email.com')
+    user_name = session.get('user_name', 'Valued Member')
+
+    # 💰 Determine amount
+    amount_paid = 3000 if referral_code else 10000
+
+    # 📄 Generate Receipt
+    receipt_id = f"KVR-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    file_name = f"receipt_{receipt_id}.pdf"
+    generate_receipt(
+        member_name=user_name,
+        email=user_email,
+        amount=amount_paid,
+        receipt_id=receipt_id
+    )
+
+    # 📧 Email Content
+    subject = "Payment Successful - KVR Infinity Membership"
+    body = f"""Hello {user_name},
+
+Your payment of ₹{amount_paid} was successful!
+
+Membership: All Courses Access  
+Receipt ID: {receipt_id}  
+Date: {datetime.now().strftime("%d-%m-%Y %H:%M:%S")}
+
+Thank you for becoming a premium member of KVR Infinity!
+
+Warm regards,  
+KVR Infinity Team
+"""
+
+    sender_email = "nishankamath@gmail.com"
+    sender_password = "hxui wjwz adsz vycn"
+
+    # 📎 Compose email with attachment
+    message = MIMEMultipart()
+    message['Subject'] = subject
+    message['From'] = sender_email
+    message['To'] = user_email
+    message.attach(MIMEText(body, 'plain'))
+
+    try:
+        with open(file_name, 'rb') as f:
+            part = MIMEApplication(f.read(), _subtype='pdf')
+            part.add_header('Content-Disposition', 'attachment', filename=file_name)
+            message.attach(part)
+    except Exception as e:
+        print(f"❌ Failed to attach PDF: {e}")
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, user_email, message.as_string())
+        print(f"✅ Email with receipt sent to {user_email}")
+    except Exception as e:
+        print("❌ Failed to send email:", e)
+
+    return jsonify({"status": "success", "redirect": "/login"})
+
+# 🧾 Generate Receipt PDF (no phone number)
+def generate_receipt(member_name, email, amount, receipt_id):
+    file_name = f"receipt_{receipt_id}.pdf"
+    doc = SimpleDocTemplate(file_name, pagesize=letter)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    date_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    elements.append(Paragraph("<b>KVR Infinity - Membership Receipt</b>", styles['Title']))
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph(f"Receipt ID: <b>{receipt_id}</b><br/>Date: <b>{date_str}</b>", styles['Normal']))
+    elements.append(Spacer(1, 20))
+
+    data = [
+        ["Field", "Details"],
+        ["Name", member_name],
+        ["Email", email],
+        ["Membership", "All Courses Access"],
+        ["Amount Paid", f"₹{amount}"],
+    ]
+
+    table = Table(data, hAlign='LEFT', colWidths=[150, 300])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#850014")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 11),
+        ('BOX', (0, 0), (-1, -1), 1, colors.gray),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 40))
+    elements.append(Paragraph("✅ Thank you for becoming a premium member of <b>KVR Infinity</b>!", styles['Normal']))
+    elements.append(Paragraph("This receipt is computer-generated and does not require a signature.", styles['Italic']))
+
+    doc.build(elements)
+    print(f"✅ Receipt saved as: {file_name}")
+
 @app.route('/home')
 def home():
     # Fetch top 6 courses with enrollment and chapter count
@@ -87,8 +206,8 @@ def home():
                 "enrollments_count": {
                     "$size": { "$ifNull": ["$enrolled_users", []] }
                 },
-                "chapters": {
-                    "$size": { "$ifNull": ["$chaptername", []] }
+                "chapters_count": {
+                    "$size": { "$ifNull": ["$chapters", []] }
                 }
             }
         },
@@ -103,8 +222,8 @@ def home():
         else:
             course['image_url'] = "/static/default.jpg"
 
-    # Fetch all bundles (or top N bundles)
-    bundles = list(bundles_col.find())  # You can apply sorting/filtering here
+    # Fetch all bundles
+    bundles = list(bundles_col.find())
 
     # Add image URL and course count for each bundle
     for bundle in bundles:
@@ -115,24 +234,49 @@ def home():
         else:
             bundle['image_url'] = "/static/default-bundle.png"
 
-    return render_template('home.html', top_courses=top_courses, bundles=bundles)
+    # ✅ Fetch all fitness tests
+    fitness_tests = list(fitness_tests_col.find())
 
-def update_bundle_progress(user_email, course_id):
+    # Add image URL for each fitness test
+    for test in fitness_tests:
+        if 'image_id' in test:
+            test['image_url'] = f"/image_fitness/{test['image_id']}"
+        else:
+            test['image_url'] = "/static/default-test.png"
+
+    # Return home.html with all 3 data types
+    return render_template('home.html', top_courses=top_courses, bundles=bundles, fitness_tests=fitness_tests)
+
+
+def update_bundle_progress(user_email, course_id, completed_chapters_list):
     user = users_col.find_one({'email': user_email})
     if not user:
         return
 
     for bundle_id in user.get('enrolled_bundles', []):
         bundle = bundles_col.find_one({'_id': ObjectId(bundle_id)})
-        if course_id in bundle.get('course_ids', []):
-            progress = user.get('bundle_progress', {})
-            bprog = progress.get(bundle_id, {'completed_courses': 0, 'courses_done': []})
-            if course_id not in bprog['courses_done']:
-                bprog['courses_done'].append(course_id)
-                bprog['completed_courses'] += 1
-                progress[bundle_id] = bprog
+        if not bundle or course_id not in bundle.get('course_ids', []):
+            continue
 
-                users_col.update_one({'email': user_email}, {'$set': {'bundle_progress': progress}})
+        bundle_id_str = str(bundle_id)
+        progress = user.get('bundle_progress', {})
+        bprog = progress.get(bundle_id_str, {'completed_courses': 0, 'courses_done': {}})
+
+        course_id_str = str(course_id)
+
+        # If course not yet tracked or chapters have increased
+        previous_chapters = set(bprog['courses_done'].get(course_id_str, []))
+        new_chapters = set(completed_chapters_list)
+
+        if new_chapters != previous_chapters:
+            bprog['courses_done'][course_id_str] = list(new_chapters)
+
+            if len(new_chapters) == courses_col.find_one({'_id': course_id}).get('chapters', []).__len__():
+                bprog['completed_courses'] = len(bprog['courses_done'])
+
+            progress[bundle_id_str] = bprog
+            users_col.update_one({'email': user_email}, {'$set': {'bundle_progress': progress}})
+
 
 @app.route('/enroll_bundle/<bundle_id>', methods=['POST'])
 def enroll_bundle(bundle_id):
@@ -148,16 +292,18 @@ def enroll_bundle(bundle_id):
         if bundle_id not in user['enrolled_bundles']:
             user['enrolled_bundles'].append(bundle_id)
 
-            # Add progress tracking
+            # Setup progress tracking
             progress = user.get('bundle_progress', {})
             progress[bundle_id] = {
                 'completed_courses': 0,
-                'courses_done': []
+                'courses_done': {}
             }
 
             users_col.update_one({'email': user_email}, {
-                '$set': {'enrolled_bundles': user['enrolled_bundles'],
-                         'bundle_progress': progress}
+                '$set': {
+                    'enrolled_bundles': user['enrolled_bundles'],
+                    'bundle_progress': progress
+                }
             })
             flash("Enrolled in bundle!", "success")
     return redirect(url_for('bundle_detail', bundle_id=bundle_id))
@@ -165,27 +311,26 @@ def enroll_bundle(bundle_id):
 @app.route('/bundle/<bundle_id>')
 def bundle_detail(bundle_id):
     try:
-        # Convert to ObjectId
         bundle_obj_id = ObjectId(bundle_id)
     except:
         flash("Invalid bundle ID", "error")
         return redirect(url_for('home'))
 
-    # Fetch bundle from DB
+    # 🧩 Fetch bundle
     bundle = bundles_col.find_one({'_id': bundle_obj_id})
     if not bundle:
         flash("Bundle not found", "error")
         return redirect(url_for('home'))
 
-    # Add image URL for bundle
+    # 📦 Add image fallback
     bundle['image_url'] = f"/image/{bundle.get('image_id')}" if bundle.get('image_id') else "/static/default-bundle.png"
-
-    # Get all course ObjectIds
+    
+    # 🎓 Fetch courses in bundle
     course_ids = bundle.get('course_ids', [])
-    course_object_ids = [ObjectId(cid) for cid in course_ids]
+    course_object_ids = [ObjectId(cid) for cid in course_ids if ObjectId.is_valid(cid)]
     courses = list(courses_col.find({'_id': {'$in': course_object_ids}}))
 
-    # Check user and fetch progress
+    # 🧠 User info
     user_email = session.get('user_email')
     user_enrolled = False
     progress = {}
@@ -201,15 +346,22 @@ def bundle_detail(bundle_id):
                 'courses_done': {}
             })
 
-    # Add course info + progress
+    # 🧮 Process each course
     for course in courses:
         course['image_url'] = f"/image/{course.get('course_image_id')}" if course.get('course_image_id') else "/static/default.jpg"
-        course['chapters_count'] = len(course.get('chapters', []))
-        course['enrollments_count'] = len(course.get('enrolled_users', [])) if isinstance(course.get('enrolled_users'), list) else 0
+        chapters = course.get('chapters', [])
+        course['chapters_count'] = len(chapters)
 
+        # 🧾 Fix enrollment count key
+        course['enrollment_count'] = len(course.get('enrolled_users', [])) if isinstance(course.get('enrolled_users'), list) else 0
+
+        # ✅ Progress logic
         course_id_str = str(course['_id'])
-        completed_chapters = progress.get('courses_done', {}).get(course_id_str, [])
-        course['completed_chapters'] = len(completed_chapters)
+        completed_chapter_list = progress.get('courses_done', {}).get(course_id_str, [])
+        completed_chapters = len(completed_chapter_list)
+        course['completed_chapters'] = completed_chapters
+
+        course['progress_percent'] = int((completed_chapters / course['chapters_count']) * 100) if course['chapters_count'] > 0 else 0
 
     return render_template(
         'bundle_detail.html',
@@ -218,9 +370,6 @@ def bundle_detail(bundle_id):
         user_enrolled=user_enrolled,
         progress=progress
     )
-
-
-
 
 def get_refcode():
     while True:
@@ -252,6 +401,8 @@ def add_user():
     otp = generate_otp()
     session['temp_user'] = {'fname': fname, 'lname': lname, 'email': email, 'password': password, 'ref_code': ref_code}
     session['otp'] = otp
+    session['user_name'] = fname+' '+lname
+    session['user_email'] =email
 
     send_otp_email(email, otp)
     return render_template('otp_validation.html')
@@ -297,23 +448,11 @@ def apply_referral():
     return jsonify({'valid': False})
 
     
-@app.route('/payment_success', methods=['POST'])
-def payment_success():
-    data = request.get_json()
-    ref_code = data.get('ref_code')
-    razorpay_payment_id = data.get('razorpay_payment_id')
 
-    # (Optional) verify Razorpay payment here via their API
 
-    if ref_code:
-        referrer = db.users.find_one({'ref_code': ref_code})
-        if referrer:
-            db.users.update_one(
-                {'_id': referrer['_id']},
-                {'$inc': {'wallet': 1000}}
-            )
-    return jsonify({'success': True})
-
+from flask import Flask, render_template, request, redirect, flash, session
+from bson import ObjectId
+from werkzeug.utils import secure_filename
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -344,77 +483,165 @@ def admin():
             return redirect('/admin')
 
         # ---------- COURSE CREATION ----------
-        course_name = request.form['course_name']
-        main_section = request.form['main_section']
-        description = request.form.getlist('description[]')
+        if 'course_name' in request.form:
+            course_name = request.form['course_name']
+            main_section = request.form['main_section']
+            description = request.form.getlist('description[]')
 
-        image_file = request.files['course_image']
-        image_id = fs.put(image_file, filename=secure_filename(image_file.filename), content_type=image_file.content_type)
+            image_file = request.files['course_image']
+            image_id = fs.put(image_file, filename=secure_filename(image_file.filename), content_type=image_file.content_type)
 
-        chapters = []
-        for i, chapter_name in enumerate(request.form.getlist('chapter_name[]')):
-            v_ts = request.form.getlist(f'video_title_{i}[]')
-            v_fs = request.files.getlist(f'video_file_{i}[]')
-            videos = []
-            for t, vf in zip(v_ts, v_fs):
-                if t and vf.filename:
-                    fid = fs.put(vf, filename=secure_filename(vf.filename))
-                    videos.append({'title': t, 'file_id': fid})
+            chapters = []
+            for i, chapter_name in enumerate(request.form.getlist('chapter_name[]')):
+                v_ts = request.form.getlist(f'video_title_{i}[]')
+                v_fs = request.files.getlist(f'video_file_{i}[]')
+                videos = []
+                for t, vf in zip(v_ts, v_fs):
+                    if t and vf.filename:
+                        fid = fs.put(vf, filename=secure_filename(vf.filename))
+                        videos.append({'title': t, 'file_id': fid})
 
-            qs = request.form.getlist(f'quiz_question_{i}[]')
-            qa = request.form.getlist(f'quiz_option_a_{i}[]')
-            qb = request.form.getlist(f'quiz_option_b_{i}[]')
-            qc = request.form.getlist(f'quiz_option_c_{i}[]')
-            qd = request.form.getlist(f'quiz_option_d_{i}[]')
-            qans = request.form.getlist(f'quiz_answer_{i}[]')
+                qs = request.form.getlist(f'quiz_question_{i}[]')
+                qa = request.form.getlist(f'quiz_option_a_{i}[]')
+                qb = request.form.getlist(f'quiz_option_b_{i}[]')
+                qc = request.form.getlist(f'quiz_option_c_{i}[]')
+                qd = request.form.getlist(f'quiz_option_d_{i}[]')
+                qans = request.form.getlist(f'quiz_answer_{i}[]')
 
-            quiz = [
+                quiz = [
+                    {'question': qu, 'options': {'a': a, 'b': b, 'c': c, 'd': d}, 'answer': ans}
+                    for qu, a, b, c, d, ans in zip(qs, qa, qb, qc, qd, qans) if qu
+                ]
+
+                chapters.append({'chapter_name': chapter_name, 'videos': videos, 'quiz': quiz})
+
+            fqs = request.form.getlist('final_question[]')
+            fa = request.form.getlist('final_option_a[]')
+            fb = request.form.getlist('final_option_b[]')
+            fc = request.form.getlist('final_option_c[]')
+            fd = request.form.getlist('final_option_d[]')
+            fans = request.form.getlist('final_answer[]')
+
+            final_exam = [
                 {'question': qu, 'options': {'a': a, 'b': b, 'c': c, 'd': d}, 'answer': ans}
-                for qu, a, b, c, d, ans in zip(qs, qa, qb, qc, qd, qans) if qu
+                for qu, a, b, c, d, ans in zip(fqs, fa, fb, fc, fd, fans) if qu
             ]
 
-            chapters.append({'chapter_name': chapter_name, 'videos': videos, 'quiz': quiz})
+            courses_col.insert_one({
+                'course_name': course_name,
+                'main_section': main_section,
+                'description': description,
+                'course_image_id': image_id,
+                'chapters': chapters,
+                'final_exam': final_exam
+            })
 
-        fqs = request.form.getlist('final_question[]')
-        fa = request.form.getlist('final_option_a[]')
-        fb = request.form.getlist('final_option_b[]')
-        fc = request.form.getlist('final_option_c[]')
-        fd = request.form.getlist('final_option_d[]')
-        fans = request.form.getlist('final_answer[]')
+            flash('Course added successfully!', 'success')
+            return redirect('/admin')
 
-        final_exam = [
-            {'question': qu, 'options': {'a': a, 'b': b, 'c': c, 'd': d}, 'answer': ans}
-            for qu, a, b, c, d, ans in zip(fqs, fa, fb, fc, fd, fans) if qu
-        ]
+        # ---------- FITNESS TEST CREATION ----------
+        if 'test_name' in request.form:
+            test_name = request.form['test_name']
+            test_image = request.files['test_image']
+            if test_image and test_image.filename:
+                image_id = fs.put(test_image, filename=secure_filename(test_image.filename), content_type=test_image.content_type)
+            else:
+                image_id = None
 
-        courses_col.insert_one({
-            'course_name': course_name,
-            'main_section': main_section,
-            'description': description,
-            'course_image_id': image_id,
-            'chapters': chapters,
-            'final_exam': final_exam
-        })
+            ft_questions = request.form.getlist('ft_question[]')
+            ft_a = request.form.getlist('ft_option_a[]')
+            ft_b = request.form.getlist('ft_option_b[]')
+            ft_c = request.form.getlist('ft_option_c[]')
+            ft_d = request.form.getlist('ft_option_d[]')
+            ft_ans = request.form.getlist('ft_answer[]')
+            ft_company = request.form.getlist('ft_company[]')
 
-        flash('Course added successfully!', 'success')
-        return redirect('/admin')
+            questions = []
+            for q, a, b, c, d, ans, comp in zip(ft_questions, ft_a, ft_b, ft_c, ft_d, ft_ans, ft_company):
+                if q:
+                    questions.append({
+                        'question': q,
+                        'options': {'a': a, 'b': b, 'c': c, 'd': d},
+                        'answer': ans,
+                        'company': comp
+                    })
 
-    # ---------- GET Request ----------
+            fitness_tests_col.insert_one({
+                'test_name': test_name,
+                'image_id': image_id,
+                'questions': questions
+            })
+
+            flash("Fitness test created successfully!", "success")
+            return redirect('/admin')
+
+    # ---------- GET REQUEST ----------
     all_courses = list(courses_col.find())
     all_bundles = list(bundles_col.find())
+    all_fitness_tests = list(fitness_tests_col.find())
 
-    # Attach image URL to each bundle
-
+    # Attach image URLs
     for bundle in all_bundles:
-      if 'image_id' in bundle:
-        bundle['image_url'] = f"/image/{bundle['image_id']}"
-      else:
-        bundle['image_url'] = "/static/default.jpg"
+        bundle['image_url'] = f"/image/{bundle['image_id']}" if 'image_id' in bundle else "/static/default.jpg"
 
+    for test in all_fitness_tests:
+        test['image_url'] = f"/image/{test['image_id']}" if 'image_id' in test else "/static/default.jpg"
 
-    return render_template('admin.html', courses=all_courses, bundles=all_bundles)
+    return render_template(
+        'admin.html',
+        courses=all_courses,
+        bundles=all_bundles,
+        fitness_tests=all_fitness_tests
+    )
 
+@app.route('/delete_fitness_test/<test_id>', methods=['POST'])
+def delete_fitness_test(test_id):
+    try:
+        fitness_tests_col.delete_one({'_id': ObjectId(test_id)})
+        flash("Fitness test deleted successfully.", "success")
+    except Exception as e:
+        flash(f"Error deleting fitness test: {str(e)}", "error")
+    return redirect('/admin')
 
+@app.route('/image_fitness/<image_id>')
+def get_fitness_test_image(image_id):
+    image = fs.get(ObjectId(image_id))
+    return send_file(image, mimetype=image.content_type)
+
+@app.route('/take_fitness_test/<test_id>')
+def take_fitness_test(test_id):
+    test = fitness_tests_col.find_one({'_id': ObjectId(test_id)})
+    if not test:
+        flash("Test not found", "error")
+        return redirect('/home')
+    return render_template('take_fitness_test.html', test=test)
+
+@app.route('/submit_fitness_test/<test_id>', methods=['POST'])
+def submit_fitness_test(test_id):
+    test = fitness_tests_col.find_one({'_id': ObjectId(test_id)})
+
+    if not test:
+        return "Test not found", 404
+
+    total_questions = int(request.form.get('total_questions', 0))
+    user_answers = []
+    score = 0
+
+    for i in range(total_questions):
+        user_answer = request.form.get(f'q{i}', '').strip().lower()
+        correct_answer = test['questions'][i]['answer'].strip().lower()
+        user_answers.append(user_answer)
+
+        if user_answer == correct_answer:
+            score += 1
+
+    return render_template(
+        'take_fitness_test.html',
+        test=test,
+        score=score,
+        total=total_questions,
+        user_answers=user_answers
+    )
 @app.route('/delete_bundle/<bundle_id>', methods=['POST'])
 def delete_bundle(bundle_id):
     bundle = bundles_col.find_one({'_id': ObjectId(bundle_id)})
@@ -577,7 +804,11 @@ def courses():
     all_courses = list(courses_col.find({}))
 
     for course in all_courses:
+        course['_id'] = str(course['_id'])  # Convert _id to string
+
+        # Convert image id too (for /image/<id> route)
         if 'course_image_id' in course:
+            course['course_image_id'] = str(course['course_image_id'])
             course['image_url'] = f"/image/{course['course_image_id']}"
         else:
             course['image_url'] = "/static/default.jpg"
@@ -589,6 +820,7 @@ def courses():
 
     return render_template("courses.html", grouped_courses=dict(grouped_courses))
 
+
 @app.route('/image/<image_id>')
 def image(image_id):
     try:
@@ -597,46 +829,100 @@ def image(image_id):
     except:
         return "Image not found", 404
 
-@app.route('/course/<id>')
-def course_detail(id):
-    if "user_email" not in session:
-        flash("You need to log in first.", "warning")
-        return redirect(url_for("login"))
+@app.route('/course_detail/<course_id>')
+def course_detail(course_id):
+    user_email = session.get('user_email')
+    if not user_email:
+        flash("Please login to view course details.", "error")
+        return redirect(url_for('login'))
 
-    user_email = session["user_email"]
-    course = courses_col.find_one({"_id": ObjectId(id)})
+    try:
+        course_obj_id = ObjectId(course_id)
+    except Exception:
+        flash("Invalid course ID.", "error")
+        return redirect(url_for('home'))
+
+    # Fetch course
+    course = db['courses'].find_one({'_id': course_obj_id})
     if not course:
-        return "Course not found", 404
+        flash("Course not found.", "error")
+        return redirect(url_for('home'))
 
+    # Fetch user
+    user = db['users'].find_one({'email': user_email})
+    if not user:
+        flash("User not found.", "error")
+        return redirect(url_for('login'))
+
+    # Auto-enroll if not already enrolled
+    if course_obj_id not in user.get('enrolled_courses', []):
+        db['users'].update_one(
+            {'email': user_email},
+            {'$addToSet': {'enrolled_courses': course_obj_id}}
+        )
+        db['courses'].update_one(
+            {'_id': course_obj_id},
+            {
+                '$addToSet': {'enrolled_users': user_email},
+                '$inc': {'enrollment_count': 1}
+            }
+        )
+
+    # Create enrollment record if it doesn't exist
     enrollment = db['enrollments'].find_one({
         'user_email': user_email,
-        'course_id': ObjectId(id)
+        'course_id': course_obj_id
     })
 
-    for chapter in course.get("chapters", []):
-        for video in chapter.get("videos", []):
-            video_id = str(video.get("file_id"))
-            video["stream_url"] = f"/video/{video_id}"
-            video['completed'] = False
-            if enrollment and enrollment.get("video_progress", {}).get(video_id, 0) >= 90:
-                video['completed'] = True
+    if not enrollment:
+        enrollment = {
+            'user_email': user_email,
+            'course_id': course_obj_id,
+            'video_progress': {},
+            'quiz_progress': {},
+            'final_exam_progress': {},
+            'course_completed': False
+        }
+        db['enrollments'].insert_one(enrollment)
 
-        # Quiz status
-        quiz_scores = enrollment.get("quiz_progress", {}) if enrollment else {}
-        chapter_name = chapter.get("chapter_name")
-        quiz_data = quiz_scores.get(chapter_name, {})
-        chapter["quiz_completed"] = quiz_data.get('passed', False)
-        chapter["quiz_score"] = quiz_data.get('score', 0)
-        chapter["quiz_total"] = quiz_data.get('total', 0)
+    # Fetch updated enrollment
+    video_progress = enrollment.get('video_progress', {})
+    quiz_progress = enrollment.get('quiz_progress', {})
+    final_exam_progress = enrollment.get('final_exam_progress', {})
 
-    # Final exam status
-    final_exam_data = enrollment.get('final_exam_progress', {}) if enrollment else {}
-    course["final_exam"] = course.get("final_exam", [])
-    course["final_exam_completed"] = final_exam_data.get('passed', False)
-    course["final_exam_score"] = final_exam_data.get('score', 0)
-    course["final_exam_total"] = final_exam_data.get('total', 0)
+    # Progress calculation
+    total_videos = 0
+    completed_videos = 0
 
-    return render_template("course_detail.html", course=course)
+    for chapter in course.get('chapters', []):
+        for video in chapter.get('videos', []):
+            total_videos += 1
+            file_id = str(video.get('file_id'))
+            progress = video_progress.get(file_id, 0)
+            video['completed'] = progress >= 90
+            if video['completed']:
+                completed_videos += 1
+
+        chapter_name = chapter.get('chapter_name', '')
+        quiz_info = quiz_progress.get(chapter_name, {})
+        chapter['quiz_completed'] = quiz_info.get('passed', False)
+        chapter['quiz_score'] = quiz_info.get('score', 0)
+        chapter['quiz_total'] = quiz_info.get('total', 0)
+
+    # Final exam progress
+    if 'final_exam' in course:
+        course['final_exam_completed'] = final_exam_progress.get('passed', False)
+        course['final_exam_score'] = final_exam_progress.get('score', 0)
+        course['final_exam_total'] = final_exam_progress.get('total', 0)
+    else:
+        course['final_exam_completed'] = False
+
+    # Completion percentage
+    course['video_completion_percent'] = int((completed_videos / total_videos) * 100) if total_videos else 0
+    check_course_completion(user_email, course_id)
+    return render_template('course_detail.html', course=course)
+
+
 
 
 @app.route('/video/<video_id>')
@@ -676,7 +962,7 @@ def enroll_course(course_id):
     else:
         flash("Already enrolled in this course.", "info")
 
-    return redirect(url_for('course_detail', id=course_id))
+    return redirect(url_for('course_detail', course_id=course_id))
 
 
 
@@ -691,13 +977,26 @@ def update_progress():
     if not user_email:
         return jsonify({'error': 'Login required'}), 401
 
-    db['enrollments'].update_one(
+    try:
+        watched_percent = float(watched_percent)
+        if not (0 <= watched_percent <= 100):
+            raise ValueError("Invalid percent")
+    except:
+        return jsonify({'error': 'Invalid watched_percent'}), 400
+
+    # Update progress
+    result = db['enrollments'].update_one(
         {'user_email': user_email, 'course_id': ObjectId(course_id)},
         {'$set': {f'video_progress.{video_id}': watched_percent}},
         upsert=True
     )
 
+    # 🟢 Call the check function here
+    check_course_completion(user_email, course_id)
+
     return jsonify({'message': 'Progress updated'})
+
+
 
 @app.route('/quiz/<chapter_name>', methods=['GET'])
 def render_quiz(chapter_name):
@@ -881,87 +1180,145 @@ def user_dashboard():
         flash("User not found.", "error")
         return redirect(url_for('login'))
 
-    # Ongoing Courses
-    enrolled_course_ids = [ObjectId(c) if not isinstance(c, ObjectId) else c for c in user.get('enrolled_courses', [])]
-    ongoing_courses = list(db.courses.find({'_id': {'$in': enrolled_course_ids}}))
+    # Fetch enrollments of the current user
+    user_enrollments = list(db.enrollments.find({'user_email': user_email}))
 
-    # Completed Courses
-    completed_ids = [ObjectId(c) if not isinstance(c, ObjectId) else c for c in user.get('completed_courses', [])]
-    completed_courses = list(db.courses.find({'_id': {'$in': completed_ids}}))
+    completed_ids = []
+    ongoing_ids = []
 
-    # Image URLs for both sets
-    for course in ongoing_courses + completed_courses:
+    course_progress_map = {}
+
+    for enrollment in user_enrollments:
+        course_id = enrollment['course_id']
+        course = db.courses.find_one({'_id': course_id})
+        if not course:
+            continue
+
+        chapters = course.get("chapters", [])
+        total_videos = sum(len(ch.get("videos", [])) for ch in chapters)
+        completed_videos = sum(
+            1 for ch in chapters for v in ch.get("videos", [])
+            if enrollment.get("video_progress", {}).get(str(v["file_id"]), 0) >= 90
+        )
+
+        total_quizzes = sum(1 for ch in chapters if "quiz" in ch)
+        completed_quizzes = sum(
+            1 for ch in chapters
+            if enrollment.get("quiz_progress", {}).get(ch["chapter_name"], {}).get("passed", False)
+        )
+
+        final_exam_passed = enrollment.get("final_exam_progress", {}).get("passed", False)
+        final_exam_attempted = "final_exam_progress" in enrollment
+
+        # Calculate individual progresses
+        video_progress_percent = int((completed_videos / total_videos) * 100) if total_videos else 0
+        quiz_progress_percent = int((completed_quizzes / total_quizzes) * 100) if total_quizzes else 0
+        final_exam_percent = 100 if final_exam_passed else 0
+
+        # Overall progress (weighted: 40% videos, 40% quizzes, 20% final exam)
+        overall_progress = int(0.4 * video_progress_percent + 0.4 * quiz_progress_percent + 0.2 * final_exam_percent)
+
+        # Save progress in course object
+        course['video_progress'] = video_progress_percent
+        course['quiz_progress'] = quiz_progress_percent
+        course['progress'] = overall_progress
+
+        # Image setup
         if 'course_image_id' in course:
             course['image_url'] = f"/image/{course['course_image_id']}"
         else:
             course['image_url'] = "/static/default.jpg"
+
+        # Sort into completed or ongoing
+        if enrollment.get('course_completed'):
+            completed_ids.append(course)
+        else:
+            ongoing_ids.append(course)
 
     wallet_balance = user.get('wallet', 0)
 
     return render_template(
         'user_dashboard.html',
         user=user,
-        ongoing_courses=ongoing_courses,
-        completed_courses=completed_courses,
+        ongoing_courses=ongoing_ids,
+        completed_courses=completed_ids,
         referral_code=user.get('ref_code', 'N/A'),
         wallet_balance=wallet_balance
     )
 
 
+
 def check_course_completion(user_email, course_id):
-    user = db.users.find_one({'email': user_email})
+    enrollment = db.enrollments.find_one({'user_email': user_email, 'course_id': ObjectId(course_id)})
     course = db.courses.find_one({'_id': ObjectId(course_id)})
-    enrollment = db.enrollments.find_one({'user_id': user['_id'], 'course_id': ObjectId(course_id)})
 
-    if not course or not enrollment:
-        return False
+    if not enrollment or not course:
+        return
 
-    # 1. Check all videos
-    for chapter in course.get("chapters", []):
-        for video in chapter.get("videos", []):
-            video_id = str(video.get("file_id"))
-            if enrollment.get("video_progress", {}).get(video_id, 0) < 90:
-                return False
+    videos_total = sum(len(ch.get("videos", [])) for ch in course.get("chapters", []))
+    videos_completed = sum(
+        1 for ch in course.get("chapters", []) 
+        for v in ch.get("videos", []) 
+        if enrollment.get("video_progress", {}).get(str(v["file_id"]), 0) >= 90
+    )
 
-    # 2. Check all quizzes
-    for chapter in course.get("chapters", []):
-        if chapter.get("quiz"):
-            chapter_name = chapter.get("chapter_name")
-            if not enrollment.get("quiz_results", {}).get(chapter_name):
-                return False
+    quizzes_total = sum(1 for ch in course.get("chapters", []) if "quiz" in ch)
+    quizzes_passed = sum(
+        1 for ch in course.get("chapters", [])
+        if enrollment.get("quiz_progress", {}).get(ch["chapter_name"], {}).get("passed", False)
+    )
 
-    # 3. Check final exam
-    if course.get("final_exam"):
-        if not enrollment.get("final_exam_result"):
-            return False
+    final_exam_passed = enrollment.get("final_exam_progress", {}).get("passed", False)
 
-    # Mark as completed if not already in list
-    if ObjectId(course_id) not in user.get("completed_courses", []):
-        db.users.update_one(
-            {'_id': user['_id']},
-            {'$addToSet': {'completed_courses': ObjectId(course_id)}}
+    if (
+        videos_total == videos_completed and 
+        quizzes_total == quizzes_passed and 
+        final_exam_passed
+    ):
+        db.enrollments.update_one(
+            {'_id': enrollment['_id']},
+            {'$set': {'course_completed': True}}
         )
-    return True
+
+
+
 
 @app.route('/api/complete_video', methods=['POST'])
 def complete_video():
     data = request.json
     user_email = session.get('user_email')
 
+    if not user_email:
+        return jsonify({"success": False, "message": "User not logged in"}), 401
+
     user = db.users.find_one({'email': user_email})
+    if not user:
+        return jsonify({"success": False, "message": "User not found"}), 404
+
+    try:
+        course_id = ObjectId(data['course_id'])
+        video_id = data['video_id']
+    except:
+        return jsonify({"success": False, "message": "Invalid data"}), 400
+
     enrollment = db.enrollments.find_one({
-        'user_id': user['_id'],
-        'course_id': ObjectId(data['course_id'])
+        'user_email': user_email,
+        'course_id': course_id
     })
+
+    if not enrollment:
+        return jsonify({"success": False, "message": "Enrollment not found"}), 404
 
     db.enrollments.update_one(
         {'_id': enrollment['_id']},
-        {'$set': {f"video_progress.{data['video_id']}": 100}}
+        {'$set': {f"video_progress.{video_id}": 100}}
     )
 
-    check_course_completion(user_email, data['course_id'])
+    check_course_completion(user_email, str(course_id))  # assuming this is a custom function
 
-    return jsonify({"success": True})
+    return jsonify({"success": True, "message": "Video marked as completed."})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

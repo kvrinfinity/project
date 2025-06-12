@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ test.test_name }} - Fitness Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background-color: #f0f4ff;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .test-image {
+      display: block;
+      margin: 10px auto 20px auto;
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    .question-block {
+      margin-bottom: 20px;
+    }
+
+    .company {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    label {
+      display: block;
+      margin: 5px 0;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      margin: 20px auto 0 auto;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result-box {
+      margin-top: 30px;
+      background: #e8f5e9;
+      padding: 15px;
+      border-left: 4px solid #2e7d32;
+      color: #2e7d32;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 5px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>{{ test.test_name }}</h2>
+
+  {% if test.image_id %}
+    <img src="{{ url_for('get_fitness_test_image', image_id=test.image_id) }}" class="test-image" alt="Test Image">
+  {% endif %}
+
+  <form id="fitnessTestForm" action="{{ url_for('submit_fitness_test', test_id=test._id) }}" method="POST">
+
+  {% for q in test.questions %}
+    <div class="question-block">
+      <p><strong>Q{{ loop.index }}: {{ q.question }}</strong></p>
+      <div class="company">Company: {{ q.company }}</div>
+      <label><input type="radio" name="q{{ loop.index0 }}" value="a" required> A. {{ q.options.a }}</label>
+      <label><input type="radio" name="q{{ loop.index0 }}" value="b"> B. {{ q.options.b }}</label>
+      <label><input type="radio" name="q{{ loop.index0 }}" value="c"> C. {{ q.options.c }}</label>
+      <label><input type="radio" name="q{{ loop.index0 }}" value="d"> D. {{ q.options.d }}</label>
+    </div>
+  {% endfor %}
+  <input type="hidden" name="total_questions" value="{{ test.questions | length }}">
+  <button type="submit">Submit Test</button>
+</form>
+
+
+
+    {% if score is defined %}
+  <div class="result-box" style="display: block;">
+    ✅ You scored <strong>{{ score }}</strong> out of {{ total }}
+  </div>
+{% endif %}
+
+
+</body>
+</html>

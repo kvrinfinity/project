@@ -26,7 +26,7 @@
 
     .sidebar {
       width: 30%;
-      background: #fff;
+      background: var(--card-bg);
       padding: 20px;
       box-shadow: var(--shadow);
       overflow-y: auto;
@@ -94,7 +94,7 @@
       height: 100%;
       border: none;
       border-radius: 8px;
-      background-color: #fff;
+      background-color: var(--card-bg);
       box-shadow: var(--shadow);
       padding: 20px;
     }
@@ -135,9 +135,11 @@
         <div class="chapter-title">{{ chapter.chapter_name }}</div>
 
         {% for video in chapter.videos %}
-          <div class="video-item" data-id="{{ video.file_id }}" onclick="loadContent('video', '{{ video.file_id }}')">
+          <div class="video-item" data-video-id="{{ video.file_id }}" onclick="loadContent('video', '{{ video.file_id }}')">
             <span class="video-title">🎥 {{ video.title }}</span>
-            <span class="video-status">{% if video.completed %}✔️{% else %}⏳{% endif %}</span>
+            <span class="video-status">
+              {% if video.completed %}✔️{% else %}⏳{% endif %}
+            </span>
           </div>
         {% endfor %}
 
@@ -177,40 +179,45 @@
       const container = document.getElementById("main-display");
 
       if (type === 'video') {
-        container.innerHTML = `<video id="course-video" width="100%" controls autoplay>
-          <source src="/video/${id}" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>`;
+        container.innerHTML = `
+          <video id="course-video" width="100%" controls autoplay>
+            <source src="/video/${id}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        `;
 
         setTimeout(() => {
           const videoEl = document.getElementById("course-video");
           if (videoEl) {
             videoEl.addEventListener("ended", () => {
-              fetch("/api/complete_video", {
+              fetch("/update_progress", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                   course_id: "{{ course._id }}",
-                  video_id: id
+                  video_id: id,
+                  watched_percent: 100
                 })
               })
               .then(res => res.json())
               .then(data => {
-                if (data.success) {
+                if (data.message === "Progress updated") {
                   const videoItems = document.querySelectorAll('.video-item');
                   videoItems.forEach(item => {
-                    if (item.dataset.id === id) {
+                    if (item.dataset.videoId === id) {
                       const status = item.querySelector(".video-status");
                       if (status) status.textContent = "✔️";
                     }
                   });
+                } else {
+                  alert("Failed to update progress: " + data.error);
                 }
               });
             });
           }
-        }, 300); // Wait for video to load
+        }, 300);
       }
 
       if (type === 'quiz') {
@@ -218,16 +225,6 @@
           .then(res => res.text())
           .then(html => {
             container.innerHTML = html;
-
-            const form = container.querySelector("form");
-            if (form) {
-              form.addEventListener("submit", () => {
-                setTimeout(() => {
-                  const quizSpan = document.querySelector(`.quiz[onclick*='${id}'] .quiz-score`);
-                  if (quizSpan) quizSpan.textContent = "✔️";
-                }, 1000);
-              });
-            }
           });
       }
 
@@ -236,16 +233,6 @@
           .then(res => res.text())
           .then(html => {
             container.innerHTML = html;
-
-            const form = container.querySelector("form");
-            if (form) {
-              form.addEventListener("submit", () => {
-                setTimeout(() => {
-                  const examSpan = document.querySelector(`.exam[onclick*='${id}'] .quiz-score`);
-                  if (examSpan) examSpan.textContent = "✔️";
-                }, 1000);
-              });
-            }
           });
       }
     }

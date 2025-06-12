@@ -323,6 +323,96 @@
   color: var(--text-dark);
 }
 
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  width: 250px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+.card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.card-title {
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+.card-desc {
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+
+.progress-container {
+  width: 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.slider-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.slide-btn {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: var(--primary);
+  border: none;
+  font-size: 2rem;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background-color 0.3s ease;
+}
+
+.slide-btn:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.slide-btn.left {
+  left: -15px;
+}
+
+.slide-btn.right {
+  right: -15px;
+}
+
+@media (max-width: 768px) {
+  .slide-btn {
+    display: none;
+  }
+}
+
+
     
   </style>
 </head>
@@ -349,12 +439,14 @@
   </nav>
 
   <div class="main-wrapper">
+    
     <div class="sidebar">
       <h1>Welcome, {{ user.fname }} 👋</h1>
       <div class="referral">
-  <span>Your Referral Code:</span>
-  <button class="btn">{{ user.ref_code }}</button>
-</div>
+        <span>Your Referral Code:</span>
+        <button class="btn" id="copyReferralBtn">{{ user.ref_code }}</button>
+        <div id="copyMessage" style="margin-top: 6px; color: green; font-weight: bold;"></div>
+      </div>
 
 
       
@@ -368,8 +460,8 @@
     <div class="action-item" onclick="yourFunction('receipt')">
       <span>📄 Download Receipt</span>
     </div>
-    <div class="action-item" onclick="yourFunction('logout')">
-      <span>🚪 Logout</span>
+    <div class="action-item" href="{{ url_for('login') }}">
+      <span></span><a href="{{ url_for('login') }}">🚪 Logout</a></span>
     </div>
   </div>
 
@@ -378,40 +470,75 @@
 
     <div class="content">
       <div class="section">
-        <h2>Ongoing Courses</h2>
-        {% if ongoing_courses %}
-        <div class="ongoing-courses-wrapper">
-          {% for course in ongoing_courses %}
-          <div class="course-card">
+  <h2>Ongoing Courses</h2>
+  {% if ongoing_courses %}
+  <div class="slider-container">
+    <button class="slide-btn left" onclick="scrollCourses(-1)">&#10094;</button>
+    <div class="ongoing-courses-wrapper" id="ongoingCourses">
+      {% for course in ongoing_courses %}
+      <div class="course-card">
+        <img src="{{ course.image_url }}" alt="{{ course.course_name }} image" />
+        <div class="course-content">
+          <div class="course-title">{{ course.course_name }}</div>
+          <div class="course-main-section">
+            {{ course.main_section[:100] }}{% if course.main_section|length > 100 %}...{% endif %}
+          </div>
+
+          <div class="progress-label">📺 Videos</div>
+          <div class="progress-container">
+            <div class="progress-bar video-bar" data-progress="{{ course.video_progress | default(0) }}"></div>
+          </div>
+          <div class="progress-text">{{ course.video_progress | default(0) }}% watched</div>
+
+          <div class="progress-label">📝 Quizzes</div>
+          <div class="progress-container">
+            <div class="progress-bar quiz-bar" data-progress="{{ course.quiz_progress | default(0) }}"></div>
+          </div>
+          <div class="progress-text">{{ course.quiz_progress | default(0) }}% passed</div>
+
+          <div class="progress-label">🎯 Overall</div>
+          <div class="progress-container">
+            <div class="progress-bar overall-bar" data-progress="{{ course.progress | default(0) }}"></div>
+          </div>
+          <div class="progress-text">{{ course.progress | default(0) }}% completed</div>
+
+          <a href="{{ url_for('course_detail', course_id=course._id) }}" class="btn">View Details</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="slide-btn right" onclick="scrollCourses(1)">&#10095;</button>
+  </div>
+  {% else %}
+  <p>You have no ongoing courses.</p>
+  {% endif %}
+</div>
+
+
+
+      <div class="section">
+  <h2>✅ Completed Courses</h2>
+  {% if completed_courses %}
+    <div class="cards">
+      {% for course in completed_courses %}
+        <div class="course-card">
               <img src="{{ course.image_url }}" alt="{{ course.course_name }} image" />
             <div class="course-content">
               <div class="course-title">{{ course.course_name }}</div>
               <div class="course-main-section">{{ course.main_section[:100] }}{% if course.main_section|length > 100 %}...{% endif %}</div>
-              <a href="{{ url_for('course_detail', id=course._id) }}" class="btn">View Details</a>
+              <a href="{{ url_for('course_detail', course_id=course._id) }}" class="btn">
+                View Details
+              </a>
+
             </div>
           </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        <p>You have no ongoing courses.</p>
-        {% endif %}
-      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You haven’t completed any courses yet. Keep going!</p>
+  {% endif %}
+</div>
 
-      <div class="section">
-        <h2>✅ Completed Courses</h2>
-        {% if completed %}
-        <div class="cards">
-          {% for course in completed %}
-          <a href="{{ url_for('course_detail', id=course._id) }}" class="card">
-            <div class="card-title">{{ course.course_name }}</div>
-            <div class="card-desc">{{ course.description[:120] }}{% if course.description|length > 120 %}...{% endif %}</div>
-          </a>
-          {% endfor %}
-        </div>
-        {% else %}
-        <p>You haven’t completed any courses yet. Keep going!</p>
-        {% endif %}
-      </div>
     </div>
   </div>
 <script>
@@ -437,8 +564,41 @@ function yourFunction(action) {
     alert("Logging out...");
   }
 }
-</script>
+document.getElementById("copyReferralBtn").addEventListener("click", function () {
+  const code = this.textContent.trim();
 
+  navigator.clipboard.writeText(code).then(() => {
+    const msg = document.getElementById("copyMessage");
+    msg.textContent = "Referral code copied!";
+    
+    // Optional: Remove message after 3 seconds
+    setTimeout(() => {
+      msg.textContent = "";
+    }, 3000);
+  }).catch(err => {
+    console.error("Copy failed:", err);
+  });
+});
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const bars = document.querySelectorAll(".progress-bar");
+    bars.forEach(bar => {
+      const progress = bar.getAttribute("data-progress");
+      bar.style.width = `${progress}%`;
+    });
+  });
+</script>
+<script>
+  function scrollCourses(direction) {
+    const container = document.getElementById("ongoingCourses");
+    const scrollAmount = 320; // pixel scroll per click
+    container.scrollBy({
+      left: direction * scrollAmount,
+      behavior: "smooth"
+    });
+  }
+</script>
 
 
 </body>
