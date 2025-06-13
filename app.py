@@ -48,7 +48,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # MongoDB Setup
-uri = "mongodb+srv://nishankamath:kvrinfinity@kvr-test.hax50hy.mongodb.net/?retryWrites=true&w=majority&appName=kvr-testZ"
+uri = "mongodb+srv://praveen:tHXsIKjbFLMuwki4@cluster0.ct1utq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(uri)
 db = client['company']
 courses_col = db['courses']
