@@ -4,6 +4,7 @@ from email.mime.application import MIMEApplication
 from flask import Flask, Response, abort, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import random
+import gridfs
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 from gridfs import GridFS
@@ -17,7 +18,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 
 def generate_otp():
@@ -55,14 +56,36 @@ results_col = db['final_exam_results']
 bundles_col = db["bundles"]
 users_col = db['users']
 fitness_tests_col = db['fitness_test']
+membership_col = db["membership"]
 fs = GridFS(db)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # ✅ Fetch all fitness tests
+    fitness_tests = list(fitness_tests_col.find())
+
+    # Add image URL for each fitness test
+    for test in fitness_tests:
+        if 'image_id' in test:
+            test['image_url'] = f"/image_fitness/{test['image_id']}"
+        else:
+            test['image_url'] = "/static/default-test.png"
+
+    # ✅ Pass fitness tests to index.html
+    return render_template('index.html', fitness_tests=fitness_tests)
+
+
+def delete_expired_memberships():
+    result = membership_col.delete_many({
+        "valid_till": {"$lt": datetime.now()}
+    })
+    print(f"🧹 Deleted {result.deleted_count} expired memberships.")
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    delete_expired_memberships()  # 🧹 Clean up expired memberships first
+
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -73,10 +96,15 @@ def login():
         user = db.users.find_one({"email": email, "password": password})
         if user:
             session['user_email'] = email
+            membership = membership_col.find_one({"user_email": email})
+            if not membership or membership['valid_till'] < datetime.now():
+                return redirect(url_for('membership'))
             return redirect(url_for('home'))
         else:
-            flash('Invalid credentials', 'error')
+            return redirect(url_for('signUp'))
+
     return render_template('login.html')
+
 
 @app.route('/signup')
 def signUp():
@@ -86,22 +114,25 @@ def signUp():
 def membership():
     return render_template('membership.html')
 
+
 @app.route('/payment_success', methods=['POST'])
 def payment_success():
     data = request.get_json()
     payment_id = data.get('razorpay_payment_id')
     referral_code = data.get('ref_code')
 
-    # 🔐 Get user details
+    # 🔐 User details
     user_email = session.get('user_email', 'default@email.com')
     user_name = session.get('user_name', 'Valued Member')
 
-    # 💰 Determine amount
+    # 💰 Determine payment amount
     amount_paid = 3000 if referral_code else 10000
 
     # 📄 Generate Receipt
-    receipt_id = f"KVR-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    payment_date = datetime.now()
+    receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
     file_name = f"receipt_{receipt_id}.pdf"
+
     generate_receipt(
         member_name=user_name,
         email=user_email,
@@ -109,7 +140,23 @@ def payment_success():
         receipt_id=receipt_id
     )
 
-    # 📧 Email Content
+    # 🧾 Save to GridFS
+    fs = gridfs.GridFS(db)
+    with open(file_name, 'rb') as f:
+        receipt_file_id = fs.put(f, filename=file_name)
+
+    # ✅ Store metadata in membership collection
+    valid_till = payment_date + timedelta(days=360)
+    membership_col.insert_one({
+        "user_email": user_email,
+        "user_name": user_name,
+        "payment_date": payment_date,
+        "receipt_id": receipt_id,
+        "valid_till": valid_till,
+        "receipt_file_id": receipt_file_id  # 🔗 Link to file in GridFS
+    })
+
+    # 📧 Send Email with PDF
     subject = "Payment Successful - KVR Infinity Membership"
     body = f"""Hello {user_name},
 
@@ -120,7 +167,7 @@ Receipt ID: {receipt_id}
 GSTIN     : 37AAFCI5145J1ZD
 EMAIL     : care@kvrinfinity.in
 MOBILE    : +91-81061 47247
-Date: {datetime.now().strftime("%d-%m-%Y %H:%M:%S")}
+Date: {payment_date.strftime("%d-%m-%Y %H:%M:%S")}
 
 Thank you for becoming a premium member of KVR Infinity!
 
@@ -131,7 +178,6 @@ KVR Infinity Team
     sender_email = "nishankamath@gmail.com"
     sender_password = "hxui wjwz adsz vycn"
 
-    # 📎 Compose email with attachment
     message = MIMEMultipart()
     message['Subject'] = subject
     message['From'] = sender_email
@@ -154,7 +200,14 @@ KVR Infinity Team
     except Exception as e:
         print("❌ Failed to send email:", e)
 
+    # 🧹 Optional: Clean up the local PDF file
+    try:
+        os.remove(file_name)
+    except Exception as e:
+        print("⚠️ Could not delete temporary file:", e)
+
     return jsonify({"status": "success", "redirect": "/login"})
+
 
 # 🧾 Generate Receipt PDF (no phone number)
 def generate_receipt(member_name, email, amount, receipt_id):
@@ -444,10 +497,16 @@ def apply_referral():
     ref_code = data.get('ref_code')
     just_validate = data.get('just_validate', False)
 
-    referrer = db.users.find_one({'ref_code': ref_code})
-    if referrer:
-        if just_validate:
-            return jsonify({'valid': True})
+    # ✅ Check for hardcoded referral code (40% OFF)
+    if ref_code == 'kvr1122':
+        return jsonify({'valid': True, 'discount': 40})
+
+    # ✅ Check if referral code exists in database (70% OFF)
+    user = db.users.find_one({'ref_code': ref_code})
+    if user:
+        return jsonify({'valid': True, 'discount': 70})
+
+    # ❌ Invalid referral code
     return jsonify({'valid': False})
 
     
@@ -1281,15 +1340,51 @@ def user_dashboard():
 
     wallet_balance = user.get('wallet', 0)
 
+    latest_receipt = membership_col.find_one(
+        {'user_email': user_email},
+        sort=[('payment_date', -1)]
+    )
+
+    valid_till = latest_receipt['valid_till'] if latest_receipt else None
+
+
     return render_template(
         'user_dashboard.html',
         user=user,
         ongoing_courses=ongoing_ids,
         completed_courses=completed_ids,
         referral_code=user.get('ref_code', 'N/A'),
-        wallet_balance=wallet_balance
+        wallet_balance=wallet_balance,
+        valid_till=valid_till
     )
 
+@app.route('/download_receipt')
+def download_receipt():
+    user_email = session.get('user_email')
+    if not user_email:
+        flash("Please log in to download your receipt.", "error")
+        return redirect(url_for('login'))
+
+    membership = membership_col.find_one({'user_email': user_email})
+    if not membership or 'receipt_file_id' not in membership:
+        flash("Receipt not found.", "error")
+        return redirect(url_for('user_dashboard'))
+
+    receipt_file_id = membership['receipt_file_id']
+    fs = gridfs.GridFS(db)
+
+    try:
+        file_data = fs.get(receipt_file_id)
+        return send_file(
+            io.BytesIO(file_data.read()),
+            mimetype='application/pdf',
+            download_name=f"{membership['receipt_id']}.pdf",
+            as_attachment=True
+        )
+    except Exception as e:
+        print("Error downloading receipt:", e)
+        flash("Failed to download receipt.", "error")
+        return redirect(url_for('user_dashboard'))
 
 
 def check_course_completion(user_email, course_id):

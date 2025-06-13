@@ -73,9 +73,16 @@ body {
 /* Heading */
 .payment-box h2 {
   color: var(--primary-color);
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin-bottom: 2rem;
   font-weight: 600;
+}
+
+.payment-box h3 span{
+  color: rgb(164, 29, 1);
+  letter-spacing: 0.2ch;
+  font-weight: 600;
+  
 }
 
 /* Input */

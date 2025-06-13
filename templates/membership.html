@@ -8,9 +8,11 @@
 </head>
 <body>
   <div class="background-text">KVR Infinity</div>
-
+  
   <div class="payment-box">
-    <h2>Buy Membership - ₹<span id="amount-display">100</span></h2>
+    <h2>Buy Membership - ₹<span id="amount-display">10000</span></h2>
+    <h3>One Year Membership - Unlimited access</h3>
+    <h3>Use '<span>kvr1122</span>' code to get FLAT 40% OFF</h3>
 
     <input type="text" id="referral-input" placeholder="Enter Referral Code" />
     <button onclick="applyReferral()">Apply Code</button>
@@ -20,7 +22,8 @@
   </div>
 
   <script>
-    let finalAmount = 100;
+    let baseAmount = 10000;
+    let finalAmount = baseAmount;
     let referralCode = "";
 
     function applyReferral() {
@@ -36,17 +39,31 @@
       .then(res => res.json())
       .then(data => {
         const msg = document.getElementById("referral-msg");
+
         if (data.valid) {
-          msg.style.color = "green";
-          msg.textContent = "Referral code applied! 70% discount.";
-          finalAmount = 30;
           referralCode = code;
+
+          if (data.discount === 70) {
+            finalAmount = baseAmount - (baseAmount * 0.70); // ₹3000
+            msg.style.color = "green";
+            msg.textContent = "Referral code applied! 70% discount.";
+          } else if (data.discount === 40) {
+            finalAmount = baseAmount - (baseAmount * 0.40); // ₹6000
+            msg.style.color = "green";
+            msg.textContent = "Referral code applied! 40% discount.";
+          } else {
+            finalAmount = baseAmount;
+            referralCode = "";
+            msg.style.color = "red";
+            msg.textContent = "Invalid discount.";
+          }
         } else {
+          finalAmount = baseAmount;
+          referralCode = "";
           msg.style.color = "red";
           msg.textContent = "Invalid referral code.";
-          finalAmount = 10;
-          referralCode = "";
         }
+
         document.getElementById("amount-display").textContent = finalAmount;
       });
     }
@@ -85,6 +102,7 @@
           "color": "#3399cc"
         }
       };
+
       const rzp = new Razorpay(options);
       rzp.open();
     }

@@ -3,7 +3,7 @@
 <head>
   <title>KVR Infinity - Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   
   <style>
@@ -49,6 +49,29 @@
           fill="none"
           filter="url(#glowShadow)" />
   </svg>
+</div>
+
+<h2>Take a <span style="color: red;">Fitness Test💪</span></h2>
+
+<div class="slider" id="fitnessSlider">
+  {% for test in fitness_tests %}
+  <div class="acourse-card">
+    <div class="acourse-inner">
+      <div class="acourse-front">
+        <img src="{{ test.image_url }}" alt="{{ test.test_name }}" />
+        <span>Test</span>
+        <h3>{{ test.test_name }}</h3>
+        <p>🧠 {{ test.questions | length }} Questions</p>
+      </div>
+      <div class="acourse-details-hover">
+        <h3>{{ test.test_name }}</h3>
+        <a href="{{ url_for('take_fitness_test', test_id=test._id|string) }}">
+          <button>Take Test</button>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 
 

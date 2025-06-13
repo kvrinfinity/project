@@ -6,15 +6,18 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
 <body>
-  <div class="background-text">KVR Infinity</div>
-  <div class="center-wrapper">
-  <form action="/login" method="post">
-    <h2>Login</h2>
-    <input type="email" name="email" placeholder="Email" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-    <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+  <div class="image-section">
+    <img src="{{ url_for('static', filename='KVR.jpg') }}" alt="Login Illustration">
   </div>
-  </form>
+
+  <div class="center-wrapper">
+    <form action="/login" method="post">
+      <h2>Login</h2>
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+    </form>
+  </div>
 </body>
 </html>

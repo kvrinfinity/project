@@ -1,0 +1,99 @@
+/* login.css (for Sign Up page) */
+
+body {
+  background: #fff;
+  font-family: Arial, sans-serif;
+  color: #222;
+  font-size: 20px;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.center-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  background: linear-gradient(135deg, #92371c, #000000);
+  padding: 40px 32px 32px 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(44, 19, 56, 0.09);
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  margin-bottom: 28px;
+  color: #181818;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #a259ff;
+  outline: none;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 12px 0;
+  background: #cc0000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 18px;
+  transition: background 0.18s;
+}
+
+button[type="submit"]:hover {
+  background: #7d2ae8;
+}
+
+p {
+  margin: 0;
+  font-size: 1rem;
+  color: #444;
+  text-align: center;
+}
+
+a {
+  color: #cc0000;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Optional: Style error message */
+form p[style*="color: red"] {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  text-align: center;
+}

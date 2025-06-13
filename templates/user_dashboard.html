@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>{{ user.fname }}'s Dashboard | KVR Infinity</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     :root {
       --primary: #8e061a;
@@ -88,7 +90,7 @@
     .sidebar h1 {
       font-size: 2rem;
       margin-bottom: 20px;
-      color: rgb(228, 99, 99);
+      color: rgb(226, 42, 42);
     }
 
     .referral, .wallet-box {
@@ -101,22 +103,20 @@
       color: #9f0404;
     }
 
-  .referral button {
-  background: rgb(255, 176, 176);
-  border: none;
-  color: rgb(177, 11, 11);
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 4px 10px;
-  border-radius: 6px;
-}
+    .referral button {
+      background: rgb(255, 176, 176);
+      border: none;
+      color: rgb(177, 11, 11);
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
 
-.referral button:hover {
-  color: rgb(231, 220, 220);
-}
-
-  
+    .referral button:hover {
+      color: rgb(231, 220, 220);
+    }
 
     .wallet-box strong {
       color: green;
@@ -149,6 +149,22 @@
       scroll-behavior: smooth;
     }
 
+    .user-icon {
+      position: absolute;
+      top: -0.75px;
+      right: 30px;
+      width: 36px;
+      height: 36px;
+      background: #a259ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      box-sizing: border-box;
+      margin-top: 12px;
+      z-index: 1;
+    }
     .ongoing-courses-wrapper::-webkit-scrollbar {
       height: 8px;
     }
@@ -277,6 +293,101 @@
       z-index: 1;
     }
 
+    .action-item a{
+      text-decoration: none;
+    }
+    @media (max-width: 768px) {
+      .main-wrapper {
+        flex-direction: column;
+      }
+
+      .sidebar, .content {
+        width: 100%;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .course-card {
+        width: 90vw;
+      }
+    }
+
+    .sidebar .action-box {
+      margin-top: 20px;
+    }
+
+    .action-box .action-item {
+      background: #eaeaea;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .action-box .action-item:hover {
+      background: #f4b2b2;
+    }
+
+    .action-box .action-item span {
+      font-size: 1rem;
+      color: var(--text-dark);
+    }
+
+    .avatar-circle {
+      width: 80px;
+      height: 80px;
+      background-color: #9f0404;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #fbf6f6;
+      font-weight: bold;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      letter-spacing: 1px;
+    }
+
+    .sidebar-collapsed .sidebar {
+  width: 60px;
+  padding: 30px 10px;
+}
+
+/* Hide detailed content */
+.sidebar-collapsed .sidebar h1,
+.sidebar-collapsed .referral,
+.sidebar-collapsed .wallet-box,
+.sidebar-collapsed .action-item span,
+.sidebar-collapsed .avatar-circle,
+.sidebar-collapsed #validity-date {
+  display: none;
+}
+
+/* Center icons in collapsed sidebar */
+.sidebar-collapsed .action-item {
+  justify-content: center;
+}
+
+/* Expand content area */
+.sidebar-collapsed .main-wrapper .content {
+  width: calc(100% - 60px);
+}
+
+
+    .initials {
+      font-family: Arial, sans-serif;
+    }
     @media (max-width: 768px) {
       .main-wrapper {
         flex-direction: column;
@@ -372,6 +483,12 @@
   color: #555;
   margin-bottom: 10px;
 }
+.validity-text {
+  color: red;
+  font-weight: bold;
+  margin: 5px 0 15px 15px;
+}
+
 
 .slider-container {
   position: relative;
@@ -419,12 +536,15 @@
 
 <body>
   <nav class="navbar">
+    <i class="fas fa-bars" id="sidebarToggle" style="cursor: pointer; margin-right: 15px;"></i>
     <h1>KVR Infinity</h1>
     <div class="nav-links">
       <a href="{{ url_for('home') }}">Home</a>
       <a href="{{ url_for('courses') }}">Courses</a>
       <a href="#">About Us</a>
     </div>
+    <button onclick="toggleTheme()" class="btn" style="margin-left: 20px;">🌓</button>
+
     <a href="{{ url_for('user_dashboard') }}">
       <div class="profile">
         <div class="user-icon">
@@ -439,8 +559,12 @@
   </nav>
 
   <div class="main-wrapper">
-    
     <div class="sidebar">
+      <div class="avatar-circle">
+        <span class="initials">
+          {{ user.fname[0]|upper }}{{ user.lname[0]|upper }}
+        </span>
+      </div>
       <h1>Welcome, {{ user.fname }} 👋</h1>
       <div class="referral">
         <span>Your Referral Code:</span>
@@ -455,11 +579,17 @@
     <div class="action-item" onclick="yourFunction('validity')">
   <span>🗓 Validity</span>
 </div>
-<div id="validity-date" style="color: red; font-weight: bold; margin: 5px 0 15px 15px;"></div>
-
-    <div class="action-item" onclick="yourFunction('receipt')">
-      <span>📄 Download Receipt</span>
+    <div id="validity-date" class="validity-text">
+        Valid Till: {{ valid_till.strftime('%d %b %Y') if valid_till else 'N/A' }}
     </div>
+
+
+    <div class="action-item">
+        <a href="{{ url_for('download_receipt') }}" style="text-decoration: none; color: inherit;">
+            📄 Download Receipt
+        </a>
+    </div>
+
     <div class="action-item" href="{{ url_for('login') }}">
       <span></span><a href="{{ url_for('login') }}">🚪 Logout</a></span>
     </div>
@@ -598,6 +728,9 @@ document.getElementById("copyReferralBtn").addEventListener("click", function ()
       behavior: "smooth"
     });
   }
+  document.getElementById("sidebarToggle").addEventListener("click", function () {
+    document.body.classList.toggle("sidebar-collapsed");
+  });
 </script>
 
 

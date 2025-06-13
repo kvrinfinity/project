@@ -89,6 +89,36 @@
       border-radius: 5px;
       display: none;
     }
+
+    .result-box {
+  margin-top: 30px;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 5px;
+  display: none;
+}
+
+/* Success style */
+.result-success {
+  background: #e8f5e9;
+  border-left: 4px solid #2e7d32;
+  color: #2e7d32;
+  display: block;
+}
+
+/* Failure style */
+.result-fail {
+  background: #ffebee;
+  border-left: 4px solid #c62828;
+  color: #c62828;
+  display: block;
+}
+
   </style>
 </head>
 <body>
@@ -117,7 +147,7 @@
 
 
     {% if score is defined %}
-  <div class="result-box" style="display: block;">
+  <div class="result-box {{ 'result-success' if is_pass else 'result-fail' }}">
     {% if is_pass %}
       ✅ You scored <strong>{{ score }}</strong> out of {{ total }}<br>
       🎉 You are <strong>fit</strong> in {{ test.test_name }}!
