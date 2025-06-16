@@ -1,12 +1,13 @@
 /* login.css (for Sign Up page) */
 
 body {
-  background: #fff;
+  background: linear-gradient(135deg, #7d6b38, #000000);
   font-family: Arial, sans-serif;
   color: #222;
   font-size: 20px;
   margin: 0;
   padding: 0;
+  background-size: cover;
   min-height: 100vh;
 }
 
@@ -18,7 +19,7 @@ body {
 }
 
 form {
-  background: linear-gradient(135deg, #92371c, #000000);
+  background: rgba(255, 255, 255, 0.1);
   padding: 40px 32px 32px 32px;
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(44, 19, 56, 0.09);
@@ -77,12 +78,12 @@ button[type="submit"]:hover {
 p {
   margin: 0;
   font-size: 1rem;
-  color: #444;
+  color: #ffffff;
   text-align: center;
 }
 
 a {
-  color: #cc0000;
+  color: #ff7171;
   text-decoration: none;
   transition: text-decoration 0.2s;
 }

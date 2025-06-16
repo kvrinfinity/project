@@ -1,150 +1,219 @@
-/* membership.css */
-
-/* Variables */
-:root {
-  --primary-color: #ba0000;
-  --secondary-color: #2575fc;
-  --bg-color: #f5f7fa;
-  --form-bg: #ffffff;
-  --text-color: #333;
-  --border-radius: 12px;
-  --box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  --transition-speed: 0.3s;
-  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Global Styles */
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
 }
 
-/* Base */
 body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-family);
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--text-color);
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #0f0f0f, #400000);
+color: #ffffff;
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 40px 20px;
+position: relative;
 }
 
-/* Payment Container */
-.payment-box {
-  background-color: var(--form-bg);
-  padding: 2.5rem 3rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  animation: fadeInUp 0.7s ease-out;
-}
+/* Background Text */
 .background-text {
-  position: absolute;
-  top: 50%;
-  left: -100%;
-  width: 100%;
-  font-size: 5rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.05);
-  white-space: nowrap;
-  z-index: 0;
-  animation: slideText 20s linear infinite;
-  pointer-events: none;
-  transform: translateY(-50%);
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 120px;
+font-weight: 900;
+color: rgba(255, 255, 255, 0.05);
+white-space: nowrap;
+pointer-events: none;
+user-select: none;
+z-index: 0;
 }
 
-@keyframes slideText {
-  0% { left: -100%; }
-  100% { left: 100%; }
+/* Payment Box */
+.payment-box {
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid rgba(255, 255, 255, 0.2);
+border-radius: 20px;
+padding: 40px 30px;
+max-width: 500px;
+width: 100%;
+z-index: 1;
+backdrop-filter: blur(12px);
+box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+text-align: center;
 }
 
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Heading */
+/* Headings */
 .payment-box h2 {
-  color: var(--primary-color);
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  font-weight: 600;
+font-size: 28px;
+margin-bottom: 15px;
+color: #ffffff;
 }
 
-.payment-box h3 span{
-  color: rgb(164, 29, 1);
-  letter-spacing: 0.2ch;
-  font-weight: 600;
-  
+.payment-box h3 {
+font-size: 18px;
+font-weight: 400;
+margin-bottom: 10px;
+color: #ffd1d1;
 }
 
-/* Input */
-#referral-input {
-  width: 100%;
-  max-width: 300px;
-  padding: 0.75rem 1rem;
-  margin: 0.5rem auto 1rem;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
-  font-size: 1rem;
-  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+.payment-box span {
+color: #ff3333;
+font-weight: bold;
 }
 
-#referral-input:focus {
-  border-color: var(--primary-color);
-  outline: none;
-  box-shadow: 0 0 6px rgba(106, 17, 203, 0.2);
+/* Input & Buttons */
+input[type="text"] {
+width: 100%;
+padding: 12px;
+font-size: 16px;
+border-radius: 8px;
+border: none;
+margin: 12px 0;
+background-color: #fff;
+color: #000;
 }
 
-/* Buttons */
+input[type="text"]::placeholder {
+color: #666;
+}
+
 button {
-  display: block;
-  width: 100%;
-  max-width: 300px;
-  margin: 0.5rem auto;
-  padding: 0.75rem;
-  background: var(--primary-color);
-  border: none;
-  border-radius: var(--border-radius);
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background var(--transition-speed), transform var(--transition-speed);
+width: 100%;
+padding: 14px;
+background-color: #e50914;
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 16px;
+font-weight: bold;
+cursor: pointer;
+transition: background-color 0.3s ease;
+margin-top: 10px;
 }
 
 button:hover {
-  background: var(--secondary-color);
-  transform: translateY(-2px);
+background-color: #000000;
 }
 
-/* Referral message */
 #referral-msg {
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
+margin-top: 10px;
+font-size: 14px;
 }
 
 /* Responsive */
-@media screen and (max-width: 480px) {
-  .payment-box {
-    padding: 2rem 1.5rem;
-    margin: 1rem;
-  }
+@media screen and (max-width: 600px) {
+.background-text {
+    font-size: 60px;
+}
 
-  .payment-box h2 {
-    font-size: 1.5rem;
-  }
+.payment-box {
+    padding: 30px 20px;
+}
 
-  #referral-input,
-  button {
-    font-size: 1rem;
-    max-width: 100%;
-  }
+.payment-box h2 {
+    font-size: 22px;
+}
+
+.payment-box h3 {
+    font-size: 16px;
+}
+
+button {
+    font-size: 14px;
+}
+}
+
+/* Medium Screens (Tablets/iPads, landscape phones) */
+@media (max-width: 1024px) {
+.background-text {
+    font-size: 80px;
+}
+
+.payment-box {
+    padding: 30px 20px;
+}
+
+.payment-box h2 {
+    font-size: 24px;
+}
+
+.payment-box h3 {
+    font-size: 16px;
+}
+
+button {
+    font-size: 15px;
+    padding: 12px;
+}
+}
+
+/* Small Screens (Android/iPhones, portrait tablets) */
+@media (max-width: 768px) {
+.background-text {
+    font-size: 60px;
+}
+
+.payment-box {
+    padding: 25px 18px;
+    border-radius: 16px;
+}
+
+.payment-box h2 {
+    font-size: 22px;
+}
+
+.payment-box h3 {
+    font-size: 15px;
+}
+
+input[type="text"] {
+    font-size: 15px;
+    padding: 10px;
+}
+
+button {
+    font-size: 14px;
+    padding: 12px;
+}
+
+#referral-msg {
+    font-size: 13px;
+}
+}
+
+/* Extra Small Devices (small phones like iPhone SE, Galaxy A series) */
+@media (max-width: 480px) {
+.background-text {
+    font-size: 40px;
+}
+
+.payment-box {
+    padding: 20px 16px;
+}
+
+.payment-box h2 {
+    font-size: 20px;
+}
+
+.payment-box h3 {
+    font-size: 14px;
+}
+
+input[type="text"] {
+    font-size: 14px;
+    padding: 9px;
+}
+
+button {
+    font-size: 13px;
+    padding: 10px;
+}
+
+#referral-msg {
+    font-size: 12px;
+}
 }
