@@ -105,6 +105,26 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+
+        user = db.users.find_one({'email': email})
+        if not user:
+            return render_template('forgot_password.html', msg="Email not found in our records.")
+
+        otp = generate_otp()
+        session['otp'] = otp
+        session['otp_mode'] = 'reset'
+        session['reset_email'] = email
+        session['user_name'] = user['fname'] + ' ' + user['lname']  # for personalization
+
+        send_otp_email(email, otp)  # Assuming you already have this function
+        return render_template('otp_validation.html')
+
+    return render_template('forgot_password.html')
+
 
 @app.route('/signup')
 def signUp():
@@ -459,6 +479,7 @@ def add_user():
     session['otp'] = otp
     session['user_name'] = fname+' '+lname
     session['user_email'] =email
+    session['otp_mode'] = 'signup'
 
     send_otp_email(email, otp)
     return render_template('otp_validation.html')
@@ -469,12 +490,17 @@ def add_user():
 def verify_otp():
     entered_otp = request.form.get('otp')
     actual_otp = session.get('otp')
-    user_data = session.get('temp_user')
+    mode = session.get('otp_mode')
 
-    if not actual_otp or not user_data:
-        return redirect(url_for('signUp'))
+    if entered_otp != actual_otp:
+        return render_template('otp_validation.html', msg="Incorrect OTP")
 
-    if entered_otp == actual_otp:
+    # ✅ Signup Flow
+    if mode == 'signup':
+        user_data = session.get('temp_user')
+        if not user_data:
+            return redirect(url_for('signUp'))
+
         db.users.insert_one({
             'fname': user_data['fname'],
             'lname': user_data['lname'],
@@ -484,12 +510,23 @@ def verify_otp():
             'enrolled_courses': []
         })
 
-        session.pop('otp')
-        session.pop('temp_user')
         session['user_email'] = user_data['email']
-        return redirect(url_for('membership'))  # or home page
-    else:
-        return render_template('otp_validation.html', msg="Incorrect OTP")
+        session.pop('otp', None)
+        session.pop('otp_mode', None)
+        session.pop('temp_user', None)
+        return redirect(url_for('membership'))
+
+    # ✅ Forgot Password Flow — No New Password Screen, Just login
+    elif mode == 'reset':
+        email = session.get('reset_email')
+        session['user_email'] = email  # simulate login
+        session.pop('otp', None)
+        session.pop('otp_mode', None)
+        session.pop('reset_email', None)
+        return redirect(url_for('home'))
+
+    return redirect(url_for('login'))
+
     
 @app.route('/apply_referral', methods=['POST'])
 def apply_referral():

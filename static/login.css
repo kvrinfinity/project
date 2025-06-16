@@ -169,6 +169,51 @@ a:hover {
   }
 }
 
+/* Password Wrapper - Globally Applied */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 14px 40px 14px 18px; /* right padding for eye icon */
+  border: 1px solid #444;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fffefe;
+  color: #000;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.2s ease-in-out;
+}
+
+.password-wrapper input:focus {
+  border-color: #ff0000;
+  background: #2b2b2b;
+  color: #fff;
+  outline: none;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #888;
+  z-index: 2;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 /* Small Devices: Large Phones 481px - 767px */
 @media screen and (min-width: 481px) and (max-width: 767px) {
   body {
@@ -188,6 +233,49 @@ a:hover {
     display: none;
   }
 
+  .password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 14px 40px 14px 18px; /* padding-right for eye icon */
+  border: 1px solid #444;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fffefe;
+  color: #000;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.2s ease-in-out;
+}
+
+.password-wrapper input:focus {
+  border-color: #ff0000;
+  background: #2b2b2b;
+  color: #fff;
+  outline: none;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #888;
+  z-index: 2;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
   form {
     width: 100%;
     max-width: 380px;
@@ -198,6 +286,37 @@ a:hover {
     font-size: 1.6rem;
   }
 }
+
+@media screen and (max-width: 480px) {
+  body {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 10px;
+    min-height: 100vh;
+  }
+
+  .center-wrapper {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .image-section {
+    display: none;
+  }
+
+  form {
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    border-radius: 10px;
+  }
+}
+
 
 /* Medium Devices: Tablets 768px - 1024px */
 @media screen and (min-width: 768px) and (max-width: 1024px) {

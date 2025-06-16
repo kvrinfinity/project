@@ -1,4 +1,3 @@
 Flask>=2.0
 pymongo>=4.0
-gridfs>=0.1.1
 reportlab>=3.5
