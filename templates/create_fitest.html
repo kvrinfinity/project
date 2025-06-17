@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Fitness Test</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .fitness-question-block {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    input[type="text"], input[type="file"] {
+      margin-bottom: 10px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .fitness-question-block {
+        padding: 10px;
+      }
+
+      h2, h3 {
+        font-size: 1.5rem;
+      }
+
+      button {
+        font-size: 1rem;
+      }
+
+      input[type="text"] {
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="mb-4 text-center">Add Fitness Test</h2>
+    <form method="POST" action="/create-fitness-test" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label for="test_name" class="form-label">Test Name:</label>
+        <input type="text" name="test_name" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="test_image" class="form-label">Test Image:</label>
+        <input type="file" name="test_image" accept="image/*" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="fitness_video" class="form-label">Test Video (optional):</label>
+        <input type="file" name="fitness_video" accept="video/*" class="form-control">
+      </div>
+
+      <div id="fitness-questions">
+  <h3>Questions</h3>
+  <div class="fitness-question-block">
+    <input type="text" name="ft_question[]" class="form-control mb-1" placeholder="Question Text (optional)">
+    <input type="file" name="ft_question_image[]" class="form-control mb-2" accept="image/*">
+
+    <input type="text" name="ft_option_a[]" class="form-control mb-1" placeholder="Option A Text (optional)">
+    <input type="file" name="ft_option_a_img[]" class="form-control mb-2" accept="image/*">
+
+    <input type="text" name="ft_option_b[]" class="form-control mb-1" placeholder="Option B Text (optional)">
+    <input type="file" name="ft_option_b_img[]" class="form-control mb-2" accept="image/*">
+
+    <input type="text" name="ft_option_c[]" class="form-control mb-1" placeholder="Option C Text (optional)">
+    <input type="file" name="ft_option_c_img[]" class="form-control mb-2" accept="image/*">
+
+    <input type="text" name="ft_option_d[]" class="form-control mb-1" placeholder="Option D Text (optional)">
+    <input type="file" name="ft_option_d_img[]" class="form-control mb-2" accept="image/*">
+
+    <input type="text" name="ft_answer[]" class="form-control mb-1" placeholder="Correct Option (a/b/c/d)" required>
+    <input type="text" name="ft_company[]" class="form-control mb-3" placeholder="Company Name" required>
+  </div>
+</div>
+
+
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <button type="button" onclick="addFitnessQuestion()" class="btn btn-outline-primary">➕ Add More Questions</button>
+        <button type="submit" class="btn btn-success">✅ Submit Fitness Test</button>
+      </div>
+    </form>
+  </div>
+
+    <hr class="my-5">
+
+<h3>📋 Existing Fitness Tests</h3>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+{% if tests %}
+<table class="table table-bordered mt-4">
+  <thead class="table-dark">
+    <tr>
+      <th>Test Name</th>
+      <th>No. of Questions</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in tests %}
+    <tr>
+      <td>{{ test.test_name }}</td>
+      <td>{{ test.question_count }}</td>
+      <td>
+        <form action="{{ url_for('delete_fitness_test', test_id=test._id) }}" method="POST" onsubmit="return confirm('Delete this test?');">
+          <button type="submit" class="btn btn-danger btn-sm">🗑 Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="text-muted">No fitness tests found yet.</p>
+{% endif %}
+
+  <script>
+  function addFitnessQuestion() {
+    const container = document.getElementById('fitness-questions');
+    const block = document.createElement('div');
+    block.className = 'fitness-question-block';
+    block.innerHTML = `
+      <hr>
+      <input type="text" name="ft_question[]" class="form-control mb-1" placeholder="Question Text (optional)">
+      <input type="file" name="ft_question_image[]" class="form-control mb-2" accept="image/*">
+
+      <input type="text" name="ft_option_a[]" class="form-control mb-1" placeholder="Option A Text (optional)">
+      <input type="file" name="ft_option_a_img[]" class="form-control mb-2" accept="image/*">
+
+      <input type="text" name="ft_option_b[]" class="form-control mb-1" placeholder="Option B Text (optional)">
+      <input type="file" name="ft_option_b_img[]" class="form-control mb-2" accept="image/*">
+
+      <input type="text" name="ft_option_c[]" class="form-control mb-1" placeholder="Option C Text (optional)">
+      <input type="file" name="ft_option_c_img[]" class="form-control mb-2" accept="image/*">
+
+      <input type="text" name="ft_option_d[]" class="form-control mb-1" placeholder="Option D Text (optional)">
+      <input type="file" name="ft_option_d_img[]" class="form-control mb-2" accept="image/*">
+
+      <input type="text" name="ft_answer[]" class="form-control mb-1" placeholder="Correct Option (a/b/c/d)" required>
+      <input type="text" name="ft_company[]" class="form-control mb-3" placeholder="Company Name" required>
+    `;
+    container.appendChild(block);
+  }
+</script>
+
+</body>
+</html>

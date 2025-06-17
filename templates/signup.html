@@ -8,20 +8,21 @@
 <body>
   <div class="center-wrapper">
   <form action="/add_user" method="post">
-    <h2>Create Account</h2>
+  <h2>Create Account</h2>
 
-    {% if msg %}
-      <p style="color: red;">{{ msg }}</p>
-    {% endif %}
+  {% if msg %}
+    <p style="color: red;">{{ msg }}</p>
+  {% endif %}
 
-    <input type="text" name="fname" placeholder="First Name" required />
-    <input type="text" name="lname" placeholder="Last Name" required />
-    <input type="email" name="email" placeholder="Email" required />
-    <input type="password" name="password" placeholder="Password" required />
+  <input type="text" name="fname" placeholder="First Name" required />
+  <input type="text" name="lname" placeholder="Last Name" required />
+  <input type="email" name="email" placeholder="Email" required />
+  <input type="password" name="password" placeholder="Password" required />
+  <input type="text" name="whatsapp" placeholder="WhatsApp Number" required pattern="[0-9]{10}" title="Enter a valid 10-digit number" />
 
-    <button type="submit">Sign Up</button>
-    <p>Already have an account? <a href="/login">Login</a></p>
-    </div>
-  </form>
+  <button type="submit">Sign Up</button>
+  <p>Already have an account? <a href="/login">Login</a></p>
+</form>
+
 </body>
 </html>

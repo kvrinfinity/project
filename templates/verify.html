@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Account</title>
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+form input[type="text"],
+form input[type="number"],
+form input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+  .container {
+    padding: 10px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Account Verification</h2>
+    <form action="/submit-verification" method="POST">
+      <input type="text" name="bank_name" placeholder="Bank Name" required>
+      <input type="text" name="branch" placeholder="Bank Branch" required>
+      <input type="text" name="ifsc" placeholder="IFSC Code" required>
+      <input type="text" name="account_number" placeholder="Account Number" required>
+      <input type="text" name="account_holder" placeholder="Account Holder Name" required>
+      <input type="text" name="upi" placeholder="UPI ID (Optional)">
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</body>
+</html>

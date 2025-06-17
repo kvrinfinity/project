@@ -574,7 +574,19 @@
 
 
       
-      <div class="wallet-box">Wallet Balance: <strong>₹{{ wallet_balance }}/-</strong></div>
+      <div class="wallet-box">
+  Wallet Balance: <strong>₹{{ wallet_balance }}/-</strong>
+  {% if user.get('is_verified') %}
+    <span style="color: green; font-weight: bold;">✔ Verified</span>
+  {% else %}
+    <span style="color: red;">⏳ Not Verified</span>
+  {% endif %}
+</div>
+
+<form action="{{ url_for('request_withdrawal_page') }}" method="GET">
+  <button type="submit" class="btn">💸 Withdraw</button>
+</form>
+
         <div class="action-box">
     <div class="action-item" onclick="yourFunction('validity')">
   <span>🗓 Validity</span>

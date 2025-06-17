@@ -460,31 +460,30 @@ def add_user():
     lname = request.form.get('lname')
     email = request.form.get('email')
     password = request.form.get('password')
+    whatsapp = request.form.get('whatsapp')
 
     if db.users.find_one({'email': email}):
         return render_template('signup.html', msg="User already exists")
 
     ref_code = get_refcode()
-    '''db.users.insert_one({
+
+    otp = generate_otp()
+    session['temp_user'] = {
         'fname': fname,
         'lname': lname,
         'email': email,
         'password': password,
         'ref_code': ref_code,
-        'enrolled_courses': []
-    })'''
-    
-    otp = generate_otp()
-    session['temp_user'] = {'fname': fname, 'lname': lname, 'email': email, 'password': password, 'ref_code': ref_code}
+        'whatsapp': whatsapp
+    }
     session['otp'] = otp
-    session['user_name'] = fname+' '+lname
-    session['user_email'] =email
+    session['user_name'] = fname + ' ' + lname
+    session['user_email'] = email
     session['otp_mode'] = 'signup'
 
     send_otp_email(email, otp)
     return render_template('otp_validation.html')
-    #return render_template('validation.html')
-    #return render_template('membership.html')
+
 
 @app.route('/verify_otp', methods=['POST'])
 def verify_otp():
@@ -507,8 +506,10 @@ def verify_otp():
             'email': user_data['email'],
             'password': user_data['password'],
             'ref_code': user_data['ref_code'],
+            'whatsapp': user_data['whatsapp'],  # ✅ Added field
             'enrolled_courses': []
         })
+
 
         session['user_email'] = user_data['email']
         session.pop('otp', None)
@@ -556,6 +557,280 @@ from werkzeug.utils import secure_filename
 from flask import request, redirect, render_template, flash, Response, abort
 from bson import ObjectId
 from werkzeug.utils import secure_filename
+
+@app.route('/download_users_csv')
+def download_users_csv():
+    from flask import Response
+    import csv
+    from datetime import datetime
+
+    users = list(users_col.find())
+    memberships = {m['user_email']: m for m in membership_col.find()}
+
+    # CSV Header
+    header = ['Name', 'Email', 'WhatsApp Number', 'Payment Date', 'Valid Till']
+
+    def generate():
+        yield ','.join(header) + '\n'
+        for user in users:
+            name = f"{user.get('fname', '')} {user.get('lname', '')}"
+            email = user.get('email', '')
+            whatsapp = user.get('whatsapp', '')
+
+            membership = memberships.get(email, {})
+            payment_date = membership.get('payment_date')
+            valid_till = membership.get('valid_till')
+
+            # Format dates
+            payment_str = payment_date.strftime("%Y-%m-%d") if payment_date else ''
+            valid_str = valid_till.strftime("%Y-%m-%d") if valid_till else ''
+
+            row = [name, email, whatsapp, payment_str, valid_str]
+            yield ','.join(row) + '\n'
+
+    return Response(generate(), mimetype='text/csv', headers={
+        'Content-Disposition': 'attachment; filename=users_membership_data.csv'
+    })
+
+
+verifications_col = db["verifications"]
+withdrawals_col = db["withdrawals"]
+
+
+@app.route('/request_withdrawal', methods=['GET'])
+def request_withdrawal_page():
+    if 'user_email' not in session:
+        flash("Please log in to access this page.", "error")
+        return redirect(url_for('login'))
+
+    user_email = session['user_email']
+    user = users_col.find_one({"email": user_email})
+
+    if not user:
+        flash("User not found.", "error")
+        return redirect(url_for('login'))
+
+    if user.get('is_verified', False):
+        wallet_balance = user.get('wallet_balance', 0)
+        return render_template('withdraw.html', wallet_balance=wallet_balance, user=user)
+    else:
+        flash("Please verify your bank details before requesting a withdrawal.", "info")
+        return redirect(url_for('submit_verification_page'))
+
+
+@app.route('/submit-verification', methods=['GET', 'POST'])
+def submit_verification_page():
+    if 'user_email' not in session:
+        flash("Please log in to access this page.", "error")
+        return redirect(url_for('login'))
+
+    user_email = session['user_email']
+
+    if request.method == 'POST':
+        existing_verification = verifications_col.find_one({"email": user_email, "status": "pending"})
+        if existing_verification:
+            flash("You already have a pending verification request. Please wait for it to be approved.", "info")
+            return redirect(url_for('user_dashboard'))
+
+        verification_data = {
+            "email": user_email,
+            "bank_name": request.form['bank_name'],
+            "branch": request.form['branch'],
+            "ifsc": request.form['ifsc'],
+            "account_number": request.form['account_number'],
+            "account_holder": request.form['account_holder'],
+            "upi": request.form.get('upi', ''),
+            "status": "pending",
+            "submitted_at": datetime.utcnow()
+        }
+
+        verifications_col.insert_one(verification_data)
+
+        flash("✅ Verification submitted! You'll be approved within 72 hours.", "success")
+        return redirect(url_for('user_dashboard'))
+
+    return render_template('verify.html')
+
+
+
+@app.route('/process_withdrawal', methods=['POST'])
+def process_withdrawal():
+    if 'user_email' not in session:
+        flash("Please log in to complete this action.", "error")
+        return redirect(url_for('login'))
+
+    user_email = session['user_email']
+    user = users_col.find_one({"email": user_email})
+
+    if not user or not user.get('is_verified', False):
+        flash("You are not authorized to withdraw funds or your account is not verified.", "error")
+        return redirect(url_for('request_withdrawal_page'))
+
+    try:
+        amount = int(request.form['amount'])
+    except ValueError:
+        flash("Invalid amount. Please enter a number.", "error")
+        return redirect(url_for('request_withdrawal_page'))
+
+    if amount <= 0:
+        flash("Withdrawal amount must be greater than 0.", "error")
+        return redirect(url_for('request_withdrawal_page'))
+
+    try:
+        current_balance = float(user.get('wallet_balance', 0))
+    except ValueError:
+        flash("Invalid wallet balance format.", "error")
+        return redirect(url_for('request_withdrawal_page'))
+
+    if amount > current_balance:
+        flash(f"❌ Not enough balance. Available: {current_balance}", "error")
+        return redirect(url_for('request_withdrawal_page'))
+
+    existing_pending = withdrawals_col.find_one({
+        "email": user_email,
+        "status": "pending"
+    })
+    if existing_pending:
+        flash("You already have a pending withdrawal request. Please wait until it is processed.", "info")
+        return redirect(url_for('user_dashboard'))
+
+    withdrawals_col.insert_one({
+        'email': user_email,
+        'amount': amount,
+        'status': 'pending',
+        'requested_at': datetime.utcnow()
+    })
+
+    flash("✅ Withdrawal request submitted! Money will be transferred to your bank account within 24 hours after admin approval.", "success")
+    return redirect(url_for('user_dashboard'))
+
+@app.route('/approve-verification', methods=['POST'])
+def approve_verification():
+    email = request.form['email']
+    users_col.update_one({"email": email}, {"$set": {"is_verified": True}})
+    verifications_col.update_one(
+        {"email": email, "status": "pending"},
+        {"$set": {"status": "approved"}}
+    )
+    flash(f"{email} has been verified.", "success")
+    return redirect(url_for('verifications'))
+
+
+@app.route('/approve-withdrawal/<withdrawal_id>', methods=['POST'])
+def approve_withdrawal(withdrawal_id):
+    withdrawal = withdrawals_col.find_one({"_id": ObjectId(withdrawal_id)})
+
+    if not withdrawal or withdrawal.get("status") != "pending":
+        flash("Invalid or already processed withdrawal request.", "error")
+        return redirect(url_for('admin'))
+
+    user = users_col.find_one({"email": withdrawal['user_email']})
+    if not user:
+        flash("User not found.", "error")
+        return redirect(url_for('admin'))
+
+    current_balance = float(user.get('wallet_balance', 0))
+    amount = withdrawal['amount']
+
+    if current_balance < amount:
+        flash("Insufficient wallet balance at time of approval.", "error")
+        return redirect(url_for('admin'))
+
+    users_col.update_one(
+        {"email": withdrawal['email']},
+        {"$inc": {"wallet_balance": -amount}}
+    )
+
+    withdrawals_col.update_one(
+        {"_id": ObjectId(withdrawal_id)},
+        {
+            "$set": {
+                "status": "approved",
+                "approved_at": datetime.utcnow(),
+                "approved_by": session.get('admin_email', 'admin')  # Optional
+            }
+        }
+    )
+
+    flash(f"✅ Withdrawal of ₹{amount} approved for {withdrawal['email']}.", "success")
+    return redirect(url_for('verifications'))
+
+from flask import request, redirect, url_for, flash, session
+from bson import ObjectId
+from datetime import datetime
+
+@app.route('/process_withdrawal_admin', methods=['POST'])
+def process_withdrawal_admin():
+    withdrawal_id = request.form.get('withdrawal_id')
+
+    if not withdrawal_id:
+        flash("Withdrawal ID is missing.", "error")
+        return redirect(url_for('verifications'))
+
+    try:
+        withdrawal = withdrawals_col.find_one({"_id": ObjectId(withdrawal_id)})
+    except Exception as e:
+        print("❌ Error finding withdrawal:", e)
+        flash("Invalid withdrawal ID.", "error")
+        return redirect(url_for('verifications'))
+
+    if not withdrawal:
+        flash("Withdrawal not found.", "error")
+        return redirect(url_for('verifications'))
+
+    if withdrawal.get("status") != "pending":
+        flash("Withdrawal already processed.", "error")
+        return redirect(url_for('verifications'))
+
+    email = withdrawal.get('email')
+    if not email:
+        flash("Email not found in withdrawal record.", "error")
+        return redirect(url_for('verifications'))
+
+    user = users_col.find_one({"email": email})
+    if not user:
+        flash("User not found.", "error")
+        return redirect(url_for('verifications'))
+
+    try:
+        current_balance = float(user.get('wallet_balance', 0))
+        amount = float(withdrawal.get('amount', 0))
+    except Exception as e:
+        print("⚠️ Error converting balance/amount:", e)
+        flash("Invalid balance or amount data.", "error")
+        return redirect(url_for('verifications'))
+
+    if current_balance < amount:
+        flash("Insufficient wallet balance.", "error")
+        return redirect(url_for('verifications'))
+
+    # Deduct balance
+    result1 = users_col.update_one(
+        {"email": email},
+        {"$inc": {"wallet_balance": -amount}}
+    )
+
+    # Update withdrawal
+    result2 = withdrawals_col.update_one(
+        {"_id": ObjectId(withdrawal_id)},
+        {
+            "$set": {
+                "status": "approved",
+                "approved_at": datetime.utcnow(),
+                "approved_by": session.get('admin_email', 'admin')
+            }
+        }
+    )
+
+    # Print result (debugging)
+    print(f"✅ Deducted ₹{amount} from {email}: matched={result1.matched_count}, modified={result1.modified_count}")
+    print(f"🟢 Withdrawal update: matched={result2.matched_count}, modified={result2.modified_count}")
+
+    flash(f"✅ Withdrawal of ₹{amount} approved for {email}.", "success")
+    return redirect(url_for('verifications'))
+
+
+
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -719,6 +994,133 @@ def admin():
         fitness_tests=all_fitness_tests
     )
 
+@app.route('/create-fitness-test', methods=['GET', 'POST'])
+def create_fitness_test():
+    if request.method == 'POST':
+        test_name = request.form['test_name']
+        test_image = request.files.get('test_image')
+        test_video = request.files.get('fitness_video')
+
+        image_id = video_id = None
+
+        if test_image and test_image.filename:
+            image_id = fs.put(
+                test_image,
+                filename=secure_filename(test_image.filename),
+                content_type=test_image.content_type
+            )
+
+        if test_video and test_video.filename:
+            video_id = fs.put(
+                test_video,
+                filename=secure_filename(test_video.filename),
+                content_type=test_video.content_type
+            )
+
+        questions = []
+        total_questions = len(request.form.getlist('ft_answer[]'))
+
+        for i in range(total_questions):
+            q_text = request.form.getlist('ft_question[]')[i]
+            q_img = request.files.getlist('ft_question_image[]')[i]
+
+            question = {}
+            if q_text:
+                question['text'] = q_text
+            if q_img and q_img.filename:
+                q_img_id = fs.put(
+                    q_img,
+                    filename=secure_filename(q_img.filename),
+                    content_type=q_img.content_type
+                )
+                question['image_id'] = q_img_id
+
+            options = {}
+            for opt in ['a', 'b', 'c', 'd']:
+                opt_text = request.form.getlist(f'ft_option_{opt}[]')[i]
+                opt_file = request.files.getlist(f'ft_option_{opt}_img[]')[i]
+
+                option = {}
+                if opt_text:
+                    option['text'] = opt_text
+                if opt_file and opt_file.filename:
+                    opt_img_id = fs.put(
+                        opt_file,
+                        filename=secure_filename(opt_file.filename),
+                        content_type=opt_file.content_type
+                    )
+                    option['image_id'] = opt_img_id
+
+                options[opt] = option
+
+            questions.append({
+                'question': question,
+                'options': options,
+                'answer': request.form.getlist('ft_answer[]')[i],
+                'company': request.form.getlist('ft_company[]')[i]
+            })
+
+        if not questions:
+            flash("No valid questions provided.", "error")
+            return redirect('/create-fitness-test')
+
+        fitness_tests_col.insert_one({
+            'test_name': test_name,
+            'image_id': image_id,
+            'video_id': video_id,
+            'questions': questions,
+            'created_at': datetime.utcnow()
+        })
+
+        flash("✅ Fitness test created successfully!", "success")
+        return redirect('/create-fitness-test')
+
+    # ========== Display existing tests ==========
+    tests = list(fitness_tests_col.find())
+    for test in tests:
+        test['_id'] = str(test['_id'])
+        test['question_count'] = len(test.get('questions', []))
+
+    return render_template('create_fitest.html', tests=tests)
+
+
+
+@app.route('/verifications')
+def verifications():
+    # Get pending verification requests
+    pending_verifications = list(verifications_col.find({"status": "pending"}))
+    for v in pending_verifications:
+        v['_id'] = str(v['_id'])
+
+    # Get approved verification details
+    approved_verifications = {
+        v['email'].strip().lower(): v
+        for v in verifications_col.find({"status": "approved"})
+    }
+
+    # Get pending withdrawals
+    pending_withdrawals = []
+    for w in withdrawals_col.find({"status": "pending"}):
+        email = w['email'].strip().lower()
+        verification = approved_verifications.get(email)
+
+        pending_withdrawals.append({
+            '_id': str(w['_id']),
+            'user_email': email,
+            'amount': w.get('amount', 0),
+            'account_holder': verification.get('account_holder', 'N/A') if verification else 'N/A',
+            'account_number': verification.get('account_number', 'N/A') if verification else 'N/A',
+            'bank_name': verification.get('bank_name', 'N/A') if verification else 'N/A',
+            'branch': verification.get('branch', 'N/A') if verification else 'N/A',
+            'ifsc': verification.get('ifsc', 'N/A') if verification else 'N/A',
+            'upi': verification.get('upi', 'N/A') if verification else 'N/A'
+        })
+
+    return render_template(
+        'verifications.html',
+        pending_verifications=pending_verifications,
+        pending_withdrawals=pending_withdrawals
+    )
 
 
 @app.route('/delete_fitness_test/<test_id>', methods=['POST'])
@@ -728,12 +1130,13 @@ def delete_fitness_test(test_id):
         flash("Fitness test deleted successfully.", "success")
     except Exception as e:
         flash(f"Error deleting fitness test: {str(e)}", "error")
-    return redirect('/admin')
+    return redirect('/create_fitness_test')
 
 @app.route('/image_fitness/<image_id>')
 def get_fitness_test_image(image_id):
     image = fs.get(ObjectId(image_id))
     return send_file(image, mimetype=image.content_type)
+
 
 @app.route('/take_fitness_test/<test_id>')
 def take_fitness_test(test_id):
@@ -742,6 +1145,7 @@ def take_fitness_test(test_id):
         flash("Test not found", "error")
         return redirect('/home')
     return render_template('take_fitness_test.html', test=test)
+
 
 @app.route('/submit_fitness_test/<test_id>', methods=['POST'])
 def submit_fitness_test(test_id):
@@ -774,6 +1178,7 @@ def submit_fitness_test(test_id):
         is_pass=is_pass,
         percentage=percentage
     )
+
 
 @app.route('/delete_bundle/<bundle_id>', methods=['POST'])
 def delete_bundle(bundle_id):
@@ -982,20 +1387,19 @@ def course_detail(course_id):
         flash("Invalid course ID.", "error")
         return redirect(url_for('home'))
 
-    # Fetch course
     course = db['courses'].find_one({'_id': course_obj_id})
     if not course:
         flash("Course not found.", "error")
         return redirect(url_for('home'))
 
-    # Fetch user
     user = db['users'].find_one({'email': user_email})
     if not user:
         flash("User not found.", "error")
         return redirect(url_for('login'))
 
-    # Auto-enroll if not already enrolled
-    if course_obj_id not in user.get('enrolled_courses', []):
+    # Ensure enrollment
+    enrolled_courses = user.get('enrolled_courses', [])
+    if course_obj_id not in enrolled_courses:
         db['users'].update_one(
             {'email': user_email},
             {'$addToSet': {'enrolled_courses': course_obj_id}}
@@ -1008,61 +1412,74 @@ def course_detail(course_id):
             }
         )
 
-    # Create enrollment record if it doesn't exist
+    db['enrollments'].update_one(
+        {'user_email': user_email, 'course_id': course_obj_id},
+        {'$setOnInsert': {
+            'video_progress': {},
+            'quiz_progress': {},
+            'final_exam_progress': {},
+            'course_completed': False
+        }},
+        upsert=True
+    )
+
     enrollment = db['enrollments'].find_one({
         'user_email': user_email,
         'course_id': course_obj_id
     })
 
-    if not enrollment:
-        enrollment = {
-            'user_email': user_email,
-            'course_id': course_obj_id,
-            'video_progress': {},
-            'quiz_progress': {},
-            'final_exam_progress': {},
-            'course_completed': False
-        }
-        db['enrollments'].insert_one(enrollment)
-
-    # Fetch updated enrollment
     video_progress = enrollment.get('video_progress', {})
     quiz_progress = enrollment.get('quiz_progress', {})
     final_exam_progress = enrollment.get('final_exam_progress', {})
 
-    # Progress calculation
     total_videos = 0
     completed_videos = 0
+    all_quizzes_passed = True
 
     for chapter in course.get('chapters', []):
-        for video in chapter.get('videos', []):
+        chapter_videos = chapter.get('videos', [])
+        chapter_total_videos = len(chapter_videos)
+        chapter_completed_videos = 0
+
+        for video in chapter_videos:
             total_videos += 1
             file_id = str(video.get('file_id'))
             progress = video_progress.get(file_id, 0)
             video['completed'] = progress >= 90
             if video['completed']:
                 completed_videos += 1
+                chapter_completed_videos += 1
+            else:
+                all_quizzes_passed = False  # Cannot pass quiz if a video is incomplete
 
-        chapter_name = chapter.get('chapter_name', '')
-        quiz_info = quiz_progress.get(chapter_name, {})
+        # Unlock quiz only if all videos in chapter are completed
+        quiz_info = quiz_progress.get(chapter.get('chapter_name', ''), {})
         chapter['quiz_completed'] = quiz_info.get('passed', False)
         chapter['quiz_score'] = quiz_info.get('score', 0)
         chapter['quiz_total'] = quiz_info.get('total', 0)
+        chapter['quiz_unlocked'] = (chapter_total_videos > 0 and chapter_completed_videos == chapter_total_videos)
 
-    # Final exam progress
+        if not chapter['quiz_completed']:
+            all_quizzes_passed = False
+
+    # Final Exam unlock logic
     if 'final_exam' in course:
         course['final_exam_completed'] = final_exam_progress.get('passed', False)
         course['final_exam_score'] = final_exam_progress.get('score', 0)
         course['final_exam_total'] = final_exam_progress.get('total', 0)
+
+        course['final_exam_unlocked'] = (
+            completed_videos == total_videos and all_quizzes_passed
+        )
     else:
         course['final_exam_completed'] = False
+        course['final_exam_unlocked'] = False
 
-    # Completion percentage
     course['video_completion_percent'] = int((completed_videos / total_videos) * 100) if total_videos else 0
+
     check_course_completion(user_email, course_id)
+
     return render_template('course_detail.html', course=course)
-
-
 
 
 @app.route('/video/<video_id>')
@@ -1108,33 +1525,113 @@ def enroll_course(course_id):
 
 @app.route('/update_progress', methods=['POST'])
 def update_progress():
-    data = request.json
-    course_id = data.get('course_id')
-    video_id = data.get('video_id')
-    watched_percent = data.get('watched_percent')
+    data = request.get_json()
     user_email = session.get('user_email')
-
     if not user_email:
-        return jsonify({'error': 'Login required'}), 401
+        return jsonify({'error': 'Unauthorized'}), 401
 
-    try:
-        watched_percent = float(watched_percent)
-        if not (0 <= watched_percent <= 100):
-            raise ValueError("Invalid percent")
-    except:
-        return jsonify({'error': 'Invalid watched_percent'}), 400
+    course_id = ObjectId(data['course_id'])
+    video_id = str(data['video_id'])
+    watched_percent = data.get('watched_percent', 0)
 
-    # Update progress
-    result = db['enrollments'].update_one(
-        {'user_email': user_email, 'course_id': ObjectId(course_id)},
-        {'$set': {f'video_progress.{video_id}': watched_percent}},
-        upsert=True
+    enrollment = db.enrollments.find_one({'user_email': user_email, 'course_id': course_id})
+    if not enrollment:
+        return jsonify({'error': 'Enrollment not found'}), 404
+
+    # --- Update progress
+    video_progress = enrollment.get('video_progress', {})
+    video_progress[video_id] = max(video_progress.get(video_id, 0), watched_percent)
+
+    db.enrollments.update_one(
+        {'user_email': user_email, 'course_id': course_id},
+        {'$set': {'video_progress': video_progress}}
     )
 
-    # 🟢 Call the check function here
-    check_course_completion(user_email, course_id)
+    course = db.courses.find_one({'_id': course_id})
+    chapters = course.get('chapters', [])
 
-    return jsonify({'message': 'Progress updated'})
+    quiz_unlocks = []
+    final_exam_unlocked = False
+
+    # --- Check each chapter to unlock quiz
+    for chapter in chapters:
+        chapter_name = chapter['chapter_name']
+        all_videos_completed = True
+
+        for video in chapter.get('videos', []):
+            vid_id = str(video['file_id'])
+            if video_progress.get(vid_id, 0) < 90:
+                all_videos_completed = False
+                break
+
+        if all_videos_completed:
+            # Unlock quiz if not already in quiz_progress
+            enrollment = db.enrollments.find_one({'user_email': user_email, 'course_id': course_id})
+            quiz_progress = enrollment.get('quiz_progress', {})
+            if chapter_name not in quiz_progress:
+                quiz_unlocks.append(chapter_name)
+
+    # --- Check if all chapters are completed
+    all_chapters_completed = True
+    for chapter in chapters:
+        for video in chapter.get('videos', []):
+            vid_id = str(video['file_id'])
+            if video_progress.get(vid_id, 0) < 90:
+                all_chapters_completed = False
+                break
+        if not all_chapters_completed:
+            break
+
+    # --- Check if all quizzes passed (if required)
+    quizzes_completed = True
+    for chapter in chapters:
+        chapter_name = chapter['chapter_name']
+        if chapter_name not in enrollment.get('quiz_progress', {}):
+            quizzes_completed = False
+            break
+
+    # --- Unlock final exam
+    if all_chapters_completed and quizzes_completed:
+        final_exam_unlocked = True
+
+    return jsonify({
+        'message': 'Progress updated',
+        'quiz_unlocks': quiz_unlocks,
+        'final_exam_unlocked': final_exam_unlocked
+    })
+
+
+from flask import jsonify, send_file
+
+@app.route('/log-download', methods=['POST'])
+def log_download():
+    data = request.get_json()
+    video_id = data.get('video_id')
+    course_name = data.get('course_name')
+    video_title = data.get('video_title')
+    user_email = session.get('user_email', 'Unknown')
+
+    # Save log
+    db.video_access_logs.insert_one({
+        'user_email': user_email,
+        'video_id': video_id,
+        'course_name': course_name,
+        'video_title': video_title,
+        'action': 'download',
+        'timestamp': datetime.utcnow()
+    })
+
+    return jsonify({"message": "Download logged."}), 200
+
+@app.route('/download-video/<video_id>')
+def download_video(video_id):
+    try:
+        video_file = fs.get(ObjectId(video_id))
+        return Response(video_file.read(), mimetype='video/mp4', headers={
+            "Content-Disposition": f"attachment; filename=video.mp4"
+        })
+    except:
+        return "Video not found", 404
 
 
 
@@ -1217,9 +1714,44 @@ def render_final_exam(course_id):
     if not user_email:
         return "Unauthorized", 401
 
-    course = courses_col.find_one({'_id': ObjectId(course_id)})
+    try:
+        course_obj_id = ObjectId(course_id)
+    except Exception:
+        return "Invalid course ID", 400
+
+    course = courses_col.find_one({'_id': course_obj_id})
     if not course or "final_exam" not in course:
         return "Final exam not found", 404
+
+    enrollment = db['enrollments'].find_one({
+        'user_email': user_email,
+        'course_id': course_obj_id
+    })
+
+    if not enrollment:
+        return "You are not enrolled in this course", 403
+
+    # ---- Check Video Completion ----
+    video_progress = enrollment.get('video_progress', {})
+    total_videos = 0
+    completed_videos = 0
+
+    for chapter in course.get('chapters', []):
+        for video in chapter.get('videos', []):
+            total_videos += 1
+            file_id = str(video.get('file_id'))
+            if video_progress.get(file_id, 0) >= 90:
+                completed_videos += 1
+
+    # ---- Check Quiz Completion ----
+    quiz_progress = enrollment.get('quiz_progress', {})
+    all_quizzes_passed = all(
+        quiz_progress.get(ch['chapter_name'], {}).get('passed', False)
+        for ch in course.get('chapters', [])
+    )
+
+    if completed_videos < total_videos or not all_quizzes_passed:
+        return "Please complete all videos and quizzes before attempting the final exam.", 403
 
     exam_data = course["final_exam"]
     return render_template('final_exam.html', course_id=course_id, exam=exam_data)
@@ -1375,7 +1907,7 @@ def user_dashboard():
         else:
             ongoing_ids.append(course)
 
-    wallet_balance = user.get('wallet', 0)
+    wallet_balance = user.get('wallet_balance', 0)
 
     latest_receipt = membership_col.find_one(
         {'user_email': user_email},

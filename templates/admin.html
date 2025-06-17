@@ -121,6 +121,67 @@
       padding-left: 20px;
     }
 
+    table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+  font-family: Arial, sans-serif;
+}
+
+th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+.remove-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.remove-btn i {
+  margin-right: 6px;
+}
+
+.remove-btn:hover {
+  background-color: #c0392b;
+}
+
+.download-btn {
+  display: inline-block;
+  background-color: #2ecc71;
+  color: white;
+  padding: 10px 15px;
+  margin: 15px 0;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.download-btn:hover {
+  background-color: #27ae60;
+}
+
+
     @media (max-width: 768px) {
       .bundle-card {
         flex-direction: column;
@@ -131,7 +192,8 @@
 </head>
 <body>
 
-
+<a href="/create-fitness-test" class="btn btn-primary mb-2">➕ Create Fitness Test</a><br>
+  <a href="/verifications" class="btn btn-warning mb-2">🔍 View Verifications & Withdrawals</a><br>
 <div class="container">
   <h2>Add New Course</h2>
   <form method="POST" enctype="multipart/form-data" action="/admin">
@@ -257,6 +319,11 @@
       </tbody>
     </table>
 
+    <a href="/download_users_csv" class="download-btn">📥 Download Users CSV</a>
+
+
+
+
     <div class="container">
     <h2>Create Bundle</h2>
     <form method="POST" action="/admin" enctype="multipart/form-data">
@@ -314,44 +381,7 @@
     </div>
     {% endfor %}
   </div>
-  <div class="container">
-    <h2>Add Fitness Test</h2>
-    <form method="POST" action="/admin" enctype="multipart/form-data">
-  <div>
-    <label for="test_name">Test Name:</label>
-    <input type="text" name="test_name" required>
-  </div>
-
-  <div>
-    <label for="test_image">Test Image:</label>
-    <input type="file" name="test_image" accept="image/*" required>
-  </div>
-
-  <div>
-    <label for="fitness_video">Test Video (optional):</label>
-    <input type="file" name="fitness_video" accept="video/*">
-  </div>
-
-  <div id="fitness-questions">
-    <h3>Questions</h3>
-    <div class="fitness-question-block">
-      <input type="text" name="ft_question[]" placeholder="Question" required>
-      <input type="text" name="ft_option_a[]" placeholder="Option A" required>
-      <input type="text" name="ft_option_b[]" placeholder="Option B" required>
-      <input type="text" name="ft_option_c[]" placeholder="Option C" required>
-      <input type="text" name="ft_option_d[]" placeholder="Option D" required>
-      <input type="text" name="ft_answer[]" placeholder="Correct Option (a/b/c/d)" required>
-      <input type="text" name="ft_company[]" placeholder="Company Name" required>
-      <hr>
-    </div>
-  </div>
-
-  <button type="button" onclick="addFitnessQuestion()">➕ Add More Questions</button>
-  <button type="submit">✅ Submit Fitness Test</button>
-</form>
-
-
-  <script>
+    <script>
   function addFitnessQuestion() {
     const container = document.getElementById('fitness-questions');
     const block = document.createElement('div');
@@ -371,22 +401,7 @@
 </script>
 
 
-  </div>
-  <div class="container">
-    <h2>All Fitness Tests</h2>
-    {% for test in fitness_tests %}
-        <div style="border: 1px solid gray; padding: 10px; margin-bottom: 10px;">
-            <h3>{{ test.test_name }}</h3>
-            {% if test.image_url %}
-                <img src="{{ test.image_url }}" alt="Test Image" style="width: 200px;"><br>
-            {% endif %}
-            <form action="{{ url_for('delete_fitness_test', test_id=test._id|string) }}" method="POST">
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-
-        </div>
-    {% endfor %}
-  </div>
+  
 <script>
   let chapterIndex = 1; // first chapter is 0
   let finalExamIndex = 1;

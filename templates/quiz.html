@@ -10,6 +10,23 @@
       padding: 20px;
       background-color: #f0f4ff;
     }
+    .back-btn {
+  margin-bottom: 20px;
+  text-align: left; /* Align content to the left */
+}
+
+.back-btn button {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+    .back-btn button:hover {
+      background-color: #5a6268;
+    }
     form {
       background: white;
       padding: 20px;
@@ -30,7 +47,7 @@
       margin: 6px 0;
       cursor: pointer;
     }
-    button {
+    button[type="submit"] {
       background-color: #007bff;
       color: white;
       padding: 10px 16px;
@@ -40,7 +57,7 @@
       display: block;
       margin: 20px auto 0;
     }
-    button:hover {
+    button[type="submit"]:hover {
       background-color: #0056b3;
     }
     .result-box {
@@ -66,22 +83,42 @@
         padding: 15px;
       }
     }
+    .back-link-button {
+  display: inline-block;
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.back-link-button:hover {
+  background-color: #5a6268;
+}
+
   </style>
 </head>
 <body>
+
+  <!-- 🔙 Back Button -->
+  <div class="back-btn">
+    <button class="back-link-button" onclick="history.back()">← Back</button>
+</div>
+
   <h2>Quiz: {{ chapter_name }}</h2>
 
   <form action="{{ url_for('submit_quiz') }}" method="POST">
     {% for q in quiz %}
       <div class="question-block">
-  <p><strong>Q{{ loop.index }}: {{ q.question }}</strong></p>
-  <label><input type="radio" name="q{{ loop.index0 }}" value="a" {% if score is defined %} disabled {% endif %} required> A. {{ q.options.a }}</label>
-  <label><input type="radio" name="q{{ loop.index0 }}" value="b" {% if score is defined %} disabled {% endif %}> B. {{ q.options.b }}</label>
-  <label><input type="radio" name="q{{ loop.index0 }}" value="c" {% if score is defined %} disabled {% endif %}> C. {{ q.options.c }}</label>
-  <label><input type="radio" name="q{{ loop.index0 }}" value="d" {% if score is defined %} disabled {% endif %}> D. {{ q.options.d }}</label>
-</div>
-
+        <p><strong>Q{{ loop.index }}: {{ q.question }}</strong></p>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="a" {% if score is defined %} disabled {% endif %} required> A. {{ q.options.a }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="b" {% if score is defined %} disabled {% endif %}> B. {{ q.options.b }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="c" {% if score is defined %} disabled {% endif %}> C. {{ q.options.c }}</label>
+        <label><input type="radio" name="q{{ loop.index0 }}" value="d" {% if score is defined %} disabled {% endif %}> D. {{ q.options.d }}</label>
+      </div>
     {% endfor %}
+    
     <input type="hidden" name="course_id" value="{{ course_id }}">
     <input type="hidden" name="chapter_name" value="{{ chapter_name }}">
     <input type="hidden" name="total_questions" value="{{ quiz|length }}">
@@ -92,7 +129,7 @@
   </form>
 
   {% if score is defined %}
-    <div class="result-box {% if not passed %}fail-box{% endif %}" style="max-width:700px; margin:auto; margin-top:20px; text-align:center;">
+    <div class="result-box {% if not passed %}fail-box{% endif %}">
       {% if passed %}
         🎉 You passed! Score: {{ score }} / {{ total }}
       {% else %}
@@ -114,5 +151,4 @@
     </script>
   {% endif %}
 </body>
-
 </html>

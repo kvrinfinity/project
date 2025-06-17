@@ -123,11 +123,28 @@
     .video-status {
       font-size: 16px;
     }
+    .back-btn {
+  margin-bottom: 20px;
+  text-align: left; /* Align content to the left */
+}
+
+.back-btn button {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
   </style>
 </head>
 
 <body>
   <div class="sidebar">
+    <div class="back-btn">
+    <button class="back-link-button" onclick="history.back()">←</button>
+</div>
     <h2>{{ course.course_name }}</h2>
 
     {% for chapter in course.chapters %}
@@ -135,19 +152,29 @@
         <div class="chapter-title">{{ chapter.chapter_name }}</div>
 
         {% for video in chapter.videos %}
-          <div class="video-item" data-video-id="{{ video.file_id }}" onclick="loadContent('video', '{{ video.file_id }}')">
-            <span class="video-title">🎥 {{ video.title }}</span>
-            <span class="video-status">
-              {% if video.completed %}✔️{% else %}⏳{% endif %}
-            </span>
-          </div>
-        {% endfor %}
+  <div class="video-item"
+       data-video-id="{{ video.file_id }}"
+       data-video-title="{{ video.title }}"
+       data-course-name="{{ course.course_name }}"
+       onclick="loadContent('video', '{{ video.file_id }}')">
+    <span class="video-title">🎥 {{ video.title }}</span>
+    <span class="video-status">
+      {% if video.completed %}✔️{% else %}⏳{% endif %}
+    </span>
+  </div>
+{% endfor %}
+
 
         {% if chapter.quiz %}
-          <div class="quiz" onclick="loadContent('quiz', '{{ chapter.chapter_name }}')">
+          <div class="quiz"
+               data-type="quiz"
+               data-id="{{ chapter.chapter_name }}"
+               data-unlocked="{{ 'true' if chapter.quiz_unlocked else 'false' }}">
             <div class="quiz-title"><i>📝</i> Quiz</div>
             {% if chapter.quiz_completed %}
               <span class="quiz-score">{{ chapter.quiz_score }}/{{ chapter.quiz_total }} ✔️</span>
+            {% elif not chapter.quiz_unlocked %}
+              <span class="incomplete">Locked 🔒</span>
             {% else %}
               <span class="incomplete">Not attempted</span>
             {% endif %}
@@ -157,7 +184,10 @@
     {% endfor %}
 
     {% if course.final_exam %}
-      <div class="exam" onclick="loadContent('exam', '{{ course._id }}')">
+      <div class="exam"
+           data-type="exam"
+           data-id="{{ course._id }}"
+           data-unlocked="{{ 'true' if course.final_exam_unlocked else 'false' }}">
         <div class="quiz-title"><i>🎓</i> Final Exam</div>
         {% if course.final_exam_completed %}
           <span class="quiz-score">{{ course.final_exam_score }}/{{ course.final_exam_total }} ✔️</span>
@@ -173,6 +203,68 @@
       <p>Select a video, quiz, or exam to begin.</p>
     </div>
   </div>
+
+  <script>
+function downloadVideo(videoId, courseName, videoTitle) {
+  fetch('/log-download', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      video_id: videoId,
+      course_name: courseName,
+      video_title: videoTitle
+    })
+  }).then(res => {
+    if (res.ok) {
+      // Proceed to download
+      const link = document.createElement('a');
+      link.href = `/download-video/${videoId}`;
+      link.download = '';
+      link.click();
+    } else {
+      alert("Failed to log download.");
+    }
+  });
+}
+</script>
+
+  <script>
+  document.addEventListener('contextmenu', function(e) {
+    const video = document.getElementById('course-video');
+    if (video && video.contains(e.target)) {
+      e.preventDefault();
+
+      // Log the "download attempt"
+      fetch('/log_download_attempt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          course_id: "{{ course._id }}",
+          course_name: "{{ course.course_name }}",
+          video_id: video.querySelector('source')?.src.split('/').pop(), // get file_id
+          video_title: getCurrentVideoTitle(video)
+        })
+      });
+
+      alert("Download is disabled. This attempt has been logged.");
+    }
+  });
+
+  function getCurrentVideoTitle(videoElement) {
+    const videoId = videoElement.querySelector('source')?.src.split('/').pop();
+    const videoItems = document.querySelectorAll('.video-item');
+    for (const item of videoItems) {
+      if (item.dataset.videoId === videoId) {
+        return item.querySelector('.video-title')?.innerText || "Unknown Title";
+      }
+    }
+    return "Unknown Title";
+  }
+</script>
 
   <script>
     function loadContent(type, id) {
@@ -192,9 +284,7 @@
             videoEl.addEventListener("ended", () => {
               fetch("/update_progress", {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   course_id: "{{ course._id }}",
                   video_id: id,
@@ -204,6 +294,7 @@
               .then(res => res.json())
               .then(data => {
                 if (data.message === "Progress updated") {
+                  // Mark video as completed
                   const videoItems = document.querySelectorAll('.video-item');
                   videoItems.forEach(item => {
                     if (item.dataset.videoId === id) {
@@ -211,6 +302,37 @@
                       if (status) status.textContent = "✔️";
                     }
                   });
+
+                  // Unlock quizzes
+                  if (Array.isArray(data.quiz_unlocks)) {
+                    data.quiz_unlocks.forEach(chapterName => {
+                      const quizEls = document.querySelectorAll(`.quiz[data-id="${chapterName}"]`);
+                      quizEls.forEach(quizEl => {
+                        quizEl.dataset.unlocked = "true";
+                        const span = quizEl.querySelector("span.incomplete");
+                        if (span) {
+                          span.textContent = "Not attempted";
+                          span.classList.remove("incomplete");
+                          span.classList.add("quiz-score");
+                        }
+                      });
+                    });
+                  }
+
+                  // Unlock final exam
+                  if (data.final_exam_unlocked) {
+                    const examEl = document.querySelector(".exam");
+                    if (examEl) {
+                      examEl.dataset.unlocked = "true";
+                      const span = examEl.querySelector("span.incomplete");
+                      if (span) {
+                        span.textContent = "Not attempted";
+                        span.classList.remove("incomplete");
+                        span.classList.add("quiz-score");
+                      }
+                    }
+                  }
+
                 } else {
                   alert("Failed to update progress: " + data.error);
                 }
@@ -236,6 +358,23 @@
           });
       }
     }
+
+    // Attach click handler for quiz and exam elements
+    document.addEventListener('click', function (e) {
+      const target = e.target.closest('.quiz, .exam');
+      if (target) {
+        const unlocked = target.getAttribute('data-unlocked') === 'true';
+        const type = target.getAttribute('data-type');
+        const id = target.getAttribute('data-id');
+
+        if (!unlocked) {
+          alert('This content is locked. Please complete required videos or quizzes first.');
+          return;
+        }
+
+        loadContent(type, id);
+      }
+    });
   </script>
 </body>
 </html>
