@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
   <title>Verify Account</title>
   <style>
     * {
@@ -77,6 +78,8 @@ form button:hover {
   <div class="container">
     <h2>Account Verification</h2>
     <form action="/submit-verification" method="POST">
+      <input type="text" name="aadhar_number" placeholder="Aadhar Number" pattern="\d{12}" title="Enter 12-digit Aadhar number" required>
+      <input type="text" name="pan_number" placeholder="PAN Number" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" title="Enter valid PAN (e.g., ABCDE1234F)" required>
       <input type="text" name="bank_name" placeholder="Bank Name" required>
       <input type="text" name="branch" placeholder="Bank Branch" required>
       <input type="text" name="ifsc" placeholder="IFSC Code" required>

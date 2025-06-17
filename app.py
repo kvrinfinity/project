@@ -634,6 +634,8 @@ def submit_verification_page():
 
         verification_data = {
             "email": user_email,
+            "adhar_number": request.form['aadhar_number'],
+            "pancard_number": request.form['pan_number'],
             "bank_name": request.form['bank_name'],
             "branch": request.form['branch'],
             "ifsc": request.form['ifsc'],

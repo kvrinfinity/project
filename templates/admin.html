@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
   <title>Admin Panel - Add Course</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -188,12 +189,64 @@ tr:hover {
         align-items: flex-start;
       }
     }
+
+    .navbar {
+      background-color: #2c3e50;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      background-color: #3498db;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navbar a:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .navbar a.warning {
+      background-color: #f39c12;
+    }
+
+    .navbar a.warning:hover {
+      background-color: #e67e22;
+    }
+
+    .navbar i {
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
 
-<a href="/create-fitness-test" class="btn btn-primary mb-2">➕ Create Fitness Test</a><br>
-  <a href="/verifications" class="btn btn-warning mb-2">🔍 View Verifications & Withdrawals</a><br>
+<div class="navbar">
+  <a href="#bundle">
+  <i class="fas fa-box-open"></i> Create Bundle
+</a>
+
+    <a href="/create-fitness-test">
+      <i class="fas fa-dumbbell"></i> Create Fitness Test
+    </a>
+    <a href="/verifications" class="warning">
+      <i class="fas fa-file-alt"></i> View Verifications & Withdrawals
+    </a>
+    <a href="/download_users_csv" class="download-btn">📥 Download Users CSV</a>
+  </div>
 <div class="container">
   <h2>Add New Course</h2>
   <form method="POST" enctype="multipart/form-data" action="/admin">
@@ -319,12 +372,8 @@ tr:hover {
       </tbody>
     </table>
 
-    <a href="/download_users_csv" class="download-btn">📥 Download Users CSV</a>
 
-
-
-
-    <div class="container">
+    <div class="container" id="bundle">
     <h2>Create Bundle</h2>
     <form method="POST" action="/admin" enctype="multipart/form-data">
       <label for="bundle_name">Bundle Name:</label>
