@@ -17,13 +17,13 @@ membership_col = db['membership']
 fs = GridFS(db)
 
 # Dummy Data
-fname = "Praveen"
-lname = "Kumbhakonam"
-email = "kumbakonampraveen@gmail.com"
+fname = "Nishan"
+lname = "Kamath"
+email = "nishankamath@gmail.com"
 password = "password"  
 
 
-ref_code = 'kvr1001'
+ref_code = 'kvr1002'
 
 # Insert user
 user_col.insert_one({

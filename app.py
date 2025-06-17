@@ -706,16 +706,34 @@ def process_withdrawal():
     flash("✅ Withdrawal request submitted! Money will be transferred to your bank account within 24 hours after admin approval.", "success")
     return redirect(url_for('user_dashboard'))
 
+from bson.objectid import ObjectId
+
 @app.route('/approve-verification', methods=['POST'])
 def approve_verification():
-    email = request.form['email']
+    verification_id = request.form.get('verification_id')
+    
+    if not verification_id:
+        flash("Verification ID not provided.", "error")
+        return redirect(url_for('verifications'))
+
+    verification = verifications_col.find_one({"_id": ObjectId(verification_id)})
+    
+    if not verification:
+        flash("Verification record not found.", "error")
+        return redirect(url_for('verifications'))
+
+    email = verification['email']
+
+    # Update user and verification status
     users_col.update_one({"email": email}, {"$set": {"is_verified": True}})
     verifications_col.update_one(
-        {"email": email, "status": "pending"},
+        {"_id": ObjectId(verification_id)},
         {"$set": {"status": "approved"}}
     )
+
     flash(f"{email} has been verified.", "success")
     return redirect(url_for('verifications'))
+
 
 
 @app.route('/approve-withdrawal/<withdrawal_id>', methods=['POST'])

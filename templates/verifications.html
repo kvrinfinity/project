@@ -43,20 +43,21 @@
       <tbody>
         {% for v in pending_verifications %}
         <tr>
-          <td>{{ v.email }}</td>
-          <td>{{ v.bank_name }}</td>
-          <td>{{ v.branch }}</td>
-          <td>{{ v.ifsc }}</td>
-          <td>{{ v.account_number }}</td>
-          <td>{{ v.account_holder }}</td>
-          <td>{{ v.upi }}</td>
-          <td>
-            <form method="POST" action="/approve-verification">
-              <input type="hidden" name="verification_id" value="{{ v._id }}">
-              <button type="submit" class="btn btn-success btn-sm">Approve ✅</button>
-            </form>
-          </td>
-        </tr>
+  <td>{{ v.email }}</td>
+  <td>{{ v.bank_name }}</td>
+  <td>{{ v.branch }}</td>
+  <td>{{ v.ifsc }}</td>
+  <td>{{ v.account_number }}</td>
+  <td>{{ v.account_holder }}</td>
+  <td>{{ v.upi }}</td>
+  <td>
+    <form method="POST" action="/approve-verification">
+      <input type="hidden" name="verification_id" value="{{ v._id }}">
+      <button type="submit" class="btn btn-success btn-sm">Approve ✅</button>
+    </form>
+  </td>
+</tr>
+
         {% endfor %}
       </tbody>
     </table>
