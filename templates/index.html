@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
   <title>KVR Infinity - Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -17,15 +16,24 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <h1 class="netflix-font">KVR Infinity</h1>
+ <nav class="navbar">
+  <h1 class="netflix-font">KVR Infinity</h1>
+  <div class="nav-links">
+    <a href="#">about us</a>
+    <a href="#">career</a>
+    <a href="#">team</a>
+    <a href="#">blog</a>
+  </div>
+  <div class="login-wrapper">
     <a href="{{ url_for('login') }}" class="bold-text">Login</a>
-  </nav>
+  </div>
+</nav>
+
 
   <section class="hero">
     <h2>Endless Learning, One Membership</h2>
     <p>Join KVR to access top courses in Aptitude, DSA & OS.</p><br>
-    <a href="{{ url_for('login') }}" class="btn">Join Membership</a>
+    <a href="{{ url_for('membership') }}" class="btn">Join Membership</a>
   </section>
 
 <div class="curve-wrapper">
@@ -75,8 +83,6 @@
   {% endfor %}
 </div>
 
-
-
 <h2>Explore top <span style="color: red;">courses</span></h2>
 
   <div class="courses-container">
@@ -84,7 +90,7 @@
     <!-- AI & ML -->
     <div class="course-card">
       <div class="course-front">
-        <img src="{{ url_for('static', filename='c1.png') }}" alt="Entrepreneurship">
+        <img src="{{ url_for('static', filename='Aimlimg.jpg') }}" alt="Entrepreneurship">
     </div>
       <div class="course-details-hover">
         <h3>AI & ML Jobs</h3>
@@ -97,7 +103,7 @@
     <!-- ChatGPT Clones -->
     <div class="course-card">
       <div class="course-front">
-        <img src="{{ url_for('static', filename='c2.png') }}" alt="Entrepreneurship">
+        <img src="{{ url_for('static', filename='Enterprenuership.jpg') }}" alt="Entrepreneurship">
 
       </div>
       <div class="course-details-hover">
@@ -110,7 +116,7 @@
     <!-- Prompt Engineering -->
     <div class="course-card">
       <div class="course-front">
-      <img src="{{ url_for('static', filename='c3.png') }}" alt="Entrepreneurship">     
+      <img src="{{ url_for('static', filename='promptengineering.jpg') }}" alt="Entrepreneurship">     
       </div>
       <div class="course-details-hover">
         <h3>Prompt Engineering</h3>
@@ -122,7 +128,7 @@
     <!-- Entrepreneurship -->
     <div class="course-card">
       <div class="course-front">
-        <img src="{{ url_for('static', filename='c4.png') }}" alt="Entrepreneurship">
+        <img src="{{ url_for('static', filename='chatgptclones.jpg') }}" alt="Entrepreneurship">
         
       </div>
       <div class="course-details-hover">
@@ -154,6 +160,243 @@
       <p>Once selected, get the membership at ₹1499/- and unlock all premium courses to boost your skills.</p>
     </div>
   </section>
+  <br>
+  
+  <h1 style="text-align:center; margin-top: 42px;">Membership Plans</h1>
+  <div class="plans-container">
+        <!-- Personal Plan Card -->
+        <div class="plan-card">
+            <div class="plan-header personal">
+                <h2>Personal Plan</h2>
+                <p class="subtitle">For you</p>
+                <p class="icon-text"><span class="icon">&#128100;</span> Individual</p>
+            </div>
+            <div class="plan-body">
+                <p class="price"><strong>Starting at ₹850 per month</strong></p><br>
+                <button class="subscribe-btn">Start subscription</button>
+                <ul class="features">
+                    <li>Access to 26,000+ top courses</li>
+                    <li>Certification prep</li>
+                    <li>Goal-focused recommendations</li>
+                    <li>AI-powered coding exercises</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Team Plan Card -->
+        <div class="plan-card">
+            <div class="plan-header team">
+                <h2>Team Plan</h2>
+                <p class="subtitle">For your team</p>
+                <p class="icon-text"><span class="icon">&#128101;</span> 2 to 20 people</p>
+            </div>
+            <div class="plan-body">
+                <p class="price"><strong>₹2,000 a month per user</strong></p><br>
+                <button class="subscribe-btn">Start subscription</button>
+                <ul class="features">
+                    <li>Access to 13,000+ top courses</li>
+                    <li>Certification prep</li>
+                    <li>Goal-focused recommendations</li>
+                    <li>AI-powered coding exercises</li>
+                    <li>Analytics and adoption reports</li>
+                </ul>
+            </div>
+        </div>
+        <div class="plan-card">
+            <div class="plan-header team">
+                <h2>Team Plan</h2>
+                <p class="subtitle">For your team</p>
+                <p class="icon-text"><span class="icon">&#128101;</span> 2 to 20 people</p>
+            </div>
+            <div class="plan-body">
+                <p class="price"><strong>₹2,000 a month per user</strong></p><br>
+                <button class="subscribe-btn">Start subscription</button>
+                <ul class="features">
+                    <li>Access to 13,000+ top courses</li>
+                    <li>Certification prep</li>
+                    <li>Goal-focused recommendations</li>
+                    <li>AI-powered coding exercises</li>
+                    <li>Analytics and adoption reports</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+  
+
+<section class="team-section">
+  <h2 class="team-title">Meet Our Beloved Faculty</h2>
+  <p class="team-subtitle">
+    Et optio praesent et! Eligendi ab, irure impedit rhoncus, doloremque! Pretium nobis nobis
+    modi ullamco excepturi recusandae et! Nec scelerisque, natus gravida.
+  </p>
+  <div class="team-cards">
+  <div class="team-card">
+  <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
+    <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
+    <div class="overlay">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+  <h3 class="team-name">Donald Huff</h3>
+  <p class="team-role ios">IOS DEVELOPER</p>
+</div>
+
+    <div class="team-card">
+      <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
+      <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
+      <div class="overlay">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+      <h3 class="team-name">Angelo Moore</h3>
+      <p class="team-role visual">VISUAL DESIGNER</p>
+    </div>
+
+    <div class="team-card">
+  <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
+    <img src="{{ url_for('static', filename='alak.jpg') }}" alt="Member 1" class="team-img">
+    <div class="overlay">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+      <h3 class="team-name">Alak Majumder</h3>
+      <p class="team-role android">ANDROID DEVELOPER</p>
+    </div>
+
+  <div class="team-card">
+  <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
+    <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
+    <div class="overlay">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+      <h3 class="team-name">Jenny White</h3>
+      <p class="team-role strategist">PRODUCT STRATEGIST</p>
+    </div>
+  </div>
+  </div><br>
+  <button class="hero-button">Meet our team</button>
+</section>
+
+
+  <!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<section class="appa-screenshot-section">
+  <div class="appa-section-title">
+    <span class="appa-subtitle">KVR Infinity</span>
+    <h2 class="appa-title">Our App is Launching soon</h2>
+    <p class="appa-desc">
+      Take a look at our app's interface. Smooth, clean, and easy to use!
+    </p>
+  </div>
+  <div class="appa-screenshot-carousel swiper">
+    <div class="swiper-wrapper">
+      <!-- Slide 1 -->
+      <div class="swiper-slide">
+        <div class="appa-phone-mockup">
+          <img src="{{ url_for('static', filename='study1.jpg') }}" alt="App Screenshot 1" >
+
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="swiper-slide">
+        <div class="appa-phone-mockup">
+        <img src="{{ url_for('static', filename='study2.jpg') }}" alt="App Screenshot 2" >  
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="swiper-slide">
+        <div class="appa-phone-mockup">
+        <img src="{{ url_for('static', filename='study3.jpg') }}" alt="App Screenshot 3" >
+        </div>
+      </div>
+      <!-- Add more slides as needed -->
+    </div>
+    <!-- Navigation Arrows -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </div>
+</section>
+
+  <section class="testimonials-section">
+  <div class="testimonials-header">
+    <span class="testimonials-subtitle">CLIENTS TESTIMONIAL</span>
+    <h2 class="testimonials-title">15k+ Customers Love KVR Infinity</h2>
+    <p class="testimonials-desc">
+      Et optio praesent et Eligendi ab, irure impedit rhoncus, doloremque! Pretium nobis nobis modi ullamco excepturi recusandae et! Nec scelerisque, natus gravida.
+    </p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="testimonial-img">
+      <p class="testimonial-text">
+        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
+      </p>
+      <span class="testimonial-quote">
+        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
+          <circle cx="7" cy="7" r="1"/>
+        </svg>
+      </span>
+    </div>
+    <div class="testimonial-card">
+      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="testimonial-img">
+      <p class="testimonial-text">
+        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
+      </p>
+      <span class="testimonial-quote">
+        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
+          <circle cx="7" cy="7" r="1"/>
+        </svg>
+      </span>
+    </div>
+    <div class="testimonial-card">
+      <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="User" class="testimonial-img">
+      <p class="testimonial-text">
+        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
+      </p>
+      <span class="testimonial-quote">
+        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
+          <circle cx="7" cy="7" r="1"/>
+        </svg>
+      </span>
+    </div>
+    <div class="testimonial-card">
+      <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="User" class="testimonial-img">
+      <p class="testimonial-text">
+        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
+      </p>
+      <span class="testimonial-quote">
+        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
+          <circle cx="7" cy="7" r="1"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+<button class="view-reviews-btn">VIEW ALL REVIEWS</button>
+
+</section>
+
 
   <section class="faq-section">
   <h2>Frequently Asked Questions</h2>
@@ -225,6 +468,10 @@
       <h3>Need some help?</h3>
       <p>FAQs</p>
       <p>Contact</p>
+      <p>about us</p>
+      <p>blog</p>
+      <p>invest relations</p>
+      <p>Carriers</p>
     </div>
 
     <div class="footer-section">
@@ -299,7 +546,24 @@
 </script>
 
   
-
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  var swiper = new Swiper('.appa-screenshot-carousel', {
+    slidesPerView: 3,
+    spaceBetween: 30,
+    centeredSlides: true,
+    loop: true,
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    breakpoints: {
+      0: { slidesPerView: 1 },
+      600: { slidesPerView: 2 },
+      900: { slidesPerView: 3 }
+    }
+  });
+</script>
   
 </body>
 </html>
