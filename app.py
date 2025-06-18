@@ -446,6 +446,9 @@ def bundle_detail(bundle_id):
         user_enrolled=user_enrolled,
         progress=progress
     )
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 def get_refcode():
     while True:

@@ -1,0 +1,630 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 2rem;
+    background-color: #111;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar h1.netflix-font {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e50914; /* Netflix red or brand color */
+    margin: 0;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: #ffffffcc;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-links a:hover {
+    color: #f7c873;
+}
+
+.nav-links a.bold-text {
+    font-weight: 600;
+    color: #ffffff;
+    border: 1px solid #f7c873;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-links a.bold-text:hover {
+    background-color: #f7c873;
+    color: #111;
+}
+
+
+.background-decor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    background:
+        linear-gradient(120deg, #aa1f0f 60px, transparent 60px),
+        linear-gradient(-60deg, #ae2718 60px, transparent 60px),
+        linear-gradient(60deg, #000000 20px, transparent 20px),
+        linear-gradient(-120deg, #ffffff 20px, transparent 20px);
+    background-repeat: no-repeat;
+    background-size: 100% 100%, 100% 100%, 60vw 60vh, 60vw 60vh;
+    background-position: left bottom, right top, left top, right bottom;
+    opacity: 0.9;
+}
+
+.hero-card {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 60px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    padding: 100px 32px 32px 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 36px;
+    margin-top: -32px;
+    margin-bottom: 14px;
+}
+
+.hero-nav a {
+    color: #222;
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 400;
+    transition: color 0.2s;
+}
+
+.hero-nav a:hover {
+    color: #e74c3c;
+}
+
+.top-left-wave {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;   /* Make the wave stretch the full width */
+    height: 180px; /* Increase height for more impact */
+    z-index: 1;
+    pointer-events: none;
+    /* Optional: smooth out scaling on resize */
+    min-width: 600px;
+}
+
+.hero-card {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 36px;
+}
+
+
+
+.hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.hero-left {
+    flex: 1 1 320px;
+    min-width: 260px;
+}
+
+.company-name {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.hero-left h1 {
+    font-size: 2.7rem;
+    font-weight: 700;
+    margin: 0 0 18px 0;
+    color: #181818;
+}
+
+.hero-left p {
+    font-size: 1.08rem;
+    color: #444;
+    margin-bottom: 28px;
+    max-width: 400px;
+}
+
+.hero-left h3 {
+    color: #8a0505;
+    font-size: 1.5rem;
+}
+
+
+.hero-right {
+    flex: 1 1 320px;
+    min-width: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 900px) {
+    .hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .hero-right {
+        justify-content: flex-start;
+    }
+
+    .hero-nav {
+        justify-content: flex-start;
+        margin-top: 0;
+        margin-bottom: 18px;
+    }
+}
+
+/* how it started section */
+.how-started-section {
+    max-width: 600px;
+    margin: 45px 0 45px auto; /* Pushes to right side */
+    padding: 32px 24px;
+    background: #b10606;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(53, 99, 72, 0.321);
+    text-align: left;
+
+    /* You control this value */
+    margin-left: auto;
+    margin-right: 3vw;  /* Adjust this to move more/less to the right */
+}
+
+
+.subtitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3E4EB8;
+    margin-bottom: 1.2em;
+    letter-spacing: 0.02em;
+    background: linear-gradient(90deg, #000000 0, #5b0902 100%);
+    -webkit-text-fill-color: transparent;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.story {
+    font-size: 1.13rem;
+    color: #222;
+    line-height: 1.7;
+    margin-bottom: 1.8em;
+}
+
+.story .highlight {
+    background: #f7c873;
+    color: #3E4EB8;
+    padding: 0.12em 0.5em;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.story .dept {
+    background: #e5e9f2;
+    color: #ff6f61;
+    padding: 0.12em 0.5em;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.quote-box {
+    position: relative;
+    background: #f6f8fa;
+    border-left: none;
+    border-right: 6px solid #000000;
+    padding: 1.6em 2.5em 1.2em 1.5em;
+    /* increased right padding, decreased left */
+    border-radius: 12px;
+    font-size: 1.15rem;
+    color: #444;
+    font-style: italic;
+    box-shadow: 0 2px 12px rgba(184, 82, 62, 0.04);
+    margin: 0 0 0 auto;
+    /* pushes the box to the right */
+    max-width: 450px;
+    /* optional: controls the width */
+    text-align: left;
+    display: block;
+}
+
+
+.quote-mark {
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    font-size: 2.8rem;
+    color: #f7c873;
+    font-family: serif;
+    opacity: 0.7;
+    line-height: 1;
+    pointer-events: none;
+}
+
+@media (max-width: 700px) {
+    .how-started-section {
+        padding: 18px 6vw;
+    }
+
+    .subtitle {
+        font-size: 1.3rem;
+    }
+
+    .story,
+    .quote-box {
+        font-size: 1rem;
+    }
+}
+
+
+
+/* HOW IT WORKS SECTION */
+.how-it-works-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding: 60px 40px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.how-it-works-left, .how-it-works-right {
+    flex: 1 1 480px;
+}
+
+.how-it-works-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #a11010;
+    margin-bottom: 20px;
+}
+
+.how-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.how-step-icon {
+    background: #410805;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.how-step-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 4px;
+}
+
+.how-step-desc {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.5;
+}
+
+/* MISSION & VISION SECTION */
+.mv-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding: 60px 40px;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #f9f9f9;
+    border-radius: 12px;
+    margin-top: 40px;
+}
+
+.mv-left, .mv-right {
+    flex: 1 1 480px;
+}
+
+.mv-label {
+    color: #a91515;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.mv-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 16px;
+}
+
+.mv-desc {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+.mv-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.mv-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-top: 6px;
+}
+
+.mv-dot-green {
+    background-color: #3ccf4e;
+}
+
+.mv-dot-blue {
+    background-color: #3e4eb8;
+}
+
+.mv-point-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+.mv-point-desc {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+
+
+
+/* Footer */
+.footer {
+    background-color: #111;
+    color: white;
+    padding: 2rem 1rem;
+}
+
+.footer-top {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #444;
+}
+
+.footer-section h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: #720808;
+}
+
+.footer-section p,
+.footer-section strong {
+    font-size: 0.95rem;
+}
+
+.contact-item,
+.social-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.contact-item .icon,
+.social-item .icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    color: #7e210c;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.footer-links {
+    margin-top: 1rem;
+}
+
+.footer-links a {
+    margin: 0 10px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+/* Responsive */
+/* Extra small devices (phones, <576px) */
+@media (max-width: 575.98px) {
+    .hero {
+        padding: 3rem 1rem;
+    }
+
+    .hero h2 {
+        font-size: 1.8rem;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+    }
+
+    .courses-container {
+        padding: 2rem 1rem;
+        gap: 1rem;
+    }
+
+    .steps-section {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .footer-top {
+        grid-template-columns: 1fr;
+        padding: 1rem 0;
+    }
+
+    .footer {
+        padding: 1.5rem 1rem;
+    }
+
+    .footer-section h3 {
+        font-size: 1rem;
+    }
+
+    .footer-links a {
+        display: block;
+        margin: 5px 0;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    .navbar h1 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Small devices (tablets, 576px - 768px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .hero {
+        padding: 4rem 1.5rem;
+    }
+
+    .hero h2 {
+        font-size: 2.2rem;
+    }
+
+    .hero p {
+        font-size: 1.05rem;
+    }
+
+    .courses-container {
+        padding: 3rem 2rem;
+    }
+
+    .steps-section {
+        padding: 2rem 1.5rem;
+    }
+
+    .footer-top {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .navbar h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Medium devices (laptops/tablets landscape, 768px - 992px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .hero {
+        padding: 4rem 2rem;
+    }
+
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+
+    .courses-container {
+        padding: 4rem 3rem;
+        gap: 1.5rem;
+    }
+
+    .footer-top {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Large devices (desktops, 992px - 1200px) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .courses-container {
+        padding: 5rem;
+    }
+}
+
+/* Extra large devices (1200px and up) */
+@media (min-width: 1200px) {
+    .courses-container {
+        padding: 7rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 1rem;
+    }
+
+    .footer-links a {
+        display: inline-block;
+        margin: 0 6px;
+        font-size: 0.9rem;
+    }
+}

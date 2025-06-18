@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
+
   <title>KVR Infinity - Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  
   
   <style>
     .netflix-font {
@@ -19,7 +22,7 @@
  <nav class="navbar">
   <h1 class="netflix-font">KVR Infinity</h1>
   <div class="nav-links">
-    <a href="#">about us</a>
+    <a href="{{ url_for('about') }}">about us</a>
     <a href="#">career</a>
     <a href="#">team</a>
     <a href="#">blog</a>
@@ -85,60 +88,46 @@
 
 <h2>Explore top <span style="color: red;">courses</span></h2>
 
+<div class="courses-wrapper">
   <div class="courses-container">
-
-    <!-- AI & ML -->
     <div class="course-card">
       <div class="course-front">
-        <img src="{{ url_for('static', filename='Aimlimg.jpg') }}" alt="Entrepreneurship">
-    </div>
-      <div class="course-details-hover">
+        <img src="{{ url_for('static', filename='Aimlimg.jpg') }}" alt="AI & ML">
         <h3>AI & ML Jobs</h3>
         <p>AI & ML Jobs: Career Paths & Salaries</p>
-        <p>💼🚀 AI and ML are some of the hottest career fields today.</p>
         <button>View Detail</button>
       </div>
     </div>
 
-    <!-- ChatGPT Clones -->
     <div class="course-card">
       <div class="course-front">
-        <img src="{{ url_for('static', filename='Enterprenuership.jpg') }}" alt="Entrepreneurship">
-
-      </div>
-      <div class="course-details-hover">
-        <h3>ChatGPT & Deepseek Clones</h3>
-        <p>Build your own ChatGPT clone and understand AI chat frameworks.</p>
+        <img src="{{ url_for('static', filename='Enterprenuership.jpg') }}" alt="ChatGPT Clone">
+        <h3>ChatGPT Clones</h3>
+        <p>Build your own ChatGPT clone.</p>
         <button>View Detail</button>
       </div>
     </div>
 
-    <!-- Prompt Engineering -->
     <div class="course-card">
       <div class="course-front">
-      <img src="{{ url_for('static', filename='promptengineering.jpg') }}" alt="Entrepreneurship">     
-      </div>
-      <div class="course-details-hover">
+        <img src="{{ url_for('static', filename='promptengineering.jpg') }}" alt="Prompt Eng">
         <h3>Prompt Engineering</h3>
-        <p>Master the art of crafting effective prompts for AI tools.</p>
+        <p>Master prompt design for AI.</p>
         <button>View Detail</button>
       </div>
     </div>
 
-    <!-- Entrepreneurship -->
     <div class="course-card">
       <div class="course-front">
         <img src="{{ url_for('static', filename='chatgptclones.jpg') }}" alt="Entrepreneurship">
-        
-      </div>
-      <div class="course-details-hover">
         <h3>Entrepreneurship</h3>
-        <p>Learn how to ideate, launch, and scale your own startup.</p>
+        <p>Learn to launch your startup.</p>
         <button>View Detail</button>
       </div>
     </div>
-
   </div>
+</div>
+
 
   <h2>Why choose <span style="color: red;">KVR Infinity?</span></h2>
     <section class="steps-section">
@@ -275,22 +264,7 @@
       <p class="team-role android">ANDROID DEVELOPER</p>
     </div>
 
-  <div class="team-card">
-  <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
-    <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
-    <div class="overlay">
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </div>
-      <h3 class="team-name">Jenny White</h3>
-      <p class="team-role strategist">PRODUCT STRATEGIST</p>
-    </div>
-  </div>
-  </div><br>
+ <br>
   <button class="hero-button">Meet our team</button>
 </section>
 

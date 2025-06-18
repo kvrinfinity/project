@@ -531,19 +531,28 @@
   }
 }
 
-
+@keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blurIn {
+      from { filter: blur(8px); opacity: 0; }
+      to { filter: blur(0); opacity: 1; }
+    }
+    .animate-fade-in { opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+    .animate-blur-in { opacity: 0; animation: blurIn 0.7s ease-out forwards; }
     
   </style>
 </head>
 
-<body>
+<body class="animate-fade-in animate-blur-in">
   <nav class="navbar">
     <i class="fas fa-bars" id="sidebarToggle" style="cursor: pointer; margin-right: 15px;"></i>
     <h1>KVR Infinity</h1>
     <div class="nav-links">
-      <a href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('courses') }}">Courses</a>
-      <a href="#">About Us</a>
+      <a href="{{ url_for('home') }}">home</a>
+      <a href="{{ url_for('courses') }}">courses</a>
+      <a href="{{ url_for('about') }}">about Us</a>
     </div>
     <button onclick="toggleTheme()" class="btn" style="margin-left: 20px;">🌓</button>
 
@@ -622,6 +631,24 @@
       hoverSound.currentTime = 0; // reset to start
       hoverSound.play();
       
+    });
+  });
+  
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = 1;
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-fade-in, .animate-blur-in').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
     });
   });
 </script>

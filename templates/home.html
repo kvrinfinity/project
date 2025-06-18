@@ -4,40 +4,92 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
   <title>Dashboard - KVR Infinity</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+<style>
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes blurIn {
+      from {
+        filter: blur(8px);
+        opacity: 0;
+      }
+      to {
+        filter: blur(0);
+        opacity: 1;
+      }
+    }
+
+    .animate-fade-in {
+      opacity: 0;
+      animation: fadeInUp 1s ease-out forwards;
+    }
+
+    .animate-blur-in {
+      opacity: 0;
+      animation: blurIn 1.2s ease-out forwards;
+    }
+  </style>
 </head>
 <body>
 
-   <nav class="navbar">
-    <h1>KVR Infinity</h1>
-    <div class="nav-links">
-      <a href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('courses') }}">Courses</a>
-      <a href="#about-us">About Us</a>
-       <a href="#">Blog</a>
-      
-    </div>
-    </nav>
-    <a href="{{ url_for('user_dashboard') }}">
-    <div class="profile">
-      <div class="user-icon">
+<nav class="navbar animate-fade-in">
+  <h1>KVR Infinity</h1>
+
+  <div class="nav-links">
+    <a href="{{ url_for('home') }}">home</a>
+    <a href="{{ url_for('courses') }}">courses</a>
+    <a href="{{ url_for('about') }}">About Us</a>
+    <a href="#">Blog</a>
+  </div>
+
+  <a href="{{ url_for('user_dashboard') }}" class="profile">
+    <div class="user-icon">
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
         <circle cx="20" cy="20" r="20" fill="#222"/>
         <circle cx="20" cy="15" r="7" fill="#fff"/>
         <ellipse cx="20" cy="29" rx="12" ry="7" fill="#fff"/>
       </svg>
     </div>
-  </div></a>
+  </a>
 </nav>
+
+<section class="slider animate-blur-in">
+  <button class="prev-slide">←</button>
+  <div class="slider-container">
+    <div class="slider-track">
+      {% for slide in [
+        {"image": "banner.jpg", "title": "Welcome to KVR Infinity", "text": "Start your learning journey today"},
+        {"image": "advertisment.jpg", "title": "Professional Courses", "text": "Expert-led training programs"},
+        {"image": "banner.jpg", "title": "Online Learning", "text": "Flexible learning at your pace"} ] %}
+      <div class="slider-image animate-blur-in">
+        <img src="{{ url_for('static', filename=slide.image) }}" alt="Slide Image">
+        <div class="slider-text">
+          <h2>{{ slide.title }}</h2>
+          <p>{{ slide.text }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <button class="next-slide">→</button>
 </section>
-<h2>Take a <span style="color: red;">Fitness Test💪</span></h2>
 
-<div class="slider-wrapper">
+<h2 class="animate-fade-in">Take a <span style="color: red;">Fitness Test💪</span></h2>
 
+<div class="slider-wrapper animate-fade-in">
   <div class="slider" id="fitnessSlider">
     {% for test in fitness_tests %}
-    <div class="course-card">
+    <div class="course-card animate-fade-in">
       <div class="course-front">
-        <img src="{{ test.image_url }}" alt="{{ test.test_name }}" />
+        <img src="{{ test.image_url }}" alt="{{ test.test_name }}">
         <span>Test</span>
         <h3>{{ test.test_name }}</h3>
         <p>🧠 {{ test.questions | length }} Questions</p>
@@ -51,39 +103,52 @@
     </div>
     {% endfor %}
   </div>
-
 </div>
-<h2>Explore top <span style="color: red;">courses🎓</span></h2>
 
-<div class="slider-wrapper">
-  <button class="slider-btn left">&#8249;</button>
+<h2 class="animate-fade-in">Explore top <span style="color: red;">courses🎓</span></h2>
 
+<div class="slider-wrapper animate-fade-in">
+  <button class="slider-btn left">‹</button>
   <div class="slider" id="courseSlider">
     {% for course in top_courses %}
-<div class="course-card">
-  <div class="course-front">
-    <img src="{{ course.image_url }}" alt="{{ course.course_name }}">
-    <span>All levels</span>
-    <h3>{{ course.course_name }}</h3>
-    <p>👨‍🎓 {{ course.get('enrollment_count', 0) }} Students &nbsp;&nbsp; 📘 {{ course.chapters_count }} Chapters</p>
-
-
-  
+    <div class="course-card animate-fade-in">
+      <div class="course-front">
+        <img src="{{ course.image_url }}" alt="{{ course.course_name }}">
+        <span>All levels</span>
+        <h3>{{ course.course_name }}</h3>
+        <p>👨‍🎓 {{ course.get('enrollment_count', 0) }} Students &nbsp;&nbsp; 📘 {{ course.chapters_count }} Chapters</p>
+      </div>
+      <div class="course-details-hover">
+        <h3>{{ course.course_name }}</h3>
+        <a href="{{ url_for('course_detail', course_id=course._id) }}" class="action-btn">
+          <button>View Details</button>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
   </div>
-  <div class="course-details-hover">
-    <h3>{{ course.course_name }}</h3>
-    <a href="{{ url_for('course_detail', course_id=course._id) }}" class="action-btn">
-      <button>View Details</button>
-    </a>
-
-  </div>
-</div>
-  {% endfor %}
-  </div>
-    <button class="slider-btn right">&#8250;</button>
+  <button class="slider-btn right">›</button>
 </div>
 
-<div class="slider-wrapper">
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = 1;
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  document.querySelectorAll('.animate-fade-in, .animate-blur-in').forEach(el => {
+    el.style.animationPlayState = 'paused';
+    observer.observe(el);
+  });
+</script>
+
+<div class="slider-wrapper animate-fade-in animate-blur-in">
   <h2>📦 Build Your Career with Bundles</h2>
 
   <div class="slider" id="bundleSlider">
@@ -107,7 +172,7 @@
   </div>
 
 </div>
-<section class="intro-section" id="about-us">
+<section class="intro-section animate-fade-in animate-blur-in" id="about-us">
   <h1 class="welcome-title">Welcome to <span>KVR Infinity</span></h1>
 
   <h2 class="subtitle">✨ How it started?</h2>
@@ -118,7 +183,7 @@
     at <em>Topper's Tea Session</em>.
   </p>
 
-  <div class="quote-box">
+  <div class="quote-box animate-fade-in animate-blur-in">
     <em>
       We have formed a group from <strong>NITs, IITs, SRM & BITS Goa alumni</strong>. This group guides the R&D team.
     </em>
@@ -127,7 +192,7 @@
 
 <!-- NEW HOW IT WORKS SECTION -->
     
-    <div class="how-it-works-container">
+    <div class="how-it-works-container animate-blur-in animate-fade-in">
       <div class="how-it-works-right">
         <div class="how-it-works-title">How it works?</div>
         <img src="{{ url_for('static', filename='how-it-works.jpg') }}" alt="How it works image">
@@ -174,7 +239,7 @@
     </div>
     <!-- END HOW IT WORKS SECTION -->
     
-<div class="mv-container">
+<div class="mv-container animate-blur-in animate-fade-in">
   <!-- Left Column: Mission -->
   <div class="mv-left">
     <div class="mv-label">MISSION</div>
@@ -218,7 +283,7 @@
   </div>
 
   <h1 style="text-align:center; margin-top: 40px;">Meet Our Team</h1>
-  <div class="team-section">
+  <div class="team-section animate-blur-in animate-fade-in">
     <h2>Executive Department</h2>
     <!-- Team Member1 -->
     <div class="team-member">

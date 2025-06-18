@@ -14,16 +14,16 @@ body {
 
 /* Navbar */
 .navbar {
-  background-color:  #9f0404;
+  background-color: #9f0404;
   color: white;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* ✅ Keep this */
   align-items: center;
-  justify-content: center;
   padding: 15px 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-   position: relative;
+  position: relative;
 }
+
 
 .navbar h1 {
   font-size: 28px;
@@ -80,6 +80,57 @@ body {
 .user-icon svg {
   display: block;
 }
+
+.navbar {
+  background-color: #9f0404;
+  color: white;
+  display: flex;
+  justify-content: space-between; /* distributes h1, nav-links, profile */
+  align-items: center;
+  padding: 15px 30px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar h1 {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 60px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #e9aead;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 /* Section Title */
 h2 {
@@ -906,4 +957,62 @@ body {
     font-size: 0.85rem;
     margin: 5px 6px;
   }
+}
+
+
+
+.slider-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.slider-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  gap: 20px;
+  padding: 20px 0;
+}
+.slider-image {
+  min-width: 100%;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+.slider-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.slider-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: white;
+  animation: slideIn 0.5s ease-out;
+}
+.prev-slide, .next-slide {
+  background: transparent;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px;
+  transition: color 0.3s ease;
+}
+
+.prev-slide {
+  left: 20px;
+}
+
+.next-slide {
+  right: 20px;
+}
+
+.prev-slide:hover, .next-slide:hover {
+  color: #00ff00;
 }

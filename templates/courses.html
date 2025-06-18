@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
   <title>Courses by Main Section</title>
+   <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='courses.css') }}">
   <style>
     body {
@@ -11,7 +11,29 @@
       background: #fafafa;
       margin: 0;
       padding: 20px;
+      transition: background 0.3s, color 0.3s;
     }
+
+    body.dark-mode {
+      background: #121212;
+      color: #f0f0f0;
+    }
+
+    .navbar {
+      background-color: #9f0404;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
     .container {
       max-width: 95%;
       margin: 0 auto;
@@ -20,27 +42,44 @@
       border-radius: 12px;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
+
+    body.dark-mode .container {
+      background: #1e1e1e;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+
     h1 {
       text-align: center;
       color: #222;
       margin-bottom: 30px;
     }
+
+    body.dark-mode h1,
+    body.dark-mode h2,
+    body.dark-mode .course-name {
+      color: #f0f0f0;
+    }
+
     h2.section-title {
       margin-top: 40px;
-      
       padding-bottom: 5px;
       color: #0d0d0d;
       text-transform: capitalize;
     }
+
+    body.dark-mode h2.section-title {
+      color: #ddd;
+    }
+
     .course-list {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
       margin-top: 20px;
     }
+
     .course-card {
-      /*background: linear-gradient() #f1f1f1;*/
-       background: linear-gradient(135deg, #f6f6f6, #e5e2e2);
+      background: linear-gradient(135deg, #f6f6f6, #e5e2e2);
       border-radius: 10px;
       box-shadow: 0 5px 8px rgba(1, 0, 0, 0.1);
       width: 260px;
@@ -49,11 +88,17 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      transition: box-shadow 0.3s ease;
+      transition: box-shadow 0.3s ease, background 0.3s;
     }
+
+    body.dark-mode .course-card {
+      background: linear-gradient(135deg, #333, #444);
+    }
+
     .course-card:hover {
       box-shadow: 0 4px 15px rgb(0 0 0 / 0.2);
     }
+
     .course-card img {
       width: 100%;
       height: 150px;
@@ -62,13 +107,15 @@
       margin-bottom: 12px;
       border: 1px solid #ccc;
     }
+
     .course-name {
       font-size: 20px;
       font-weight: 700;
       color: #333;
       margin-bottom: 12px;
-      min-height: 48px; /* keeps cards uniform height */
+      min-height: 48px;
     }
+
     .action-btn {
       background-color: #9f0404;
       color: white;
@@ -83,87 +130,70 @@
       transition: background-color 0.3s ease;
       width: 100%;
     }
+
     .action-btn:hover {
       background-color: #19a249;
     }
 
-    .profile {
-  display: flex;
-  align-items: center;
-  margin-left: 50px;
-}
 
-
-.user-icon {
-  position: absolute;
-  top: -0.75px; /* Adjust as needed */
-  right: 30px; /* Match navbar padding */
-  width: 36px;
-  height: 36px;
-  background: #a259ff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #fff;
-  box-sizing: border-box;
-  margin-top: 12px;
-  z-index: 1;
-  margin-right: 50px;
-}
-
-.user-icon svg {
-  display: block;
-}
+   
+   
+    #darkModeToggle {
+      font-size: 20px;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <nav class="navbar">
-    <h1>KVR Infinity</h1>
-    <div class="nav-links">
-      <a href="{{ url_for('home') }}">Home</a>
-      <a href="#">Courses</a>
-      <a href="#">About Us</a>
-       <a href="#">Blog</a>
-      <a href="{{ url_for('user_dashboard') }}">
+  <h1>KVR Infinity</h1>
+  <div class="nav-links">
+    <a href="{{ url_for('home') }}">home</a>
+    <a href="{{ url_for('courses') }}">courses</a>
+    <a href="{{ url_for('about') }}">about Us</a>
+    <a href="#">Blog</a>
+
+    <!-- Dark Mode Toggle Button Positioned Between Blog and Profile -->
+    <button id="darkModeToggle" title="Toggle Dark Mode">🌓</button>
+
     <div class="profile">
-      <div class="user-icon">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="20" fill="#222"/>
-        <circle cx="20" cy="15" r="7" fill="#fff"/>
-        <ellipse cx="20" cy="29" rx="12" ry="7" fill="#fff"/>
-      </svg>
+      <a href="{{ url_for('user_dashboard') }}">
+        <div class="user-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="20" fill="#222"/>
+            <circle cx="20" cy="15" r="7" fill="#fff"/>
+            <ellipse cx="20" cy="29" rx="12" ry="7" fill="#fff"/>
+          </svg>
+        </div>
+      </a>
     </div>
-  </div></a>
-    </div>
-    </nav>
-   
-</section>
+  </div>
+</nav>
+
 
 
   <div class="container">
-  <h1>Top Picks to Boost <span style="color: red;">Your Skills</span></h1>
-  
-   {% if grouped_courses %}
+    <h1>Top Picks to Boost <span style="color: red;">Your Skills</span></h1>
+
+    {% if grouped_courses %}
       {% for section, courses in grouped_courses.items() %}
         <h2 class="section-title">{{ section }}</h2>
         <div class="course-list">
           {% for course in courses %}
-            <div class="course-card">
-              <img src="{{ course.image_url }}" alt="{{ course.course_name }}" />
-              <div class="course-name">{{ course.course_name }}</div>
-              
+          <div class="course-card" data-course-id="{{ course._id }}">
+  <button class="wishlist-btn" onclick="toggleWishlist(this, '{{ course._id }}')">🤍</button>
+  <img src="{{ course.image_url }}" alt="{{ course.course_name }}" />
+  <div class="course-name">{{ course.course_name }}</div>
+  
 
               {% if user_enrolled_courses and course._id|string in user_enrolled_courses %}
-                <!-- User enrolled: show Go to Course -->
-                  <a href="{{ url_for('course_detail', course_id=course._id) }}" class="btn">
-                      <button>View Details</button>
-                    </a>
-
-
-
+                <a href="{{ url_for('course_detail', course_id=course._id) }}" class="btn">
+                  <button>View Details</button>
+                </a>
               {% else %}
-                <!-- User not enrolled: show Enroll button -->
                 <form method="POST" action="{{ url_for('enroll_course', course_id=course._id) }}">
                   <button class="action-btn" type="submit">Start Learning</button>
                 </form>
@@ -176,5 +206,69 @@
       <p>No courses available.</p>
     {% endif %}
   </div>
+
+  <script>
+    const toggle = document.getElementById("darkModeToggle");
+    const body = document.body;
+
+    if (localStorage.getItem('dark-mode') === 'true') {
+      body.classList.add('dark-mode');
+    }
+
+    toggle.addEventListener("click", () => {
+      body.classList.toggle("dark-mode");
+      localStorage.setItem('dark-mode', body.classList.contains('dark-mode'));
+    });
+  </script>
+
+  <audio id="hoverSound" src="{{ url_for('static', filename='hover-sound.mp3') }}" preload="auto"></audio>
+
+  <script>
+    const hoverSound = document.getElementById("hoverSound");
+    hoverSound.volume = 0.2;
+
+    document.querySelectorAll('.course-card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        hoverSound.currentTime = 0;
+        hoverSound.play();
+      });
+    });
+  </script>
+ <script>
+  function toggleWishlist(button, courseId) {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const index = wishlist.indexOf(courseId);
+
+    if (index === -1) {
+      wishlist.push(courseId);
+      button.classList.add('active');
+      button.textContent = '❤';  // Change heart to filled
+    } else {
+      wishlist.splice(index, 1);
+      button.classList.remove('active');
+      button.textContent = '🤍';  // Change heart back to outline
+    }
+
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  }
+
+  // On page load: activate wishlisted items and update heart icon
+  window.addEventListener('DOMContentLoaded', () => {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    document.querySelectorAll('.course-card').forEach(card => {
+      const courseId = card.getAttribute('data-course-id');
+      const btn = card.querySelector('.wishlist-btn');
+      if (wishlist.includes(courseId)) {
+        btn.classList.add('active');
+        btn.textContent = '❤';
+      } else {
+        btn.textContent = '🤍';
+      }
+    });
+  });
+
+  
+</script>
+
 </body>
 </html>
