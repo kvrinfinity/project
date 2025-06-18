@@ -948,15 +948,37 @@ body {
   border-bottom: 1px solid #444;
 }
 
+.footer {
+  padding: 1.5rem 1rem;
+}
+
+.footer-top {
+  padding: 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .footer-section {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.footer-section {
+  display: block;
+}
+
 .footer-section h3 {
   margin-bottom: 1rem;
   font-size: 1.2rem;
   color: #b39662;
 }
 
+.footer-section p{
+  font-size: 20px;
+}
+
 .footer-section p,
 .footer-section strong {
-  font-size: 0.95rem;
+  font-size: 0.7rem;
 }
 
 .contact-item,
@@ -1028,9 +1050,10 @@ body {
   }
 
   .footer-section h3 {
-    font-size: 1rem;
+    font-size: 0.7rem;
   }
 
+  
   .footer-links a {
     display: block;
     margin: 5px 0;
@@ -1056,6 +1079,11 @@ body {
   .hero h2 {
     font-size: 2.2rem;
   }
+
+  .footer-section p{
+    font-size: 20px;
+  }
+
 
   .hero p {
     font-size: 1.05rem;
@@ -1377,4 +1405,27 @@ body {
 .acourse-card:hover .course-details-hover {
   transform: rotateY(0deg);
   z-index: 2;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.responsive-image {
+    width: 100%;
+    max-width: 400px; /* You can adjust this as needed */
+    height: auto;
+    max-height: 500px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    object-fit: cover;
+}
+
+.responsive-image:hover{
+  transform: scale(1.2);
+  transition: 0.5s;
 }

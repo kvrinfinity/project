@@ -36,7 +36,7 @@
   <section class="hero">
     <h2>Endless Learning, One Membership</h2>
     <p>Join KVR to access top courses in Aptitude, DSA & OS.</p><br>
-    <a href="{{ url_for('membership') }}" class="btn">Join Membership</a>
+    <a href="{{ url_for('login') }}" class="btn">Join Membership</a>
   </section>
 
 <div class="curve-wrapper">
@@ -152,65 +152,10 @@
   <br>
   
   <h1 style="text-align:center; margin-top: 42px;">Membership Plans</h1>
-  <div class="plans-container">
-        <!-- Personal Plan Card -->
-        <div class="plan-card">
-            <div class="plan-header personal">
-                <h2>Personal Plan</h2>
-                <p class="subtitle">For you</p>
-                <p class="icon-text"><span class="icon">&#128100;</span> Individual</p>
-            </div>
-            <div class="plan-body">
-                <p class="price"><strong>Starting at ₹850 per month</strong></p><br>
-                <button class="subscribe-btn">Start subscription</button>
-                <ul class="features">
-                    <li>Access to 26,000+ top courses</li>
-                    <li>Certification prep</li>
-                    <li>Goal-focused recommendations</li>
-                    <li>AI-powered coding exercises</li>
-                </ul>
-            </div>
-        </div>
+<div class="image-container">
+    <img src="{{ url_for('static', filename='membership.jpg') }}" alt="Membership Plans" class="responsive-image">
+</div>
 
-        <!-- Team Plan Card -->
-        <div class="plan-card">
-            <div class="plan-header team">
-                <h2>Team Plan</h2>
-                <p class="subtitle">For your team</p>
-                <p class="icon-text"><span class="icon">&#128101;</span> 2 to 20 people</p>
-            </div>
-            <div class="plan-body">
-                <p class="price"><strong>₹2,000 a month per user</strong></p><br>
-                <button class="subscribe-btn">Start subscription</button>
-                <ul class="features">
-                    <li>Access to 13,000+ top courses</li>
-                    <li>Certification prep</li>
-                    <li>Goal-focused recommendations</li>
-                    <li>AI-powered coding exercises</li>
-                    <li>Analytics and adoption reports</li>
-                </ul>
-            </div>
-        </div>
-        <div class="plan-card">
-            <div class="plan-header team">
-                <h2>Team Plan</h2>
-                <p class="subtitle">For your team</p>
-                <p class="icon-text"><span class="icon">&#128101;</span> 2 to 20 people</p>
-            </div>
-            <div class="plan-body">
-                <p class="price"><strong>₹2,000 a month per user</strong></p><br>
-                <button class="subscribe-btn">Start subscription</button>
-                <ul class="features">
-                    <li>Access to 13,000+ top courses</li>
-                    <li>Certification prep</li>
-                    <li>Goal-focused recommendations</li>
-                    <li>AI-powered coding exercises</li>
-                    <li>Analytics and adoption reports</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-  
 
 <section class="team-section">
   <h2 class="team-title">Meet Our Beloved Faculty</h2>
