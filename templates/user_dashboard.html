@@ -552,7 +552,6 @@
     <div class="nav-links">
       <a href="{{ url_for('home') }}">home</a>
       <a href="{{ url_for('courses') }}">courses</a>
-      <a href="{{ url_for('about') }}">about Us</a>
     </div>
     <button onclick="toggleTheme()" class="btn" style="margin-left: 20px;">🌓</button>
 
@@ -614,7 +613,7 @@
     </div>
 
     <div class="action-item" href="{{ url_for('login') }}">
-      <span></span><a href="{{ url_for('login') }}">🚪 Logout</a></span>
+      <span><a href="{{ url_for('logout') }}">🚪 Logout</a></span>
     </div>
   </div>
 

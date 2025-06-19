@@ -1,7 +1,7 @@
 from collections import defaultdict
 import datetime
 from email.mime.application import MIMEApplication
-from flask import Flask, Response, abort, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, Response, abort, make_response, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import random
 import gridfs
@@ -137,96 +137,68 @@ def membership():
 
 @app.route('/payment_success', methods=['POST'])
 def payment_success():
-    data = request.get_json()
-    payment_id = data.get('razorpay_payment_id')
-    referral_code = data.get('ref_code')
-
-    # 🔐 User details
-    user_email = session.get('user_email', 'default@email.com')
-    user_name = session.get('user_name', 'Valued Member')
-
-    # 💰 Determine payment amount
-    amount_paid = 3000 if referral_code else 10000
-
-    # 📄 Generate Receipt
-    payment_date = datetime.now()
-    receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
-    file_name = f"receipt_{receipt_id}.pdf"
-
-    generate_receipt(
-        member_name=user_name,
-        email=user_email,
-        amount=amount_paid,
-        receipt_id=receipt_id
-    )
-
-    # 🧾 Save to GridFS
-    fs = gridfs.GridFS(db)
-    with open(file_name, 'rb') as f:
-        receipt_file_id = fs.put(f, filename=file_name)
-
-    # ✅ Store metadata in membership collection
-    valid_till = payment_date + timedelta(days=360)
-    membership_col.insert_one({
-        "user_email": user_email,
-        "user_name": user_name,
-        "payment_date": payment_date,
-        "receipt_id": receipt_id,
-        "valid_till": valid_till,
-        "receipt_file_id": receipt_file_id  # 🔗 Link to file in GridFS
-    })
-
-    # 📧 Send Email with PDF
-    subject = "Payment Successful - KVR Infinity Membership"
-    body = f"""Hello {user_name},
-
-Your payment of ₹{amount_paid} was successful!
-
-Membership: All Courses Access  
-Receipt ID: {receipt_id}  
-GSTIN     : 37AAFCI5145J1ZD
-EMAIL     : care@kvrinfinity.in
-MOBILE    : +91-81061 47247
-Date: {payment_date.strftime("%d-%m-%Y %H:%M:%S")}
-
-Thank you for becoming a premium member of KVR Infinity!
-
-Warm regards,  
-KVR Infinity Team
-"""
-
-    sender_email = "nishankamath@gmail.com"
-    sender_password = "hxui wjwz adsz vycn"
-
-    message = MIMEMultipart()
-    message['Subject'] = subject
-    message['From'] = sender_email
-    message['To'] = user_email
-    message.attach(MIMEText(body, 'plain'))
-
     try:
+        data = request.get_json()
+        payment_id = data.get('razorpay_payment_id')
+        referral_code = data.get('ref_code')
+
+        user_email = session.get('user_email', 'default@email.com')
+        user_name = session.get('user_name', 'Valued Member')
+        amount_paid = 3000 if referral_code else 10000
+
+        payment_date = datetime.now()
+        receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
+        file_name = f"receipt_{receipt_id}.pdf"
+
+        # 🧾 Generate & Save
+        generate_receipt(member_name=user_name, email=user_email, amount=amount_paid, receipt_id=receipt_id)
+
+        fs = gridfs.GridFS(db)
+        with open(file_name, 'rb') as f:
+            receipt_file_id = fs.put(f, filename=file_name)
+
+        valid_till = payment_date + timedelta(days=360)
+        membership_col.insert_one({
+            "user_email": user_email,
+            "user_name": user_name,
+            "payment_date": payment_date,
+            "receipt_id": receipt_id,
+            "valid_till": valid_till,
+            "receipt_file_id": receipt_file_id
+        })
+
+        # 📧 Email
+        subject = "Payment Successful - KVR Infinity Membership"
+        body = f"""Hello {user_name}, ..."""
+
+        sender_email = "nishankamath@gmail.com"
+        sender_password = "hxui wjwz adsz vycn"
+
+        message = MIMEMultipart()
+        message['Subject'] = subject
+        message['From'] = sender_email
+        message['To'] = user_email
+        message.attach(MIMEText(body, 'plain'))
+
         with open(file_name, 'rb') as f:
             part = MIMEApplication(f.read(), _subtype='pdf')
             part.add_header('Content-Disposition', 'attachment', filename=file_name)
             message.attach(part)
-    except Exception as e:
-        print(f"❌ Failed to attach PDF: {e}")
 
-    try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, user_email, message.as_string())
-        print(f"✅ Email with receipt sent to {user_email}")
-    except Exception as e:
-        print("❌ Failed to send email:", e)
 
-    # 🧹 Optional: Clean up the local PDF file
-    try:
+        print(f"✅ Email sent to {user_email}")
+
         os.remove(file_name)
-    except Exception as e:
-        print("⚠️ Could not delete temporary file:", e)
 
-    return jsonify({"status": "success", "redirect": "/login"})
+        return jsonify({"status": "success", "redirect": "/login"})
+
+    except Exception as e:
+        print("❌ Error in payment_success route:", str(e))
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 # 🧾 Generate Receipt PDF (no phone number)
@@ -2049,6 +2021,36 @@ def complete_video():
 
     return jsonify({"success": True, "message": "Video marked as completed."})
 
+@app.route('/logout')
+def logout():
+    session.clear()  # 🧹 Clear all session variables
+
+    resp = make_response(redirect(url_for('login')))
+    # Optional: remove cookies set by your app
+    resp.set_cookie('session', '', expires=0)
+
+    return resp
+
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+
+from functools import wraps
+from flask import make_response
+
+def nocache(view):
+    @wraps(view)
+    def no_cache(*args, **kwargs):
+        response = make_response(view(*args, **kwargs))
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+    return no_cache
 
 
 if __name__ == '__main__':
