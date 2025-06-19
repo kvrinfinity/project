@@ -8,53 +8,73 @@ body {
 }
 
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 2rem;
-    background-color: #111;
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  background-color:  #000000;
+  color: white;
+  display: flex;
+  justify-content: space-between; /* ✅ Keep this only */
+  align-items: center;
+  padding: 15px 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
-
-.navbar h1.netflix-font {
-    font-family: 'Poppins', Arial, sans-serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #e50914; /* Netflix red or brand color */
-    margin: 0;
+.login-wrapper {
+  margin-left: auto;
+  width: 80px;
+  height: 30px;
+  border-radius: 5px;
+  text-align: center;
+  background-color: #ff0000;
+  font-size: 1.2rem;
+}
+.login-wrapper:hover,.bold-text:hover{
+  transform: scale(1.1);
+  transition: 0.4s;
+  background: rgb(255, 255, 255);
+  color:#680912;
 }
 
 .nav-links {
-    display: flex;
-    gap: 1.5rem;
+  display: flex;
+  gap: 80px;
+  justify-content: center;
+  flex: 1;
 }
 
 .nav-links a {
-    color: #ffffffcc;
-    text-decoration: none;
-    font-size: 1rem;
-    transition: color 0.2s ease-in-out;
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  transition: color 0.3s ease;
+  font-weight: 500;
 }
 
 .nav-links a:hover {
-    color: #f7c873;
+  color: #c00300;
 }
 
-.nav-links a.bold-text {
-    font-weight: 600;
-    color: #ffffff;
-    border: 1px solid #f7c873;
-    padding: 6px 12px;
-    border-radius: 4px;
-    transition: background-color 0.2s, color 0.2s;
+
+/* Hover Effects */
+.navbar a:hover {
+  color: #e90000;
+  transform: scale(1.2);
+  transition: 0.5s;
+  box-shadow: 0 2px 8px rgba(229,9,20,0.15);
 }
 
-.nav-links a.bold-text:hover {
-    background-color: #f7c873;
-    color: #111;
+
+.navbar h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  align-items: center;
+  
+}
+
+.bold-text{
+  text-align: center;
+  font-weight: 600;
+  text-decoration: none;
+  color: white;
 }
 
 

@@ -669,6 +669,9 @@ body {
         margin: 40px auto 60px auto;
         max-width: 1000px;
         padding: 20px 0;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
     .team-member {
         background: #fff;
@@ -783,6 +786,9 @@ body {
   .team-section {
     flex-direction: column;
     align-items: center;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 

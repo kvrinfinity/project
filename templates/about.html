@@ -8,20 +8,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css?family=Poppins:700,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+
 
 </head>
 <body>
     <nav class="navbar">
-    <h1 class="netflix-font">KVR Infinity</h1>
-    <div class="nav-links">
-    <a href="{{ url_for('about') }}">About Us</a>
-    <a href="#">career</a>
-    <a href="#">team</a>
-    <a href="#">Blog</a>
+  <h1 class="netflix-font">KVR Infinity</h1>
+  <div class="nav-links">
+    <a href="{{ url_for('index') }}">home</a>
+    <a href="{{ url_for('about') }}">about us</a>
+    
+  </div>
+  <div class="login-wrapper">
     <a href="{{ url_for('login') }}" class="bold-text">Login</a>
+  </div>
 </nav>
 
-<div class="background-decor"></div>
+
 <div class="hero-card">
     <img src="{{ url_for('static', filename='waveimg.jpg') }}" class="top-left-wave" alt="wave decor">
 
@@ -78,23 +82,12 @@
 </div>
 </div>
 
-<section class="how-started-section">
-  <h2 class="subtitle">✨ How it started?</h2>
-  <p class="story">
-    The idea was initiated by my professor <span class="highlight">Alok Majumdar</span>,
-    <span class="dept">ECE Dept, NIT Arunachal Pradesh</span>, while we were having tea with teaching staff at <em>Topper's Tea Session</em>.
-  </p>
-  <blockquote class="quote-box">
-    <span class="quote-mark">“</span>
-    We have formed a group from <b>NITs, IITs, SRM &amp; BITS Goa alumni</b>. This group guides the R&amp;D team.
-  </blockquote>
-</section>
-
-
-  
-    <div class="how-it-works-container">
+    
+    <div class="how-it-works-container animate-blur-in animate-fade-in">
       <div class="how-it-works-right">
         <div class="how-it-works-title">How it works?</div>
+        <img src="{{ url_for('static', filename='how-it-works.jpg') }}" alt="How it works image">
+
       </div>
       <div class="how-it-works-left">
         <div class="how-step">
@@ -137,7 +130,7 @@
     </div>
     <!-- END HOW IT WORKS SECTION -->
     
-<div class="mv-container">
+<div class="mv-container animate-blur-in animate-fade-in">
   <!-- Left Column: Mission -->
   <div class="mv-left">
     <div class="mv-label">MISSION</div>
@@ -169,8 +162,158 @@
     </div>
   </div>
 </div>
+    
+    <div class="about-highlight">
+        Thank you for choosing KVR Infinity for your learning journey!
+    </div>
+    
+    <div class="about-contact">
+        For any queries or support, please contact us at 
+        <a href="mailto:support@kvrinfinity.com">support@kvrinfinity.com</a>
+    </div>
+  </div>
 
+  <h1 style="text-align:center; margin-top: 40px;">Meet Our Team</h1>
+  <div class="team-section animate-blur-in animate-fade-in">
+    <h2>Executive Department</h2>
+    <!-- Team Member1 -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='praveen.jpg') }}" alt="Member 1">
+      <h3>Praveen Kumar Kumbakonam</h3>
+      <p>CEO</p>
+      <a href="https://www.linkedin.com/in/praveenkumbhakonam/" target="_blank">LinkedIn</a>
+    </div>
+    <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='muskan2.jpg') }}" alt="Member 2">
+      <h3>Muskan Singh</h3>
+      <p>HR</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <!-- Team Member3 -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='nidheesh.jpg') }}" alt="Faculty">
+      <h3>Nidheesh N A</h3>
+      <p>Executive Head</p>
+      <a href="https://linkedin.com/in/alokmajumdar" target="_blank">LinkedIn</a>
+    </div>
 
+    <h2>Assistants</h2>
+     <!-- Team Member 4  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='vibitha.jpg') }}" alt="Member 2">
+      <h3>Vibitha</h3>
+      <p>H.R Assistant</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='sushmitha.jpg') }}" alt="Member 2">
+      <h3>Sushmitha</h3>
+      <p>CEO Assistant</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <h2>Marketing Team</h2>
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='minali.jpg') }}" alt="Member 2">
+      <h3>Minali Rathod</h3>
+      <p>Marketing Head</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='anjana.jpg') }}" alt="Member 2">
+      <h3>Anjana</h3>
+      <p>Marketing Assistant</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='anuj.jpg') }}" alt="Member 2">
+      <h3>Anuj</h3>
+      <p>Marketing Assistant</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='divin.jpg') }}" alt="Member 2">
+      <h3>Divin Kori</h3>
+      <p>Visual Designer</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <h2>IT Team</h2>
+     <!-- Team Member2  -->
+    
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='nishan.jpg') }}" alt="Member 2">
+      <h3>Nishan Kamath</h3>
+      <p>Junior Software Developer</p>
+      <a href="https://www.linkedin.com/in/nishan-kamath-b2891b26b/" target="_blank">LinkedIn</a>
+    </div>
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='sumedh.jpg') }}" alt="Member 2">
+      <h3>Sumedh K.S Hathwar</h3>
+      <p>Junior Software Developer</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='sathwika.jpg') }}" alt="Member 2">
+      <h3>Sathwika A</h3>
+      <p>Junior Software Developer</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+     <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='harshini.jpg') }}" alt="Member 2">
+      <h3>Harshini B.T</h3>
+      <p>Junior Software Developer</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <h2>Finance Team</h2>
+    <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='amruth.jpg') }}" alt="Member 2">
+      <h3>Amruth</h3>
+      <p>Finance Head</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='shilpa.jpg') }}" alt="Member 2">
+      <h3>Shilpa</h3>
+      <p>Finance(Expenditure)</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='images/member2.jpg') }}" alt="Member 2">
+      <h3>Sravanthi</h3>
+      <p>Finance(Revenue)</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <h2>Sales Team</h2>
+    <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='pavan.jpg') }}" alt="Member 2">
+      <h3>Billa Pavan Kumar</h3>
+      <p>Sales Head</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+    <h2>Business Analyst</h2>
+    <!-- Team Member2  -->
+    <div class="team-member">
+      <img src="{{ url_for('static', filename='sanjana.jpg') }}" alt="Member 2">
+      <h3>Sanjana Mohan</h3>
+      <p>Business Analyst</p>
+      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+    </div>
+  </div>
+</div>
+  <h1 style="text-align:center; margin-top: 42px;">We are onboarding the Indias best faculties</h1>
+  
 
  <!-- footer section -->
 <footer class="footer">

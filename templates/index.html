@@ -22,10 +22,9 @@
  <nav class="navbar">
   <h1 class="netflix-font">KVR Infinity</h1>
   <div class="nav-links">
+    <a href="{{ url_for('index') }}">home</a>
     <a href="{{ url_for('about') }}">about us</a>
-    <a href="#">career</a>
-    <a href="#">team</a>
-    <a href="#">blog</a>
+    
   </div>
   <div class="login-wrapper">
     <a href="{{ url_for('login') }}" class="bold-text">Login</a>
@@ -148,6 +147,12 @@
       <h3>3. Start Learning with Membership</h3>
       <p>Once selected, get the membership at ₹1499/- and unlock all premium courses to boost your skills.</p>
     </div>
+
+    <div class="step">
+      <i class="fas fa-id-card icon"></i>
+      <h3>4. Start Learning with Membership</h3>
+      <p>Once selected, get the membership at ₹1499/- and unlock all premium courses to boost your skills.</p>
+    </div>
   </section>
   <br>
   
@@ -195,6 +200,22 @@
     </div>
 
     <div class="team-card">
+      <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
+      <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
+      <div class="overlay">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+      <h3 class="team-name">Angelo Moore</h3>
+      <p class="team-role visual">VISUAL DESIGNER</p>
+    </div>
+
+
+    <div class="team-card">
   <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
     <img src="{{ url_for('static', filename='alak.jpg') }}" alt="Member 1" class="team-img">
     <div class="overlay">
@@ -210,9 +231,8 @@
     </div>
 
  <br>
-  <button class="hero-button">Meet our team</button>
+  
 </section>
-
 
   <!-- Swiper CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
