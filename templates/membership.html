@@ -14,6 +14,7 @@
     <h2>Buy Membership - ₹<span id="amount-display">10000</span></h2>
     <h3>One Year Membership - Unlimited access</h3>
     <h3>Use '<span>kvr1122</span>' code to get FLAT 40% OFF</h3>
+    <h3>Use '<span>kvr1111</span>' code to get FLAT 99% OFF</h3>
 
     <input type="text" id="referral-input" placeholder="Enter Referral Code" />
     <button onclick="applyReferral()">Apply Code</button>
@@ -48,6 +49,11 @@
             finalAmount = baseAmount - (baseAmount * 0.70); // ₹3000
             msg.style.color = "green";
             msg.textContent = "Referral code applied! 70% discount.";
+          }else if (data.discount === 99) {
+            finalAmount = baseAmount - (baseAmount * 0.99); // ₹3000
+            msg.style.color = "green";
+            msg.textContent = "Referral code applied! 99% discount.";
+
           } else if (data.discount === 40) {
             finalAmount = baseAmount - (baseAmount * 0.40); // ₹6000
             msg.style.color = "green";

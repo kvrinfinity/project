@@ -513,6 +513,8 @@ def apply_referral():
     # ✅ Check for hardcoded referral code (40% OFF)
     if ref_code == 'kvr1122':
         return jsonify({'valid': True, 'discount': 40})
+    if ref_code == 'kvr1111':
+        return jsonify({'valid': True, 'discount': 99})
 
     # ✅ Check if referral code exists in database (70% OFF)
     user = db.users.find_one({'ref_code': ref_code})
