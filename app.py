@@ -148,13 +148,18 @@ def payment_success():
         if not referral_code:
             amount_paid = 10000
         
+        user_data = users_col.find_one({"email": user_email})
+        user_whatsapp = user_data.get("whatsapp", "Not Provided")
 
         payment_date = datetime.now()
         receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
         file_name = f"receipt_{receipt_id}.pdf"
 
+        valid_till = payment_date + timedelta(days=365)
+        #member_name, email, phone, amount, receipt_id, transaction_date, valid_through
         # 🧾 Generate & Save
-        generate_receipt(member_name=user_name, email=user_email, amount=amount_paid, receipt_id=receipt_id)
+        #generate_receipt(member_name=user_name,user_whatsapp = user_whatsapp email=user_email, amount=amount_paid, receipt_id=receipt_id)
+        generate_receipt(user_name,user_email,user_whatsapp,amount_paid,receipt_id,payment_date,valid_till)
 
         fs = gridfs.GridFS(db)
         with open(file_name, 'rb') as f:
@@ -203,29 +208,49 @@ def payment_success():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-
-# 🧾 Generate Receipt PDF (no phone number)
-def generate_receipt(member_name, email, amount, receipt_id):
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+def generate_receipt(member_name, email, phone, amount, receipt_id, transaction_date, valid_through):
     file_name = f"receipt_{receipt_id}.pdf"
-    doc = SimpleDocTemplate(file_name, pagesize=letter)
+    doc = SimpleDocTemplate(file_name, pagesize=A4)
     styles = getSampleStyleSheet()
     elements = []
 
-    date_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    elements.append(Paragraph("<b>KVR Infinity - Membership Receipt</b>", styles['Title']))
-    elements.append(Spacer(1, 20))
-    elements.append(Paragraph(f"Receipt ID: <b>{receipt_id}</b><br/>Date: <b>{date_str}</b>", styles['Normal']))
+    # Custom Styles
+    header_style = ParagraphStyle('Header', parent=styles['Heading1'], fontSize=14, spaceAfter=12, alignment=1)
+    label_style = styles['Normal']
+    bold_style = ParagraphStyle('Bold', parent=styles['Normal'], fontName='Helvetica-Bold')
+
+    # Company Info
+    elements.append(Paragraph("KVR Infinity", header_style))
+    elements.append(Paragraph("1st Floor, KH - Connects, JP Nagar 4th Phase, Bengaluru, India – 560078", label_style))
+    elements.append(Paragraph("CIN: U72900AP2019PTC113696 | GSTIN: 37AAFCI5145J1ZD", label_style))
+    elements.append(Paragraph("Phone: 918106147247 | Email: sales@kvrinfinity.in", label_style))
     elements.append(Spacer(1, 20))
 
+    # Title
+    elements.append(Paragraph("PAYMENT RECEIPT", header_style))
+
+    # Receipt Metadata
+    elements.append(Paragraph(f"<b>Receipt No:</b> {receipt_id}", label_style))
+    elements.append(Paragraph(f"<b>Receipt Date:</b> {datetime.now().strftime('%Y/%m/%d')}", label_style))
+    elements.append(Paragraph(f"<b>Transaction Date:</b> {transaction_date}", label_style))
+    elements.append(Paragraph(f"<b>Transaction Amount:</b> Rs. {amount:,.2f}", label_style))
+    elements.append(Paragraph(f"<b>Valid Through:</b> {valid_through}", label_style))
+    elements.append(Spacer(1, 12))
+
+    # Bill To
+    elements.append(Paragraph(f"<b>Bill to:</b> {member_name}", label_style))
+    elements.append(Paragraph(phone, label_style))
+    elements.append(Paragraph(email, label_style))
+    elements.append(Spacer(1, 12))
+
+    # Item Table
     data = [
-        ["Field", "Details"],
-        ["Name", member_name],
-        ["Email", email],
-        ["Membership", "All Courses Access"],
-        ["Amount Paid", f"Rs. {amount}"],
+        ["Item & Description", "Amount"],
+        ["KVR Infinity Membership", f"Rs. {amount:,.2f}"]
     ]
-
-    table = Table(data, hAlign='LEFT', colWidths=[150, 300])
+    table = Table(data, colWidths=[350, 150])
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#850014")),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -241,12 +266,15 @@ def generate_receipt(member_name, email, amount, receipt_id):
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
     elements.append(table)
-    elements.append(Spacer(1, 40))
-    elements.append(Paragraph("✅ Thank you for becoming a premium member of <b>KVR Infinity</b>!", styles['Normal']))
-    elements.append(Paragraph("This receipt is computer-generated and does not require a signature.", styles['Italic']))
+    elements.append(Spacer(1, 20))
+
+    # Notes
+    elements.append(Paragraph("This is a computer generated pay receipt and does not require a signature.", styles['Italic']))
+    elements.append(Paragraph("The total amount is inclusive of 18% GST.", styles['Italic']))
 
     doc.build(elements)
     print(f"✅ Receipt saved as: {file_name}")
+
 
 @app.route('/home')
 def home():
