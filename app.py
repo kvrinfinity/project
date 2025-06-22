@@ -138,34 +138,48 @@ def membership():
 @app.route('/payment_success', methods=['POST'])
 def payment_success():
     try:
+        # 🔓 Get payment and referral info from Razorpay response
         data = request.get_json()
         payment_id = data.get('razorpay_payment_id')
         referral_code = data.get('ref_code')
-        amount_paid = session.get('amount_paid')
 
+        # 🧾 Default base price if no referral
+        base_price = 10000
+        amount_paid = session.get('amount_paid')
+        if not amount_paid:
+            amount_paid = base_price
+
+        # 👤 Get user info from session
         user_email = session.get('user_email', 'default@email.com')
         user_name = session.get('user_name', 'Valued Member')
-        if not referral_code:
-            amount_paid = 10000
-        
-        user_data = users_col.find_one({"email": user_email})
-        user_whatsapp = user_data.get("whatsapp", "Not Provided")
 
+        # 📱 Get WhatsApp number from DB
+        user_data = users_col.find_one({"email": user_email})
+        user_whatsapp = user_data.get("whatsapp", "Not Provided") if user_data else "Not Provided"
+
+        # 🗓 Generate timestamps
         payment_date = datetime.now()
+        valid_till = payment_date + timedelta(days=365)
         receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
         file_name = f"receipt_{receipt_id}.pdf"
 
-        valid_till = payment_date + timedelta(days=365)
-        #member_name, email, phone, amount, receipt_id, transaction_date, valid_through
-        # 🧾 Generate & Save
-        #generate_receipt(member_name=user_name,user_whatsapp = user_whatsapp email=user_email, amount=amount_paid, receipt_id=receipt_id)
-        generate_receipt(user_name,user_email,user_whatsapp,amount_paid,receipt_id,payment_date,valid_till)
+        # 📄 Generate Receipt PDF
+        generate_receipt(
+            member_name=user_name,
+            email=user_email,
+            phone=user_whatsapp,
+            amount=amount_paid,
+            receipt_id=receipt_id,
+            transaction_date=payment_date.strftime('%Y/%m/%d'),
+            valid_through=valid_till.strftime('%Y/%m/%d')
+        )
 
+        # 💾 Store PDF in GridFS
         fs = gridfs.GridFS(db)
         with open(file_name, 'rb') as f:
             receipt_file_id = fs.put(f, filename=file_name)
 
-        valid_till = payment_date + timedelta(days=365)
+        # 🧾 Insert Membership Record
         membership_col.insert_one({
             "user_email": user_email,
             "user_name": user_name,
@@ -175,9 +189,24 @@ def payment_success():
             "receipt_file_id": receipt_file_id
         })
 
-        # 📧 Email
+        # 📧 Compose and send confirmation email
         subject = "Payment Successful - KVR Infinity Membership"
-        body = f"""Hello {user_name}, ..."""
+        body = f"""Hello {user_name},
+
+✅ Thank you for purchasing the KVR Infinity Membership!
+
+🧾 Receipt ID: {receipt_id}  
+📅 Membership Valid Till: {valid_till.strftime('%d-%m-%Y')}  
+💰 Amount Paid: ₹{amount_paid}  
+📱 WhatsApp: {user_whatsapp}
+
+Your receipt is attached with this email.
+
+For any support, feel free to reach us at sales@kvrinfinity.in.
+
+Warm Regards,  
+Team KVR Infinity
+"""
 
         sender_email = "no-reply@kvrinfinity.in"
         sender_password = "dhsa xczp azcg mpbr"
@@ -198,7 +227,6 @@ def payment_success():
             server.sendmail(sender_email, user_email, message.as_string())
 
         print(f"✅ Email sent to {user_email}")
-
         os.remove(file_name)
 
         return jsonify({"status": "success", "redirect": "/login"})
