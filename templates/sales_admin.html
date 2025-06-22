@@ -1,0 +1,61 @@
+<!-- sales_admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KVR Infinity - Sales Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/sales_admin.css">
+</head>
+<body>
+    <h1>Sales Admin - User Details</h1>
+
+    <input type="text" id="searchBox" placeholder="Search by Email or First Name..." onkeyup="filterTable()">
+
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>WhatsApp</th>
+                <th>Membership Valid Till</th>
+                <th>Aadhar</th>
+                <th>PAN</th>
+                <th>Bank</th>
+                <th>UPI</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.fname }} {{ user.lname }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.whatsapp }}</td>
+                <td>{{ user.valid_till }}</td>
+                <td>{{ user.adhar }}</td>
+                <td>{{ user.pan }}</td>
+                <td>{{ user.bank }}</td>
+                <td>{{ user.upi }}</td>
+                <td>{{ user.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+      function filterTable() {
+        const query = document.getElementById("searchBox").value.toLowerCase();
+        const rows = document.querySelectorAll("#usersTable tbody tr");
+        rows.forEach(row => {
+          const name = row.children[0].innerText.toLowerCase();
+          const email = row.children[1].innerText.toLowerCase();
+          if (name.includes(query) || email.includes(query)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+    </script>
+</body>
+</html>

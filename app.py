@@ -93,6 +93,9 @@ def login():
         if email == 'admin@kvrinfinity.in' and password == 'admin':
             return redirect(url_for('admin'))
 
+        elif email == 'sales@kvrinfinity.in' and password == 'sales':
+            return redirect(url_for('sales_admin_dashboard'))
+
         user = db.users.find_one({"email": email, "password": password})
         if user:
             session['user_email'] = email
@@ -900,6 +903,33 @@ def process_withdrawal_admin():
     return redirect(url_for('verifications'))
 
 
+@app.route('/sales_admin',methods=['GET','POST'])
+def sales_admin_dashboard():
+
+    users = list(users_col.find())
+    verifications = {v['email']: v for v in verifications_col.find()}
+    memberships = {m['user_email']: m for m in membership_col.find()}
+
+    results = []
+    for user in users:
+        email = user['email']
+        verification = verifications.get(email, {})
+        membership = memberships.get(email, {})
+
+        results.append({
+            "fname": user.get('fname'),
+            "lname": user.get('lname'),
+            "email": email,
+            "whatsapp": user.get('whatsapp', 'N/A'),
+            "valid_till": membership.get('valid_till', '').strftime('%Y-%m-%d') if membership.get('valid_till') else 'N/A',
+            "adhar": verification.get('adhar_number', 'N/A'),
+            "pan": verification.get('pancard_number', 'N/A'),
+            "bank": f"{verification.get('bank_name', '')} - {verification.get('branch', '')}",
+            "upi": verification.get('upi', 'N/A'),
+            "status": verification.get('status', 'N/A')
+        })
+
+    return render_template('sales_admin.html', users=results)
 
 
 @app.route('/admin', methods=['GET', 'POST'])
