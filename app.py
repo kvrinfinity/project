@@ -141,68 +141,38 @@ def payment_success():
         data = request.get_json()
         payment_id = data.get('razorpay_payment_id')
         referral_code = data.get('ref_code')
+        amount_paid = session.get('amount_paid')
 
-        # 🧑 Get session info
-        user_email = session.get('user_email')
+        user_email = session.get('user_email', 'default@email.com')
         user_name = session.get('user_name', 'Valued Member')
-        amount_paid = 3000 if referral_code else 10000
+        if not referral_code:
+            amount_paid = 10000
+        
 
-        # 📞 Fetch mobile from users collection
-        user_doc = users_col.find_one({"email": user_email})
-        user_phone = user_doc.get("whatsapp", "Not Provided") if user_doc else "Not Provided"
-
-        # 🕒 Timestamps
         payment_date = datetime.now()
-        transaction_date = payment_date.strftime('%Y/%m/%d')
-        valid_till_date = payment_date + timedelta(days=365)
-        valid_through = valid_till_date.strftime('%Y/%m/%d')
-
-        # 🧾 Receipt
         receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
         file_name = f"receipt_{receipt_id}.pdf"
 
-        # 🧾 Generate the styled PDF
-        generate_receipt(
-            member_name=user_name,
-            email=user_email,
-            phone=user_phone,
-            amount=amount_paid,
-            receipt_id=receipt_id,
-            transaction_date=transaction_date,
-            valid_through=valid_through
-        )
+        # 🧾 Generate & Save
+        generate_receipt(member_name=user_name, email=user_email, amount=amount_paid, receipt_id=receipt_id)
 
-        # 💾 Save to GridFS
         fs = gridfs.GridFS(db)
         with open(file_name, 'rb') as f:
             receipt_file_id = fs.put(f, filename=file_name)
 
-        # 📌 Save to membership collection
+        valid_till = payment_date + timedelta(days=365)
         membership_col.insert_one({
             "user_email": user_email,
             "user_name": user_name,
             "payment_date": payment_date,
             "receipt_id": receipt_id,
-            "valid_till": valid_till_date,
+            "valid_till": valid_till,
             "receipt_file_id": receipt_file_id
         })
 
-        # 📧 Compose email
+        # 📧 Email
         subject = "Payment Successful - KVR Infinity Membership"
-        body = f"""Hello {user_name},
-
-Thank you for becoming a premium member of KVR Infinity! 🎉
-
-Receipt ID: {receipt_id}
-Amount Paid: ₹{amount_paid}
-Phone: {user_phone}
-Valid Till: {valid_through}
-
-Your receipt is attached to this email.
-
-Regards,
-Team KVR Infinity
-"""
+        body = f"""Hello {user_name}, ..."""
 
         sender_email = "no-reply@kvrinfinity.in"
         sender_password = "dhsa xczp azcg mpbr"
@@ -223,14 +193,10 @@ Team KVR Infinity
             server.sendmail(sender_email, user_email, message.as_string())
 
         print(f"✅ Email sent to {user_email}")
+
         os.remove(file_name)
 
         return jsonify({"status": "success", "redirect": "/login"})
-
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
 
     except Exception as e:
         print("❌ Error in payment_success route:", str(e))
@@ -239,45 +205,27 @@ Team KVR Infinity
 
 
 # 🧾 Generate Receipt PDF (no phone number)
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from datetime import datetime
-
-def generate_receipt(member_name, email, phone, amount, receipt_id, transaction_date, valid_through):
-    file_name = f"KVR_Receipt_{receipt_id}.pdf"
+def generate_receipt(member_name, email, amount, receipt_id):
+    file_name = f"receipt_{receipt_id}.pdf"
     doc = SimpleDocTemplate(file_name, pagesize=letter)
     styles = getSampleStyleSheet()
     elements = []
 
-    # Header
-    elements.append(Paragraph("<b>KVR Infinity</b>", styles['Title']))
-    elements.append(Paragraph("1st Floor, KH - Connects, JP Nagar 4th Phase, Bengaluru, India – 560078", styles['Normal']))
-    elements.append(Paragraph("CIN: U72900AP2019PTC113696 | GSTIN: 37AAFCI5145J1ZD", styles['Normal']))
-    elements.append(Paragraph("Phone: 918106147247 | Email: sales@kvrinfinity.in", styles['Normal']))
+    date_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    elements.append(Paragraph("<b>KVR Infinity - Membership Receipt</b>", styles['Title']))
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph(f"Receipt ID: <b>{receipt_id}</b><br/>Date: <b>{date_str}</b>", styles['Normal']))
     elements.append(Spacer(1, 20))
 
-    # Receipt Info
-    elements.append(Paragraph(f"<b>PAYMENT RECEIPT</b>", styles['Heading2']))
-    elements.append(Paragraph(f"Receipt No: <b>{receipt_id}</b>", styles['Normal']))
-    elements.append(Paragraph(f"Receipt Date: <b>{datetime.now().strftime('%Y/%m/%d')}</b>", styles['Normal']))
-    elements.append(Paragraph(f"Transaction Date: <b>{transaction_date}</b>", styles['Normal']))
-    elements.append(Paragraph(f"Valid Through: <b>{valid_through}</b>", styles['Normal']))
-    elements.append(Spacer(1, 20))
-
-    # Customer Info
-    elements.append(Paragraph(f"<b>Bill To:</b> {member_name}", styles['Normal']))
-    elements.append(Paragraph(f"Phone: {phone}", styles['Normal']))
-    elements.append(Paragraph(f"Email: {email}", styles['Normal']))
-    elements.append(Spacer(1, 20))
-
-    # Table
     data = [
-        ["Item & Description", "Amount"],
-        ["KVR Infinity Membership", f"Rs. {amount:,.2f}"]
+        ["Field", "Details"],
+        ["Name", member_name],
+        ["Email", email],
+        ["Membership", "All Courses Access"],
+        ["Amount Paid", f"Rs. {amount}"],
     ]
-    table = Table(data, hAlign='LEFT', colWidths=[300, 150])
+
+    table = Table(data, hAlign='LEFT', colWidths=[150, 300])
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#850014")),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -294,14 +242,11 @@ def generate_receipt(member_name, email, phone, amount, receipt_id, transaction_
     ]))
     elements.append(table)
     elements.append(Spacer(1, 40))
-
-    # Footer Note
-    elements.append(Paragraph("The total amount is inclusive of 18% GST.", styles['Italic']))
-    elements.append(Paragraph("This is a computer-generated receipt and does not require a signature.", styles['Italic']))
+    elements.append(Paragraph("✅ Thank you for becoming a premium member of <b>KVR Infinity</b>!", styles['Normal']))
+    elements.append(Paragraph("This receipt is computer-generated and does not require a signature.", styles['Italic']))
 
     doc.build(elements)
-    print(f"✅ Receipt generated and saved as: {file_name}")
-
+    print(f"✅ Receipt saved as: {file_name}")
 
 @app.route('/home')
 def home():
@@ -568,15 +513,29 @@ def apply_referral():
     ref_code = data.get('ref_code')
     just_validate = data.get('just_validate', False)
 
+    
+    base_price = 10000
+    discount = 0
+    amount_paid = base_price 
+
     # ✅ Check for hardcoded referral code (40% OFF)
     if ref_code == 'kvr1122':
+        discount = 40
+        session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
         return jsonify({'valid': True, 'discount': 40})
     if ref_code == 'kvr1111':
+        discount = 99
+        session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
         return jsonify({'valid': True, 'discount': 99})
+    
+
+
 
     # ✅ Check if referral code exists in database (70% OFF)
     user = db.users.find_one({'ref_code': ref_code})
     if user:
+        discount = 70
+        session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
         return jsonify({'valid': True, 'discount': 70})
 
     # ❌ Invalid referral code
