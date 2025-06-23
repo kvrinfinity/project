@@ -93,7 +93,9 @@
     <!-- Right Side Form -->
     <form action="/login" method="post">
       <h2>Login</h2>
-
+       {% if msg %}
+          <p style="color: red;">{{ msg }}</p>
+        {% endif %}
       <input type="email" name="email" placeholder="Email" required />
 
       <div class="password-wrapper">

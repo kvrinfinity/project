@@ -104,7 +104,7 @@ def login():
                 return redirect(url_for('membership'))
             return redirect(url_for('home'))
         else:
-            return redirect(url_for('signUp'))
+            return render_template('login.html',msg='Invalid credintials')
 
     return render_template('login.html')
 
@@ -112,6 +112,7 @@ def login():
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
+        session['user_email'] = email
 
         user = db.users.find_one({'email': email})
         if not user:
@@ -556,14 +557,36 @@ def verify_otp():
 
     # ✅ Forgot Password Flow — No New Password Screen, Just login
     elif mode == 'reset':
-        email = session.get('reset_email')
-        session['user_email'] = email  # simulate login
-        session.pop('otp', None)
-        session.pop('otp_mode', None)
-        session.pop('reset_email', None)
-        return redirect(url_for('home'))
+        email = session.get('user_email')
+        session['reset_verified'] = True  # ✅ mark as verified
+        return redirect(url_for('reset_password'))
+
 
     return redirect(url_for('login'))
+
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if not session.get('reset_verified'):
+        return redirect(url_for('forgot_password'))  # prevent direct access
+
+    email = session.get('user_email')
+
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+
+        db.users.update_one(
+            {'email': email},
+            {'$set': {'password': new_password}}
+        )
+
+        # Clear session data after reset
+        session.pop('reset_verified', None)
+        session.pop('reset_email', None)
+
+        return redirect(url_for('login'))
+
+    return render_template('reset_password.html')
+
 
     
 @app.route('/apply_referral', methods=['POST'])
