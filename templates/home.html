@@ -36,12 +36,16 @@
       opacity: 0;
       animation: blurIn 1.2s ease-out forwards;
     }
+    nav a{
+      color: white;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
 
 <nav class="navbar animate-fade-in">
-  <h1>KVR Infinity</h1>
+  <a href="{{ url_for('home') }}" ><h1 class="netflix-font">KVR Infinity</h1></a>
 
   <div class="nav-links">
     <a href="{{ url_for('home') }}">home</a>

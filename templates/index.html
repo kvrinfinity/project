@@ -7,9 +7,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  
+  <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
+
+    nav a{
+      text-decoration: none;
+    }
     .netflix-font {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 35px;
@@ -20,7 +24,7 @@
 </head>
 <body>
  <nav class="navbar">
-  <h1 class="netflix-font">KVR Infinity</h1>
+  <a href="{{ url_for('index') }}" ><h1 class="netflix-font">KVR Infinity</h1></a>
   <div class="nav-links">
     <a href="{{ url_for('index') }}">home</a>
     <a href="{{ url_for('about') }}">about us</a>
@@ -85,81 +89,198 @@
   {% endfor %}
 </div>
 
-<h2>Explore top <span style="color: red;">courses</span></h2>
+<div class="top-courses-wrapper">
+    <h2 class="top-courses-title">Exlore top<span> courses</span></h2>
+    <div class="top-courses-scroll">
+      
+      <!-- Course Card -->
+      <div class="top-courses-card">
+        <span class="course-rank">1</span>
+        <img class="course-thumb" src="{{ url_for('static',filename='APTITUDE.png') }}" alt="Course 1">
+        <div class="course-hover-info">
+          <h4>Full Stack Web Dev</h4>
+          <p>12 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
 
-<div class="courses-wrapper">
-  <div class="courses-container">
-    <div class="course-card">
-      <div class="course-front">
-        <img src="{{ url_for('static', filename='Aimlimg.jpg') }}" alt="AI & ML">
-        <h3>AI & ML Jobs</h3>
-        <p>AI & ML Jobs: Career Paths & Salaries</p>
-        <button>View Detail</button>
+      <div class="top-courses-card">
+        <span class="course-rank">2</span>
+        <img class="course-thumb" src="{{ url_for('static',filename='images/2.png') }}"  alt="Course 2">
+        <div class="course-hover-info">
+          <h4>UI/UX Design</h4>
+          <p>10 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <div class="top-courses-card">
+        <span class="course-rank">3</span>
+        <img class="course-thumb" src="{{ url_for('static',filename='images/3.png') }}" alt="Course 3">
+        <div class="course-hover-info">
+          <h4>Data Science Basics</h4>
+          <p>8 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <!-- Continue for 4 through 10 -->
+      <div class="top-courses-card">
+        <span class="course-rank">4</span>
+        <img class="course-thumb" src="{{ url_for('static',filename='images/4.png') }}" alt="Course 4">
+        <div class="course-hover-info">
+          <h4>React for Beginners</h4>
+          <p>14 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <div class="top-courses-card">
+        <span class="course-rank">5</span>
+        <img class="course-thumb" src="{{ url_for('static',filename='images/5.png') }}" alt="Course 5">
+        <div class="course-hover-info">
+          <h4>AI Fundamentals</h4>
+          <p>11 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <div class="top-courses-card">
+        <span class="course-rank">6</span>
+        <img class="course-thumb" src="https://via.placeholder.com/300x400.png?text=Course+6" alt="Course 6">
+        <div class="course-hover-info">
+          <h4>DevOps Masterclass</h4>
+          <p>15 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <div class="top-courses-card">
+        <span class="course-rank">7</span>
+        <img class="course-thumb" src="https://via.placeholder.com/300x400.png?text=Course+7" alt="Course 7">
+        <div class="course-hover-info">
+          <h4>Mobile App Dev</h4>
+          <p>13 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <div class="top-courses-card">
+        <span class="course-rank">8</span>
+        <img class="course-thumb" src="https://via.placeholder.com/300x400.png?text=Course+8" alt="Course 8">
+        <div class="course-hover-info">
+          <h4>Cybersecurity 101</h4>
+          <p>9 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <div class="top-courses-card">
+        <span class="course-rank">9</span>
+        <img class="course-thumb" src="https://via.placeholder.com/300x400.png?text=Course+9" alt="Course 9">
+        <div class="course-hover-info">
+          <h4>Python Essentials</h4>
+          <p>7 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+      <div class="top-courses-card">
+        <span class="course-rank">10</span>
+        <img class="course-thumb" src="https://via.placeholder.com/300x400.png?text=Course+10" alt="Course 10">
+        <div class="course-hover-info">
+          <h4>Machine Learning</h4>
+          <p>10 Chapters</p>
+          <button>Start Now</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+
+  <section class="kvr-section">
+  <div class="kvr-left">
+    <img src="{{ url_for('static',filename='gurl.png') }}" alt="Phone 1" />
+  </div>
+
+  <div class="kvr-right">
+    <h2>Why Choose <span>KVR Infinity?</span></h2>
+    <p>Your journey to excellence begins here. Here’s how we help you succeed.</p>
+
+    <div class="kvr-feature">
+      <i class="fas fa-pen"></i>
+      <div class="kvr-text">
+        <h4>Register Yourself</h4>
+        <p>Begin your journey by signing up on our platform. Fill in your details and showcase your enthusiasm for learning.</p>
       </div>
     </div>
 
-    <div class="course-card">
-      <div class="course-front">
-        <img src="{{ url_for('static', filename='Enterprenuership.jpg') }}" alt="ChatGPT Clone">
-        <h3>ChatGPT Clones</h3>
-        <p>Build your own ChatGPT clone.</p>
-        <button>View Detail</button>
+    <div class="kvr-feature">
+      <i class="fas fa-graduation-cap"></i>
+      <div class="kvr-text">
+        <h4>Crack the Scholarship Interview</h4>
+        <p>Prove your potential and earn a chance to qualify for our exclusive scholarship program.</p>
       </div>
     </div>
 
-    <div class="course-card">
-      <div class="course-front">
-        <img src="{{ url_for('static', filename='promptengineering.jpg') }}" alt="Prompt Eng">
-        <h3>Prompt Engineering</h3>
-        <p>Master prompt design for AI.</p>
-        <button>View Detail</button>
+    <div class="kvr-feature">
+      <i class="fas fa-id-card"></i>
+      <div class="kvr-text">
+        <h4>Start Learning with Membership</h4>
+        <p>Get access to all premium courses for just ₹1499/- and take the next big step in your career.</p>
       </div>
     </div>
 
-    <div class="course-card">
-      <div class="course-front">
-        <img src="{{ url_for('static', filename='chatgptclones.jpg') }}" alt="Entrepreneurship">
-        <h3>Entrepreneurship</h3>
-        <p>Learn to launch your startup.</p>
-        <button>View Detail</button>
+    <div class="kvr-feature">
+      <i class="fas fa-rocket"></i>
+      <div class="kvr-text">
+        <h4>Launch Your Career</h4>
+        <p>Apply your new skills, earn certifications, and unlock career opportunities with confidence.</p>
       </div>
     </div>
   </div>
-</div>
-
-
-  <h2>Why choose <span style="color: red;">KVR Infinity?</span></h2>
-    <section class="steps-section">
-    <div class="step">
-      <i class="fas fa-pen icon"></i>
-      <h3>1. Register Yourself</h3>
-      <p>Begin your journey by signing up on our platform. Fill in your details and showcase your enthusiasm for learning.</p>
-    </div>
-    
-    <div class="step">
-      <i class="fas fa-graduation-cap icon"></i>
-      <h3>2. Crack the Scholarship Interview</h3>
-      <p>Prove your potential! If you're capable and eager to excel, you'll get a chance to qualify for our exclusive scholarship.</p>
-    </div>
-    
-    <div class="step">
-      <i class="fas fa-id-card icon"></i>
-      <h3>3. Start Learning with Membership</h3>
-      <p>Once selected, get the membership at ₹1499/- and unlock all premium courses to boost your skills.</p>
-    </div>
-
-    <div class="step">
-      <i class="fas fa-id-card icon"></i>
-      <h3>4. Start Learning with Membership</h3>
-      <p>Once selected, get the membership at ₹1499/- and unlock all premium courses to boost your skills.</p>
-    </div>
-  </section>
+</section>
   <br>
   
-  <h1 style="text-align:center; margin-top: 42px;">Membership Plans</h1>
-<div class="image-container">
-    <img src="{{ url_for('static', filename='membership.jpg') }}" alt="Membership Plans" class="responsive-image">
-</div>
+  <section class="membership-section">
+  <!-- Left: Video Side -->
+  <div class="video-side">
+    <video autoplay muted loop>
+      <source src="your-video.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <!-- Right: Content Side -->
+  <div class="content-side">
+    <h2>Unlock Premium Membership</h2>
+    <p>Use a referral code or early bird offer to get massive discounts!</p>
+
+    <div class="pricing-box">
+      <div>Original Price</div>
+      <h3>₹10,000</h3>
+
+      <div class="referral-box">
+        <strong>With Referral Code:</strong><br>
+        70% Off — <strong>Pay ₹3,000</strong>
+      </div>
+
+      <div class="discount-box">
+        <strong>Early Bird Code:</strong><br>
+        Use <code>kvr1122</code> for 40% Off — <strong>Pay ₹6,000</strong>
+      </div>
+
+      <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
+    </div>
+  </div>
+  </div>
+</section>
+
+
 
 
 <section class="team-section">
@@ -237,130 +358,210 @@
   <!-- Swiper CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-<section class="appa-screenshot-section">
-  <div class="appa-section-title">
-    <span class="appa-subtitle">KVR Infinity</span>
-    <h2 class="appa-title">Our App is Launching soon</h2>
-    <p class="appa-desc">
-      Take a look at our app's interface. Smooth, clean, and easy to use!
-    </p>
-  </div>
-  <div class="appa-screenshot-carousel swiper">
-    <div class="swiper-wrapper">
-      <!-- Slide 1 -->
-      <div class="swiper-slide">
-        <div class="appa-phone-mockup">
-          <img src="{{ url_for('static', filename='study1.jpg') }}" alt="App Screenshot 1" >
+<section class="launch-section">
+  <!-- Background moving text -->
+  <div class="bg-text">KVR Infinity</div>
 
-        </div>
-      </div>
-      <!-- Slide 2 -->
-      <div class="swiper-slide">
-        <div class="appa-phone-mockup">
-        <img src="{{ url_for('static', filename='study2.jpg') }}" alt="App Screenshot 2" >  
-        </div>
-      </div>
-      <!-- Slide 3 -->
-      <div class="swiper-slide">
-        <div class="appa-phone-mockup">
-        <img src="{{ url_for('static', filename='study3.jpg') }}" alt="App Screenshot 3" >
-        </div>
-      </div>
-      <!-- Add more slides as needed -->
-    </div>
-    <!-- Navigation Arrows -->
-    <div class="swiper-button-next"></div>
-    <div class="swiper-button-prev"></div>
+  <!-- Left: Animated Phone Image -->
+  <div class="phones-container">
+    <img src="{{ url_for('static', filename='phone.png') }}" alt="App Preview Phone" class="animated-phone" />
+  </div>
+
+  <!-- Right: Text Content -->
+  <div class="text-container">
+    <h1><span>KVR Infinity App</span></h1>
+    <p>Mobile Application Coming Soon</p>
+    <ul class="mobile-benefits">
+      <li>📶 Learn Anywhere</li>
+      <li>⏱️ Save Time</li>
+      <li>🔔 Instant Alerts</li>
+      <li>📝 Easy Access to Courses</li>
+      <li>📊 Progress Tracking</li>
+    </ul>
+    <h2>🚀 Launching Soon...</h2>
   </div>
 </section>
 
-  <section class="testimonials-section">
-  <div class="testimonials-header">
-    <span class="testimonials-subtitle">CLIENTS TESTIMONIAL</span>
-    <h2 class="testimonials-title">15k+ Customers Love KVR Infinity</h2>
-    <p class="testimonials-desc">
-      Et optio praesent et Eligendi ab, irure impedit rhoncus, doloremque! Pretium nobis nobis modi ullamco excepturi recusandae et! Nec scelerisque, natus gravida.
-    </p>
-  </div>
-  <div class="testimonials-grid">
-    <div class="testimonial-card">
-      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="testimonial-img">
-      <p class="testimonial-text">
-        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
-      </p>
-      <span class="testimonial-quote">
-        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
-          <circle cx="7" cy="7" r="1"/>
-        </svg>
-      </span>
-    </div>
-    <div class="testimonial-card">
-      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="testimonial-img">
-      <p class="testimonial-text">
-        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
-      </p>
-      <span class="testimonial-quote">
-        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
-          <circle cx="7" cy="7" r="1"/>
-        </svg>
-      </span>
-    </div>
-    <div class="testimonial-card">
-      <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="User" class="testimonial-img">
-      <p class="testimonial-text">
-        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
-      </p>
-      <span class="testimonial-quote">
-        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
-          <circle cx="7" cy="7" r="1"/>
-        </svg>
-      </span>
-    </div>
-    <div class="testimonial-card">
-      <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="User" class="testimonial-img">
-      <p class="testimonial-text">
-        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinarac dapibus leo. Cras cursus facere, numquam ultrica orci optio! Fames, ab alias.”
-      </p>
-      <span class="testimonial-quote">
-        <svg width="40" height="40" fill="none" stroke="#E7B97A" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M7 18c-2-1-3-3-3-5a5 5 0 015-5"/>
-          <circle cx="7" cy="7" r="1"/>
-        </svg>
-      </span>
-    </div>
-  </div>
-<button class="view-reviews-btn">VIEW ALL REVIEWS</button>
 
+
+
+  <section class="testimonial-section">
+  <div class="heading">
+    <span>TESTIMONIAL</span>
+    <h2>What Says <span class="highlight">Our Students</span></h2>
+  </div>
+
+  <div class="testimonial-container">
+    
+    <div class="testimonial-wrapper" id="testimonialWrapper">
+      <!-- 10 testimonials -->
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet, consectetur sadipscing elitr sed diam nonumy eirmod tempor.</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=10" alt="user">
+          <div>
+            <h4>James Simmons</h4>
+            <span>Marketing Expert</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet, consectetur sadipscing elitr sed diam nonumy eirmod tempor.</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=11" alt="user">
+          <div>
+            <h4>Alex Feroundo</h4>
+            <span>Founder</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card color3">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet, consectetur sadipscing elitr sed diam nonumy eirmod tempor.</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=12" alt="user">
+          <div>
+            <h4>Kallu Mastan</h4>
+            <span>Mastan Group</span>
+          </div>
+        </div>
+      </div>
+      <!-- Add 7 more testimonials below -->
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet...</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=13" alt="user">
+          <div><h4>Sara Kim</h4><span>Designer</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet...</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=14" alt="user">
+          <div><h4>John Lee</h4><span>Engineer</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card color3">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet...</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=15" alt="user">
+          <div><h4>Priya Nair</h4><span>Student</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet...</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=16" alt="user">
+          <div><h4>Akash Mehta</h4><span>Freelancer</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet...</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=17" alt="user">
+          <div><h4>Linda Zhou</h4><span>Entrepreneur</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card color3">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet...</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=18" alt="user">
+          <div><h4>Ravi Teja</h4><span>Coach</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>Lorem ipsum dolor sit amet...</p>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/150?img=19" alt="user">
+          <div><h4>Meera Das</h4><span>Mentor</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+  <script>
+   function scrollLeft() {
+  console.log("scroll left clicked");
+  const container = document.getElementById('testimonialWrapper');
+  container.scrollBy({ left: -320, behavior: 'smooth' });
+}
+
+function scrollRight() {
+  const container = document.getElementById('testimonialWrapper');
+  container.scrollBy({ left: 320, behavior: 'smooth' });
+}
+
+  </script>
+
+
+<section class="team-faq-section">
+  <div class="team-image">
+    <img src="{{ url_for('static',filename='faq-team.png') }}" alt="KVR Infinity Team" />
+  </div>
+
+  <div class="faq-container">
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-question">📌 What is KVR Infinity?</div>
+      <div class="faq-answer">KVR Infinity is a digital learning platform that empowers learners with career-boosting content.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">📱 Is the app available?</div>
+      <div class="faq-answer">The mobile app is launching very soon! Stay connected for updates.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">📝 How to register?</div>
+      <div class="faq-answer">Visit the official website, click Sign Up, and follow the easy steps to join us.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">🎓 What types of courses do you offer?</div>
+      <div class="faq-answer">We provide technical tests, career readiness programs, and company-specific practice modules.</div>
+    </div>
+  </div>
 </section>
 
+  <script>
+  document.querySelectorAll(".faq-question").forEach(question => {
+    question.addEventListener("click", () => {
+      question.classList.toggle("active");
+      const answer = question.nextElementSibling;
+      answer.classList.toggle("show");
+    });
+  });
+</script>
 
-  <section class="faq-section">
-  <h2>Frequently Asked Questions</h2>
+<script>
+  // Toggle accordion effect
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.addEventListener('click', () => {
+    item.classList.toggle('active');
+  });
+});
 
-  <div class="faq-item">
-    <button class="faq-question">What is KVR Infinity?</button>
-    <div class="faq-answer">
-      <p>KVR Infinity is an online education platform providing quality learning resources across India.</p>
-    </div>
-  </div>
+// Search functionality (basic filter)
+document.getElementById('searchInput').addEventListener('keyup', function () {
+  let filter = this.value.toLowerCase();
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const question = item.querySelector('.faq-question').textContent.toLowerCase();
+    item.style.display = question.includes(filter) ? '' : 'none';
+  });
+});
 
-  <div class="faq-item">
-    <button class="faq-question">How do I join a course?</button>
-    <div class="faq-answer">
-      <p>You can register using our website and browse the available courses under the 'Courses' section.</p>
-    </div>
-  </div>
-
-  <div class="faq-item">
-    <button class="faq-question">Is there a support team?</button>
-    <div class="faq-answer">
-      <p>Yes, our support team is available 24/7 to help you with your queries.</p>
-    </div>
-  </div>
-</section>
+</script>
 <script>
   const faqQuestions = document.querySelectorAll('.faq-question');
 
@@ -377,83 +578,60 @@
 
 
   <footer class="footer">
-  <div class="footer-top">
-    <div class="footer-section">
-      <h3>Get in touch</h3>
-      <div class="contact-item">
-        <span class="icon">📞</span>
-        <div>
-          <p>Call us directly?</p>
-          <strong>+91 74166 19903</strong>
-        </div>
-      </div>
-      <div class="contact-item">
-        <span class="icon">📍</span>
-        <div>
-          <p>Address</p>
-          <strong>G10, HQ BL Commerce, 125, 7th Cross Road, BTM, 2nd Stage, Bengaluru, Karnataka, India - 560076</strong>
-        </div>
-      </div>
-      <div class="contact-item">
-        <span class="icon">@</span>
-        <div>
-          <p>Email</p>
-          <strong>care@kvrinfinity.in</strong>
-        </div>
-      </div>
+  <div class="footer-container">
+    <div class="footer-column brand">
+      <h2>KVR Infinity</h2>
+      
+      <p>First Floor, KH-Connects, JP Nagar 4th phase, Bengaluru, India - 560078.</p>
+      <p>CIN :  U72900AP2019PTC113696</p>
+      <p><i class="fa fa-envelope"></i> care@kvrinfinity.in</p>
+      <p><i class="fa fa-phone"></i> +91 8106 147 247</p>
     </div>
 
-    <div class="footer-section">
-      <h3>Need some help?</h3>
-      <p>FAQs</p>
-      <p>Contact</p>
-      <p>about us</p>
-      <p>blog</p>
-      <p>invest relations</p>
-      <p>Carriers</p>
+    <div class="footer-column">
+      <h4>COMPANY</h4>
+      <ul>
+        <li>About Us</li>
+        <li>Careers</li>
+        <li>Media</li>
+        <li>Collaborations</li>
+      </ul>
     </div>
 
-    <div class="footer-section">
-      <h3>Popular subjects</h3>
-      <p>Data Analayis</p>
-      <p>Prompt Engineering</p>
-      <p>Aptitude</p>
-      <p>Entrepreneurship</p>
-      <p>Machine Learning</p>
+    <div class="footer-column">
+      <h4>Popular Subjects</h4>
+      <ul>
+        <li>Aptitude</li>
+        <li>Prompt Engineering</li>
+        <li>Computer Basics</li>
+        <li>Quality Assurance</li>
+        <li>Full-Stack development</li>
+      </ul>
     </div>
 
-    <div class="footer-section">
-      <h3>Need some help?</h3>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-youtube"></i></span>
-        <span>Youtube</span>
-        <span>50 Subscribe</span>
-      </div>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-facebook"></i></span>
-        <span>Facebook</span>
-        <span>100 Subscribe</span>
-      </div>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-instagram"></i></span>
-        <span>Instagram</span>
-        <span>50 Followers</span>
-      </div>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-linkedin"></i></span>
-        <span>Linked In</span>
-        <span>100 Followers</span>
-      </div>
+    <div class="footer-column">
+      <h4>RESOURCES</h4>
+      <ul>
+        <li>Blog</li>
+        <li>Help center</li>
+        <li>FAQ</li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h4>GET IN TOUCH</h4>
+      <ul class="social-icons">
+        <li><i class="fab fa-facebook"></i> Twitter</li>
+        <li><i class="fab fa-google"></i> Instagram</li>
+        <li><i class="fab fa-twitter"></i> Facebook</li>
+        <li><i class="fab fa-github"></i> Github</li>
+      </ul>
     </div>
   </div>
 
   <div class="footer-bottom">
-    <p>© 2025 KVR Infinity. All rights reserved.</p>
-    <div class="footer-links">
-      <a href="#">Terms of use</a>
-      <a href="#">Privacy policy</a>
-      <a href="#">Cookies policy</a>
-    </div>
+    <p>2025 © KVR Infinity - www.kvrinfinity.in</p>
+    <a href="#">Terms Conditions & Policy</a>
   </div>
 </footer>
 

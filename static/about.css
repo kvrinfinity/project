@@ -599,6 +599,10 @@ body {
     }
 }
 
+nav a{
+      text-decoration: none;
+      color: white;
+    }
 /* Medium devices (laptops/tablets landscape, 768px - 992px) */
 @media (min-width: 768px) and (max-width: 991.98px) {
     .hero {

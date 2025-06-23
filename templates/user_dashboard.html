@@ -542,13 +542,17 @@
     .animate-fade-in { opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
     .animate-blur-in { opacity: 0; animation: blurIn 0.7s ease-out forwards; }
     
+  nav a{
+    color : red;
+    text-decoration: none;
+  }
   </style>
 </head>
 
 <body class="animate-fade-in animate-blur-in">
   <nav class="navbar">
     <i class="fas fa-bars" id="sidebarToggle" style="cursor: pointer; margin-right: 15px;"></i>
-    <h1>KVR Infinity</h1>
+    <a href="{{ url_for('home') }}" ><h1 class="netflix-font">KVR Infinity</h1></a>
     <div class="nav-links">
       <a href="{{ url_for('home') }}">home</a>
       <a href="{{ url_for('courses') }}">courses</a>
