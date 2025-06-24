@@ -8,7 +8,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css?family=Poppins:700,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
 
 
 </head>
@@ -25,375 +24,281 @@
   </div>
 </nav>
 
+<!-- ABOUT US SECTION -->
+<section class="about-section">
+  <div class="about-text">
+    <h1>
+      Our Story the Journey<br />
+      That’s Shapped <span class="blue">Our Success</span>
+    </h1>
+    <p>
+      SHIFT is an agency studio that brings an innovative approach to the world of UI/UX design. 
+      We are committed to infusing the future into every project we undertake.
+    </p>
+    <button class="cta-btn">Get Start a Project</button>
+  </div>
 
-<div class="hero-card">
-    <img src="{{ url_for('static', filename='waveimg.jpg') }}" class="top-left-wave" alt="wave decor">
-
-    <div class="hero-content">
-    <div class="hero-left">
-        <div class="company-name"><h3>KVR Infinity</h3></div>
-        <h1>About Us</h1>
-        <p> is an upskilling and hiring platform for graduates.</p>
+  <div class="about-image-card">
+    <img src="{{ url_for('static', filename='faq-team.png') }}" alt="Team Working" />
+  </div>
+</section>
+<section class="stats-section">
+  <div class="stats-header">
+    <div class="stats-title">
+      <h2>Our agency knows work<br />dominates <span>our lives</span></h1>
     </div>
-    <div class="hero-right">
-        <!-- Replace this SVG with your own illustration if needed -->
-        <!-- Large Study Illustration SVG -->
-<svg width="600" height="400" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- Background -->
-    <rect width="600" height="400" rx="36" fill="#f6f8fa"/>
-    <!-- Desk -->
-    <rect x="80" y="320" width="440" height="36" rx="12" fill="#e5e9f2"/>
-    <!-- Books Stack Left -->
-    <rect x="110" y="270" width="56" height="28" rx="5" fill="#F7C873"/>
-    <rect x="114" y="254" width="48" height="18" rx="4" fill="#FF6F61"/>
-    <rect x="118" y="244" width="40" height="10" rx="3" fill="#3E4EB8"/>
-    <!-- Lamp -->
-    <rect x="460" y="250" width="18" height="60" rx="9" fill="#3E4EB8"/>
-    <rect x="468" y="210" width="6" height="44" rx="3" fill="#3E4EB8" transform="rotate(-25 468 210)"/>
-    <ellipse cx="475" cy="200" rx="24" ry="14" fill="#FF6F61"/>
-    <ellipse cx="475" cy="211" rx="30" ry="10" fill="#F7C873" opacity="0.3"/>
-    <!-- Student Body -->
-    <ellipse cx="300" cy="260" rx="60" ry="70" fill="#3E4EB8"/>
-    <!-- Head -->
-    <ellipse cx="300" cy="180" rx="32" ry="32" fill="#FFB6B6"/>
-    <!-- Laptop -->
-    <rect x="260" y="290" width="80" height="30" rx="6" fill="#fff"/>
-    <rect x="270" y="295" width="60" height="18" rx="4" fill="#e5e9f2"/>
-    <!-- Open Book -->
-    <rect x="320" y="320" width="60" height="18" rx="4" fill="#fff"/>
-    <rect x="350" y="320" width="30" height="18" rx="4" fill="#F7C873"/>
-    <!-- Book Lines -->
-    <rect x="335" y="325" width="35" height="2" rx="1" fill="#e5e9f2"/>
-    <!-- Hands -->
-    <ellipse cx="272" cy="325" rx="8" ry="6" fill="#FFB6B6"/>
-    <ellipse cx="328" cy="325" rx="8" ry="6" fill="#FFB6B6"/>
-    <!-- Face Details -->
-    <ellipse cx="292" cy="190" rx="4" ry="2.2" fill="#222"/>
-    <ellipse cx="308" cy="190" rx="4" ry="2.2" fill="#222"/>
-    <rect x="296" y="200" width="8" height="3" rx="1.5" fill="#222"/>
-    <!-- Chair -->
-    <rect x="210" y="350" width="180" height="20" rx="8" fill="#b3b3b3"/>
-    <!-- Plant -->
-    <ellipse cx="520" cy="350" rx="18" ry="8" fill="#3E4EB8" opacity="0.3"/>
-    <ellipse cx="520" cy="340" rx="8" ry="20" fill="#7ed957"/>
-    <ellipse cx="530" cy="335" rx="6" ry="14" fill="#4a90e2"/>
-</svg>
-</div>
-</div>
-</div>
-
-    
-    <div class="how-it-works-container animate-blur-in animate-fade-in">
-      <div class="how-it-works-right">
-        <div class="how-it-works-title">How it works?</div>
-        <img src="{{ url_for('static', filename='how-it-works.jpg') }}" alt="How it works image">
-
-      </div>
-      <div class="how-it-works-left">
-        <div class="how-step">
-          <div class="how-step-icon">1</div>
-          <div class="how-step-content">
-            <div class="how-step-title">R&D Team</div>
-            <div class="how-step-desc">
-              Works on the latest technologies and creates course content.
-            </div>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-icon">2</div>
-          <div class="how-step-content">
-            <div class="how-step-title">Developers</div>
-            <div class="how-step-desc">
-              Build the website and mobile application.
-            </div>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-icon">3</div>
-          <div class="how-step-content">
-            <div class="how-step-title">Marketing Team</div>
-            <div class="how-step-desc">
-              Promotes the courses and builds the brand.
-            </div>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-icon">4</div>
-          <div class="how-step-content">
-            <div class="how-step-title">Support Team</div>
-            <div class="how-step-desc">
-              Assists students and answers their queries.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- END HOW IT WORKS SECTION -->
-    
-<div class="mv-container animate-blur-in animate-fade-in">
-  <!-- Left Column: Mission -->
-  <div class="mv-left">
-    <div class="mv-label">MISSION</div>
-    <div class="mv-title">We make every connection count.</div>
-    <div class="mv-desc">
-      Our mission is to provide quality education to students and help them achieve their goals.<br>
-      We strive to make education accessible to everyone and help them build a better future.
+    <div class="stats-subtext">
+      <p>
+        We believe that when work is done right—<br />
+        with purpose, creativity, and strategy—it<br />
+        can lead to impactful changes.
+      </p>
     </div>
   </div>
-  <!-- Right Column: Vision and Team -->
-  <div class="mv-right">
-    <div class="mv-point">
-      <span class="mv-dot mv-dot-green"></span>
-      <div>
-        <div class="mv-point-title">Our Vision</div>
-        <div class="mv-point-desc">
-          Our vision is to be the leading online education platform in India and help students achieve their dreams. We aim to create a community of learners who share knowledge and help each other grow.
-        </div>
-      </div>
+
+  <div class="stats-grid">
+    <div class="stat-box dark">
+      <h2>10+</h2>
+      <p>Years of Agency<br />Experience</p>
     </div>
-    <div class="mv-point">
-      <span class="mv-dot mv-dot-blue"></span>
-      <div>
-        <div class="mv-point-title">Our Team</div>
-        <div class="mv-point-desc">
-          We have a team of experienced professionals passionate about education and technology. Our team includes professors, developers, marketers, and support staff working together to provide the best learning experience. We are committed to continuous improvement and innovation in the ever-evolving field of education.
-        </div>
-      </div>
+    <div class="stat-box blue">
+      <h2>30</h2>
+      <p>Good Award Wining<br />Agency</p>
+    </div>
+    <div class="stat-box dark">
+      <h2>7+</h2>
+      <p>Successfully Finished<br />Project</p>
+    </div>
+    <div class="stat-box blue">
+      <h2>25</h2>
+      <p>Experience<br />Engineering Members</p>
     </div>
   </div>
-</div>
-    
-    <div class="about-highlight">
-        Thank you for choosing KVR Infinity for your learning journey!
-    </div>
-    
-    <div class="about-contact">
-        For any queries or support, please contact us at 
-        <a href="mailto:support@kvrinfinity.com">support@kvrinfinity.com</a>
-    </div>
-  </div>
+</section>
+
 
   <h1 style="text-align:center; margin-top: 40px;">Meet Our Team</h1>
-  <div class="team-section animate-blur-in animate-fade-in">
-    <h2>Executive Department</h2>
-    <!-- Team Member1 -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='praveen.jpg') }}" alt="Member 1">
-      <h3>Praveen Kumar Kumbakonam</h3>
-      <p>CEO</p>
-      <a href="https://www.linkedin.com/in/praveenkumbhakonam/" target="_blank">LinkedIn</a>
-    </div>
-    <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='muskan2.jpg') }}" alt="Member 2">
-      <h3>Muskan Singh</h3>
-      <p>HR</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <!-- Team Member3 -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='nidheesh.jpg') }}" alt="Faculty">
-      <h3>Nidheesh N A</h3>
-      <p>Executive Head</p>
-      <a href="https://linkedin.com/in/alokmajumdar" target="_blank">LinkedIn</a>
-    </div>
+  <section class="team-section">
+  <div class="team-header">
+    <h2>Engage with Our <span>Creative Team</span></h2>
+    <p>We work to create the most attractive & meaningful place for small businesses. Our Team always ready to help you.</p>
+  </div>
 
-    <h2>Assistants</h2>
-     <!-- Team Member 4  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='vibitha.jpg') }}" alt="Member 2">
-      <h3>Vibitha</h3>
-      <p>H.R Assistant</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='sushmitha.jpg') }}" alt="Member 2">
-      <h3>Sushmitha</h3>
-      <p>CEO Assistant</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <h2>Marketing Team</h2>
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='minali.jpg') }}" alt="Member 2">
-      <h3>Minali Rathod</h3>
-      <p>Marketing Head</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='anjana.jpg') }}" alt="Member 2">
-      <h3>Anjana</h3>
-      <p>Marketing Assistant</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='anuj.jpg') }}" alt="Member 2">
-      <h3>Anuj</h3>
-      <p>Marketing Assistant</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='divin.jpg') }}" alt="Member 2">
-      <h3>Divin Kori</h3>
-      <p>Visual Designer</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <h2>IT Team</h2>
-     <!-- Team Member2  -->
-    
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='nishan.jpg') }}" alt="Member 2">
-      <h3>Nishan Kamath</h3>
-      <p>Junior Software Developer</p>
-      <a href="https://www.linkedin.com/in/nishan-kamath-b2891b26b/" target="_blank">LinkedIn</a>
-    </div>
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='sumedh.jpg') }}" alt="Member 2">
-      <h3>Sumedh K.S Hathwar</h3>
-      <p>Junior Software Developer</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='sathwika.jpg') }}" alt="Member 2">
-      <h3>Sathwika A</h3>
-      <p>Junior Software Developer</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-     <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='harshini.jpg') }}" alt="Member 2">
-      <h3>Harshini B.T</h3>
-      <p>Junior Software Developer</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <h2>Finance Team</h2>
-    <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='amruth.jpg') }}" alt="Member 2">
-      <h3>Amruth</h3>
-      <p>Finance Head</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='shilpa.jpg') }}" alt="Member 2">
-      <h3>Shilpa</h3>
-      <p>Finance(Expenditure)</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='images/member2.jpg') }}" alt="Member 2">
-      <h3>Sravanthi</h3>
-      <p>Finance(Revenue)</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <h2>Sales Team</h2>
-    <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='pavan.jpg') }}" alt="Member 2">
-      <h3>Billa Pavan Kumar</h3>
-      <p>Sales Head</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
-    </div>
-    <h2>Business Analyst</h2>
-    <!-- Team Member2  -->
-    <div class="team-member">
-      <img src="{{ url_for('static', filename='sanjana.jpg') }}" alt="Member 2">
-      <h3>Sanjana Mohan</h3>
-      <p>Business Analyst</p>
-      <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+  <!-- Executive Department -->
+  <div class="department-group">
+    <h3>Executive Department</h3>
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='praveen.jpg') }}">
+        <h4>Praveen Kumar Kumbakonam</h4>
+        <p>CEO</p>
+        <a href="https://www.linkedin.com/in/praveenkumbhakonam/" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='muskan2.jpg') }}">
+        <h4>Muskan Singh</h4>
+        <p>HR</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='nidheesh.jpg') }}">
+        <h4>Nidheesh N A</h4>
+        <p>Executive Head</p>
+        <a href="https://linkedin.com/in/alokmajumdar" target="_blank">LinkedIn</a>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Assistants -->
+  <div class="department-group">
+    <h3>Assistants</h3>
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='vibitha.jpg') }}">
+        <h4>Vibitha</h4>
+        <p>H.R Assistant</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='sushmitha.jpg') }}">
+        <h4>Sushmitha</h4>
+        <p>CEO Assistant</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marketing Team -->
+  <div class="department-group">
+    <h3>Marketing Team</h3>
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='minali.jpg') }}">
+        <h4>Minali Rathod</h4>
+        <p>Marketing Head</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='anjana.jpg') }}">
+        <h4>Anjana</h4>
+        <p>Marketing Assistant</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='anuj.jpg') }}">
+        <h4>Anuj</h4>
+        <p>Marketing Assistant</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='divin.jpg') }}">
+        <h4>Divin Kori</h4>
+        <p>Visual Designer</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- IT Team -->
+  <div class="department-group">
+    <h3>IT Team</h3>
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='nishan.jpg') }}">
+        <h4>Nishan Kamath</h4>
+        <p>Junior Software Developer</p>
+        <a href="https://www.linkedin.com/in/nishan-kamath-b2891b26b/" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='sumedh.jpg') }}">
+        <h4>Sumedh K.S Hathwar</h4>
+        <p>Junior Software Developer</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='sathwika.jpg') }}">
+        <h4>Sathwika A</h4>
+        <p>Junior Software Developer</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='harshini.jpg') }}">
+        <h4>Harshini B.T</h4>
+        <p>Junior Software Developer</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Finance Team -->
+  <div class="department-group">
+    <h3>Finance Team</h3>
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='amruth.jpg') }}">
+        <h4>Amruth</h4>
+        <p>Finance Head</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='shilpa.jpg') }}">
+        <h4>Shilpa</h4>
+        <p>Finance(Expenditure)</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='images/member2.jpg') }}">
+        <h4>Sravanthi</h4>
+        <p>Finance(Revenue)</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales Team -->
+  <div class="department-group">
+    <h3>Sales Team</h3>
+
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='pavan.jpg') }}">
+        <h4>Billa Pavan Kumar</h4>
+        <p>Sales Head</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+
+  <div class="department-group">
+    <h3>Business Analyst</h3>
+  
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='sanjana.jpg') }}">
+        <h4>Sanjana Mohan</h4>
+        <p>Business Analyst</p>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+      </div>
+  
+  </div>
+  
+</section>
+
   <h1 style="text-align:center; margin-top: 42px;">We are onboarding the Indias best faculties</h1>
   
 
- <!-- footer section -->
-<footer class="footer">
-  <div class="footer-top">
-    <div class="footer-section">
-      <h3>Get in touch</h3>
-      <div class="contact-item">
-        <span class="icon">📞</span>
-        <div>
-          <p>Call us directly?</p>
-          <strong>+91 74166 19903</strong>
-        </div>
-      </div>
-      <div class="contact-item">
-        <span class="icon">📍</span>
-        <div>
-          <p>Address</p>
-          <strong>G10, HQ BL Commerce, 125, 7th Cross Road, BTM, 2nd Stage, Bengaluru, Karnataka, India - 560076</strong>
-        </div>
-      </div>
-      <div class="contact-item">
-        <span class="icon">@</span>
-        <div>
-          <p>Email</p>
-          <strong>care@kvrinfinity.in</strong>
-        </div>
-      </div>
+ 
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="footer-column brand">
+      <h2>KVR Infinity</h2>
+      
+      <p>First Floor, KH-Connects, JP Nagar 4th phase, Bengaluru, India - 560078.</p>
+      <p>CIN :  U72900AP2019PTC113696</p>
+      <p><i class="fa fa-envelope"></i> care@kvrinfinity.in</p>
+      <p><i class="fa fa-phone"></i> +91 8106 147 247</p>
     </div>
 
-    <div class="footer-section">
-      <h3>Need some help?</h3>
-      <p>FAQs</p>
-      <p>Contact</p>
-      <p>about us</p>
-      <p>blog</p>
-      <p>invest relations</p>
-      <p>Carriers</p>
+    <div class="footer-column">
+      <h4>COMPANY</h4>
+      <ul>
+        <li>About Us</li>
+        <li>Careers</li>
+        <li>Media</li>
+        <li>Collaborations</li>
+      </ul>
     </div>
 
-    <div class="footer-section">
-      <h3>Popular subjects</h3>
-      <p>Data Analayis</p>
-      <p>Prompt Engineering</p>
-      <p>Aptitude</p>
-      <p>Entrepreneurship</p>
-      <p>Machine Learning</p>
+    <div class="footer-column">
+      <h4>Popular Subjects</h4>
+      <ul>
+        <li>Aptitude</li>
+        <li>Prompt Engineering</li>
+        <li>Computer Basics</li>
+        <li>Quality Assurance</li>
+        <li>Full-Stack development</li>
+      </ul>
     </div>
 
-    <div class="footer-section">
-      <h3>Need some help?</h3>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-youtube"></i></span>
-        <span>Youtube</span>
-        <span>50 Subscribe</span>
-      </div>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-facebook"></i></span>
-        <span>Facebook</span>
-        <span>100 Subscribe</span>
-      </div>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-instagram"></i></span>
-        <span>Instagram</span>
-        <span>50 Followers</span>
-      </div>
-      <div class="social-item">
-        <span class="icon"><i class="fa-brands fa-linkedin"></i></span>
-        <span>Linked In</span>
-        <span>100 Followers</span>
-      </div>
+    <div class="footer-column">
+      <h4>RESOURCES</h4>
+      <ul>
+        <li>Blog</li>
+        <li>Help center</li>
+        <li>FAQ</li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h4>GET IN TOUCH</h4>
+      <ul class="social-icons">
+        <li><i class="fab fa-facebook"></i> Twitter</li>
+        <li><i class="fab fa-google"></i> Instagram</li>
+        <li><i class="fab fa-twitter"></i> Facebook</li>
+        <li><i class="fab fa-github"></i> Github</li>
+      </ul>
     </div>
   </div>
 
   <div class="footer-bottom">
-    <p>© 2025 KVR Infinity. All rights reserved.</p>
-    <div class="footer-links">
-      <a href="#">Terms of use</a>
-      <a href="#">Privacy policy</a>
-      <a href="#">Cookies policy</a>
-    </div>
+    <p>2025 © KVR Infinity - www.kvrinfinity.in</p>
+    <a href="#">Terms Conditions & Policy</a>
   </div>
 </footer>
 </body>

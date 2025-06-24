@@ -1963,12 +1963,32 @@ body {
   margin: 0.5rem 0;
   display: flex;
   align-items: center;
+  background-color: rgb(204, 255, 203);
+  padding:10px 10px;
+  border-radius: 15px;
+  box-shadow:  0 3px 5px  0 black;
+  text-align: center;
+  align-items: center;
 }
+.mobile-benefits li:nth-child(1) {
+  background-color: #f6ddff; /* light pink */
+}
+.mobile-benefits li:nth-child(2) {
+  background-color: #d0f0fd; /* light blue */
+}
+.mobile-benefits li:nth-child(3) {
+  background-color: #f0ccf9; /* light green */
+}
+.mobile-benefits li:nth-child(4) {
+  background-color: #fff1cc; /* light yellow */
+}
+
 
 .mobile-benefits li:hover{
   transform: scale(1.08);
   transition: 0.5s ease;
   color: rgb(125, 8, 8);
+  background-color: #c2c1fe;
 }
 
 /* Phone Image */
@@ -2015,8 +2035,6 @@ body {
   }
 }
 
-
-
  .kvr-section {
       display: flex;
       flex-wrap: wrap;
@@ -2028,19 +2046,19 @@ body {
       width: 95%;
       margin-left: auto;
       margin-right: auto;
+      max-height: 700px;
     }
 
     .kvr-left {
-  flex: 1 1 300px;
+  flex: 1 1 400px;
   display: flex;
   justify-content: center;
   align-items: center; /* center image vertically */
-  margin-bottom: 1rem;
 }
 
 .kvr-left img {
   width: 400px;
-  height: 500px;
+  height: 600px;
   object-fit: cover; /* fills space while cropping if needed */
   border-radius: 20px;
 }
@@ -2073,7 +2091,7 @@ body {
       background-color: #fff;
       border-radius: 12px;
       padding: 1rem 1.5rem;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
       align-items: center;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
     }
@@ -2168,9 +2186,7 @@ body {
       padding-bottom: 10px;
     }
 
-    .top-courses-scroll::-webkit-scrollbar {
-      display: none;
-    }
+   
 
     .top-courses-card {
       position: relative;

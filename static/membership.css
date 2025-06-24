@@ -7,7 +7,7 @@ box-sizing: border-box;
 
 body {
 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-background: linear-gradient(135deg, #0f0f0f, #400000);
+background: #ffffff;
 color: #ffffff;
 min-height: 100vh;
 display: flex;
@@ -17,24 +17,10 @@ padding: 40px 20px;
 position: relative;
 }
 
-/* Background Text */
-.background-text {
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-font-size: 120px;
-font-weight: 900;
-color: rgba(255, 255, 255, 0.05);
-white-space: nowrap;
-pointer-events: none;
-user-select: none;
-z-index: 0;
-}
 
 /* Payment Box */
 .payment-box {
-background: rgba(255, 255, 255, 0.08);
+background: linear-gradient(135deg, #0f0f0f, #400000);
 border: 1px solid rgba(255, 255, 255, 0.2);
 border-radius: 20px;
 padding: 40px 30px;
@@ -109,6 +95,10 @@ font-size: 14px;
 .background-text {
     font-size: 60px;
 }
+.payment-box{
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .payment-box {
     padding: 30px 20px;
@@ -132,6 +122,7 @@ button {
 .background-text {
     font-size: 80px;
 }
+
 
 .payment-box {
     padding: 30px 20px;
@@ -160,6 +151,10 @@ button {
 .payment-box {
     padding: 25px 18px;
     border-radius: 16px;
+}
+.payment-box{
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .payment-box h2 {
@@ -194,7 +189,10 @@ button {
 .payment-box {
     padding: 20px 16px;
 }
-
+.payment-box{
+    margin-left: auto;
+    margin-right: auto;
+}
 .payment-box h2 {
     font-size: 20px;
 }
