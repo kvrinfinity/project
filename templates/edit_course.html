@@ -1,49 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Edit Course</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/static/admin.css" />
+  <meta charset="UTF-8" />
+  <title>Edit Course - Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      padding: 30px;
+      color: #1e293b;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 1200px;
+      margin: auto;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 20px;
+      display: block;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    input[type="file"] {
+      margin-bottom: 16px;
+    }
+    button, input[type="submit"] {
+      background-color: #2563eb;
+      color: white;
+      padding: 12px 18px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .remove-btn {
+      background-color: #ef4444;
+      margin-top: 10px;
+    }
+    .chapter, .final-exam-question {
+      background: #f9fafb;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+    img {
+      max-width: 150px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h2>Edit Course - {{ course.course_name }}</h2>
     <form method="POST" enctype="multipart/form-data">
-      <div class="form-group">
-        <label>Main Section</label>
-        <select name="main_section" required>
-          <option value="aptitude" {% if course.main_section == 'aptitude' %}selected{% endif %}>Aptitude</option>
-          <option value="english" {% if course.main_section == 'english' %}selected{% endif %}>English & Communication</option>
-          <option value="computers" {% if course.main_section == 'computers' %}selected{% endif %}>Computers</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Course Name</label>
-        <input type="text" name="course_name" value="{{ course.course_name }}" required />
-      </div>
+
+      <!-- Main Section -->
+      <label>Main Section</label>
+      <select name="main_section" required>
+        {% set current_section = course.main_section %}
+        {% for section in ['aptitude', 'english and communication', 'computers'] %}
+          <option value="{{ section }}" {% if section == current_section %}selected{% endif %}>{{ section|capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Course Name -->
+      <label>Course Name</label>
+      <input type="text" name="course_name" value="{{ course.course_name }}" required>
+
+      <!-- Current Image -->
+      <label>Current Image</label><br>
+      <img src="/image/{{ course.course_image_id }}" alt="Course Image"><br>
+
+      <!-- Upload New Image -->
+      <label>Change Course Image</label>
+      <input type="file" name="course_image" accept="image/*">
+
+      <!-- Outcomes -->
       <label>Course Outcomes</label>
       <div id="description_container">
         {% for point in course.description %}
         <div class="description-point">
-          <textarea name="description[]" required>{{ point }}</textarea>
-          <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✖</button>
+          <textarea name="description[]">{{ point }}</textarea>
+          <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
         </div>
         {% endfor %}
       </div>
-      <button type="button" class="btn" onclick="addDescriptionPoint()">+ Add Outcome</button>
-      <button type="submit" class="btn">Update Course</button>
+      <button type="button" onclick="addDescriptionPoint()">➕ Add Outcome</button>
+
+      <!-- Chapters -->
+      <div id="chapters">
+        {% for chapter in course.chapters %}
+          {% set ch_index = loop.index0 %}
+          <div class="chapter">
+            <label>Chapter Name</label>
+            <input type="text" name="chapter_name[]" value="{{ chapter.chapter_name }}" required>
+
+            <!-- Videos -->
+            <label>Videos</label>
+            <div id="videos_container_{{ ch_index }}">
+              {% for video in chapter.videos %}
+              <div class="video-group">
+                <p><strong>{{ video.title }}</strong></p>
+                <video src="/video/{{ video.file_id }}" controls width="300"></video><br>
+                <label>Change Video:</label>
+                <input type="text" name="video_title_{{ ch_index }}[]" value="{{ video.title }}" required>
+                <input type="file" name="video_file_{{ ch_index }}[]" accept="video/*">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+              </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="add-video-btn" data-index="{{ ch_index }}">➕ Add Video</button>
+
+            <!-- Quizzes -->
+            <label>Quiz Questions</label>
+            <div id="quiz_container_{{ ch_index }}">
+              {% for quiz in chapter.quiz %}
+              <div class="quiz-group">
+                <input type="text" name="quiz_question_{{ ch_index }}[]" value="{{ quiz.question }}" placeholder="Question" required>
+                <input type="text" name="quiz_option_a_{{ ch_index }}[]" value="{{ quiz.options.a }}" placeholder="Option A" required>
+                <input type="text" name="quiz_option_b_{{ ch_index }}[]" value="{{ quiz.options.b }}" placeholder="Option B" required>
+                <input type="text" name="quiz_option_c_{{ ch_index }}[]" value="{{ quiz.options.c }}" placeholder="Option C" required>
+                <input type="text" name="quiz_option_d_{{ ch_index }}[]" value="{{ quiz.options.d }}" placeholder="Option D" required>
+                <select name="quiz_answer_{{ ch_index }}[]" required>
+                  {% for opt in ['a','b','c','d'] %}
+                  <option value="{{ opt }}" {% if opt == quiz.answer %}selected{% endif %}>{{ opt }}</option>
+                  {% endfor %}
+                </select>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+              </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="add-quiz-btn" data-index="{{ ch_index }}">➕ Add Quiz</button>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Final Exam -->
+      <h3>Final Exam Questions</h3>
+      <div id="final_exam_questions">
+        {% for question in course.final_exam %}
+        <div class="final-exam-question">
+          <input type="text" name="final_question[]" value="{{ question.question }}" placeholder="Final Question" required>
+          <input type="text" name="final_option_a[]" value="{{ question.options.a }}" placeholder="Option A" required>
+          <input type="text" name="final_option_b[]" value="{{ question.options.b }}" placeholder="Option B" required>
+          <input type="text" name="final_option_c[]" value="{{ question.options.c }}" placeholder="Option C" required>
+          <input type="text" name="final_option_d[]" value="{{ question.options.d }}" placeholder="Option D" required>
+          <select name="final_answer[]" required>
+            {% for opt in ['a','b','c','d'] %}
+            <option value="{{ opt }}" {% if opt == question.answer %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+          <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" onclick="addFinalExamQuestion()">➕ Add Final Question</button>
+
+      <!-- Submit -->
+      <input type="submit" value="Update Course">
     </form>
   </div>
+
+  <!-- Script Handlers -->
   <script>
+    // Add video
+    document.querySelectorAll('.add-video-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const index = parseInt(this.dataset.index);
+        addVideoInput(index);
+      });
+    });
+
+    // Add quiz
+    document.querySelectorAll('.add-quiz-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const index = parseInt(this.dataset.index);
+        addQuizInput(index);
+      });
+    });
+
     function addDescriptionPoint() {
-      const cont = document.getElementById('description_container');
+      const container = document.getElementById('description_container');
       const div = document.createElement('div');
       div.className = 'description-point';
       div.innerHTML = `
-        <textarea name="description[]" placeholder="Outcome point..." required></textarea>
-        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✖</button>`;
-      cont.appendChild(div);
+        <textarea name="description[]" required></textarea>
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>`;
+      container.appendChild(div);
+    }
+
+    function addVideoInput(index) {
+      const container = document.getElementById(`videos_container_${index}`);
+      const div = document.createElement('div');
+      div.className = 'video-group';
+      div.innerHTML = `
+        <input type="text" name="video_title_${index}[]" placeholder="Video Title" required />
+        <input type="file" name="video_file_${index}[]" accept="video/*" required />
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>`;
+      container.appendChild(div);
+    }
+
+    function addQuizInput(index) {
+      const container = document.getElementById(`quiz_container_${index}`);
+      const div = document.createElement('div');
+      div.className = 'quiz-group';
+      div.innerHTML = `
+        <input type="text" name="quiz_question_${index}[]" placeholder="Question" required />
+        <input type="text" name="quiz_option_a_${index}[]" placeholder="Option A" required />
+        <input type="text" name="quiz_option_b_${index}[]" placeholder="Option B" required />
+        <input type="text" name="quiz_option_c_${index}[]" placeholder="Option C" required />
+        <input type="text" name="quiz_option_d_${index}[]" placeholder="Option D" required />
+        <select name="quiz_answer_${index}[]" required>
+          <option value="" disabled selected>Select Answer</option>
+          <option value="a">a</option>
+          <option value="b">b</option>
+          <option value="c">c</option>
+          <option value="d">d</option>
+        </select>
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>`;
+      container.appendChild(div);
+    }
+
+    function addFinalExamQuestion() {
+      const container = document.getElementById('final_exam_questions');
+      const div = document.createElement('div');
+      div.className = 'final-exam-question';
+      div.innerHTML = `
+        <input type="text" name="final_question[]" placeholder="Final Question" required />
+        <input type="text" name="final_option_a[]" placeholder="Option A" required />
+        <input type="text" name="final_option_b[]" placeholder="Option B" required />
+        <input type="text" name="final_option_c[]" placeholder="Option C" required />
+        <input type="text" name="final_option_d[]" placeholder="Option D" required />
+        <select name="final_answer[]" required>
+          <option value="" disabled selected>Select Answer</option>
+          <option value="a">a</option>
+          <option value="b">b</option>
+          <option value="c">c</option>
+          <option value="d">d</option>
+        </select>
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>`;
+      container.appendChild(div);
     }
   </script>
 </body>

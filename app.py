@@ -1110,8 +1110,13 @@ def admin():
     for test in all_fitness_tests:
         test['image_url'] = f"/image/{test['image_id']}" if 'image_id' in test else "/static/default.jpg"
 
+    grouped_courses = defaultdict(list)
+    for course in all_courses:
+        grouped_courses[course['main_section']].append(course)
+
     return render_template(
         'admin.html',
+        grouped_courses=grouped_courses,
         courses=all_courses,
         bundles=all_bundles,
         fitness_tests=all_fitness_tests
