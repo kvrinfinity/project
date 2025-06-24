@@ -56,6 +56,7 @@ results_col = db['final_exam_results']
 bundles_col = db["bundles"]
 users_col = db['users']
 fitness_tests_col = db['fitness_test']
+blogs_col = db['blogs']
 membership_col = db["membership"]
 fs = GridFS(db)
 
@@ -239,6 +240,49 @@ Team KVR Infinity
         print("❌ Error in payment_success route:", str(e))
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
+@app.route('/blogs')
+def display_blogs():
+    blogs = list(blogs_col.find())
+    for blog in blogs:
+        blog['_id'] = str(blog['_id'])
+        blog['image_url'] = f"/blog-image/{blog['image_id']}"
+    return render_template('blogs.html', blogs=blogs)
+
+@app.route('/blog-image/<image_id>')
+def blog_image(image_id):
+    image = fs.get(ObjectId(image_id))
+    return app.response_class(image.read(), mimetype=image.content_type)
+
+@app.route('/write-blog', methods=['GET', 'POST'])
+def write_blog():
+    if request.method == 'POST':
+        content = request.form['content']
+        author = request.form['author']
+        linkedin = request.form['linkedin']
+        image_file = request.files.get('image')
+
+        image_id = None
+        if image_file and image_file.filename:
+            image_id = fs.put(
+                image_file,
+                filename=secure_filename(image_file.filename),
+                content_type=image_file.content_type
+            )
+
+        blog_data = {
+            'content': content,
+            'author': author,
+            'linkedin': linkedin,
+            'image_id': image_id,
+            'created_at': datetime.utcnow()
+        }
+
+        blogs_col.insert_one(blog_data)
+        flash("✅ Blog posted successfully!", "success")
+        return redirect(url_for('write_blog'))
+
+    return render_template('write_blog.html')
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -1441,6 +1485,9 @@ def edit_bundle(bundle_id):
 
 from bson import ObjectId
 
+@app.route('/career')
+def career():
+    return render_template('careers.html')
 
 @app.route('/image/<image_id>')
 def serve_image(image_id):

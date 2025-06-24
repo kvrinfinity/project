@@ -88,6 +88,11 @@ body {
   color: white;
 }
 
+.logo {
+  height: 40px; /* Adjust based on your logo */
+  width: auto;
+  object-fit: contain;
+}
 
 
 /* Hero Section */
@@ -2877,3 +2882,101 @@ body {
   }
 }
 
+  .membership-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+      background: #fff;
+      
+    }
+
+    .carousel-container {
+      position: relative;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .pricing-card {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      background: rgb(3, 3, 3);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .pricing-card.active {
+      display: flex;
+    }
+
+    .pricing-card h2 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #d72017;
+    }
+
+    .pricing-card p {
+      font-size: 1rem;
+      margin-bottom: 20px;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .pricing-box {
+      text-align: center;
+      background: #f3f3f3;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .pricing-box h3 {
+      font-size: 2rem;
+      margin: 10px 0;
+      color: #000;
+    }
+
+    .referral-box, .discount-box {
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    code {
+      background: #da0b0b;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    .button {
+      padding: 12px 24px;
+      background: #e30e0e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .button:hover {
+      background: #5f2cd5;
+    }
+
+    @media (max-width: 768px) {
+      .pricing-card {
+        padding: 20px;
+      }
+
+      .pricing-box h3 {
+        font-size: 1.5rem;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog Articles</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+    
+     nav a{
+      text-decoration: none;
+    }
+    .netflix-font {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 35px;
+      color: #e50914; 
+      letter-spacing: 2px;
+    }
+
+    .navbar a h1{
+      text-decoration: none;
+    }
+    .blog-container {
+    margin-top: 10%;
+      max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+      padding: 20px;
+    }
+
+    .blog-card {
+      display: flex;
+      background: #000000;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .blog-image {
+        margin-left:50px;
+        margin-top: 4%;
+        display: flex;
+        align-items: center;
+        text-align: center;
+      flex: 1 1 300px;
+      min-width: 300px;
+      max-width: 300px;
+      object-fit: cover;
+      height: 200px;
+    }
+
+    .blog-content {
+      flex: 2;
+      padding: 20px;
+    }
+
+    .blog-tag {
+      background: #ff0202;
+      color: #ffffff;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .blog-title {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    .blog-paragraph {
+      font-size: 1rem;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .blog-author {
+      font-size: 0.9rem;
+      color: #ba1919;
+    }
+
+    .blog-author a {
+      color: #d90101;
+      text-decoration: none;
+    }
+
+    @media screen and (max-width: 768px) {
+      .blog-card {
+        flex-direction: column;
+      }
+
+      .blog-image {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+    .navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Nav links center */
+.nav-links {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #ff4b4b;
+  transform: scale(1.05);
+}
+
+/* Login button */
+.login-wrapper {
+  background-color: red;
+  padding: 6px 12px;
+  border-radius: 5px;
+}
+
+.login-wrapper:hover {
+  background-color: white;
+}
+
+.bold-text {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-wrapper:hover .bold-text {
+  color: red;
+}
+
+/* Media Query */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .login-wrapper {
+    margin-top: 5px;
+  }
+
+  .logo {
+    height: 40px;
+  }
+}
+
+/* Blog Card Styling */
+.blog-card {
+  background: #000;
+  color: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px;
+  overflow: hidden;
+  max-width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.blog-card img {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.blog-card .tag {
+  background: red;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin: 10px 0;
+}
+
+.blog-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.blog-card .author {
+  color: orange;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+  </style>
+</head>
+<body>
+     <nav class="navbar">
+  <a href="{{ url_for('index') }}">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Logo">
+  </a>
+
+  <div class="nav-links">
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('about') }}">About Us</a>
+  </div>
+
+  <div class="login-wrapper">
+    <a href="{{ url_for('login') }}" class="bold-text">Login</a>
+  </div>
+</nav>
+
+  <div class="blog-container">
+    {% for blog in blogs %}
+    <div class="blog-card">
+      <img class="blog-image" src="{{ blog.image_url }}" alt="Blog Image">
+      <div class="blog-content">
+        <span class="blog-tag">Blog</span>
+        <h2 class="blog-title">{{ blog.title }}</h2>
+        <p class="blog-paragraph">{{ blog.content }}</p>
+        <p class="blog-author">By <a href="{{ blog.linkedin }}" target="_blank">{{ blog.author }}</a></p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

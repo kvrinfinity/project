@@ -20,15 +20,20 @@
       color: #e50914; 
       letter-spacing: 2px;
     }
+
+    .navbar a h1{
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
  <nav class="navbar">
   <a href="{{ url_for('index') }}" ><h1 class="netflix-font">KVR Infinity</h1></a>
   <div class="nav-links">
-    <a href="{{ url_for('index') }}">home</a>
-    <a href="{{ url_for('about') }}">about us</a>
-    
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('about') }}">About us</a>
+    <a href="{{ url_for('display_blogs') }}">Blog</a>
+    <a href="{{ url_for('career') }}">Career</a>
   </div>
   <div class="login-wrapper">
     <a href="{{ url_for('login') }}" class="bold-text">Login</a>
@@ -248,42 +253,63 @@
 
   <br>
   
-  <section class="membership-section">
-  <!-- Left: Video Side -->
-  <div class="video-side">
-    <video autoplay muted loop>
-      <source src="your-video.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
+   <section class="membership-section">
+    <div class="carousel-container">
 
-  <!-- Right: Content Side -->
-  <div class="content-side">
-    <h2>Unlock Premium Membership</h2>
-    <p>Use a referral code or early bird offer to get massive discounts!</p>
-
-    <div class="pricing-box">
-      <div>Original Price</div>
-      <h3>₹10,000</h3>
-
-      <div class="referral-box">
-        <strong>With Referral Code:</strong><br>
-        70% Off — <strong>Pay ₹3,000</strong>
+      <!-- Card 1: General -->
+      <div class="pricing-card active">
+        <h2>General Membership Plan</h2>
+        <p>Unlock premium features with no discounts applied.</p>
+        <div class="pricing-box">
+          <div>Original Price</div>
+          <h3>₹10,000</h3>
+        </div>
+        <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
       </div>
 
-      <div class="discount-box">
-        <strong>Early Bird Code:</strong><br>
-        Use <code>kvr1122</code> for 40% Off — <strong>Pay ₹6,000</strong>
+      <!-- Card 2: Early Bird Offer -->
+      <div class="pricing-card">
+        <h2>Early Bird Offer</h2>
+        <p>Use early bird code <code>kvr1122</code> to unlock your 40% discount!</p>
+        <div class="pricing-box">
+          <div>Original Price</div>
+          <h3>₹10,000</h3>
+          <div class="discount-box">
+            <strong>Early Bird Code:</strong><br>
+            Use <code>kvr1122</code> — <strong>Pay ₹6,000</strong>
+          </div>
+        </div>
+        <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
       </div>
 
-      <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
+      <!-- Card 3: Friend Referral -->
+      <div class="pricing-card">
+        <h2>Friend Referral Discount</h2>
+        <p>Your friend invited you! Use their code and get a massive 70% off.</p>
+        <div class="pricing-box">
+          <div>Original Price</div>
+          <h3>₹10,000</h3>
+          <div class="referral-box">
+            <strong>With Referral Code:</strong><br>
+            70% Off — <strong>Pay ₹3,000</strong>
+          </div>
+        </div>
+        <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
+      </div>
+
     </div>
-  </div>
-  </div>
-</section>
+  </section>
 
+<script>
+    const cards = document.querySelectorAll('.pricing-card');
+    var curr = 0;
 
-
+    setInterval(() => {
+      cards[curr].classList.remove('active');
+      curr = (curr + 1) % cards.length;
+      cards[curr].classList.add('active');
+    }, 4000); // Change card every 4 seconds
+  </script>
 
 <section class="team-section">
   <h2 class="team-title">Meet Our Beloved Faculty</h2>
@@ -357,32 +383,6 @@
   
 </section>
 
-  <!-- Swiper CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-<section class="launch-section">
-  <!-- Background moving text -->
-  <div class="bg-text">KVR Infinity</div>
-
-  <!-- Left: Animated Phone Image -->
-  <div class="phones-container">
-    <img src="{{ url_for('static', filename='phone.png') }}" alt="App Preview Phone" class="animated-phone" />
-  </div>
-
-  <!-- Right: Text Content -->
-  <div class="text-container">
-    <h1>KVR Infinity<span> App</span></h1>
-    <p>Mobile Application Coming Soon</p>
-    <ul class="mobile-benefits">
-      <li>📶 Learn Anywhere</li>
-      <li>⏱️ Save Time</li>
-      <li>🔔 Instant Alerts</li>
-      <li>📝 Easy Access to Courses</li>
-      <li>📊 Progress Tracking</li>
-    </ul>
-    <h2>🚀 Launching Soon...</h2>
-  </div>
-</section>
 
 
 
