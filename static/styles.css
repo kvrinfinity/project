@@ -21,7 +21,7 @@ body {
   align-items: center;
   padding: 15px 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  
+  min-height: 5%;
   position: fixed;         /* 🧲 Fixes it to the viewport */
   top: 0;                  /* 📌 Stick to the top */
   left: 0;
@@ -281,6 +281,10 @@ h2 {
 @media (max-width: 768px) {
   .steps-section {
     grid-template-columns: 1fr;
+  }
+
+  .navbar{
+    height: 100px;
   }
 }
 
@@ -2063,40 +2067,27 @@ body {
       align-items: center;
       justify-content: center;
       padding: 4rem 2rem;
-      border-radius: 30px;
-      background-color: rgb(255, 228, 233);
-      width: 95%;
+      background-color: rgb(0, 0, 0);
       margin-left: auto;
       margin-right: auto;
       max-height: 700px;
     }
 
-    .kvr-left {
-  flex: 1 1 400px;
-  display: flex;
-  justify-content: center;
-  align-items: center; /* center image vertically */
-}
+  
 
-.kvr-left img {
-  width: 400px;
-  height: 600px;
-  object-fit: cover; /* fills space while cropping if needed */
-  border-radius: 20px;
-}
 
 
 
     .kvr-right {
       flex: 1 1 450px;
       max-width: 550px;
-      padding-left: 2rem;
+
     }
 
     .kvr-right h2 {
       font-size: 2rem;
       font-weight: 700;
-      margin-bottom: 1rem;
+      color: white;
     }
 
     .kvr-right h2 span {
@@ -2104,7 +2095,7 @@ body {
     }
 
     .kvr-right p {
-      color: #666;
+      color: #010101;
       margin-bottom: 2rem;
     }
 
@@ -2126,7 +2117,7 @@ body {
     }
 
     .kvr-feature i {
-      background-color: #030303;
+      background-color: #9f1010;
       color: #fff;
       font-size: 1.2rem;
       padding: 0.8rem;
@@ -2139,12 +2130,13 @@ body {
       margin: 0;
       font-size: 1.1rem;
       font-weight: 600;
+      color:red;
     }
 
     .kvr-feature p {
       margin: 0;
       font-size: 0.95rem;
-      color: #c7c7c7;
+      color: #353535;
     }
 
     .kvr-text {
@@ -2612,7 +2604,7 @@ body {
   font-size: 2rem;
   margin-bottom: 30px;
   font-weight: 600;
-  text-align: left;
+  text-align: center;
   margin-left: 11%;
 }
 
@@ -2624,7 +2616,7 @@ body {
 }
 
 .fitness-card {
-  background: #fff;
+  background: #000000;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
   overflow: hidden;
@@ -2634,7 +2626,8 @@ body {
 }
 
 .fitness-card:hover {
-  transform: translateY(-5px);
+  transform: scale(1.08);
+  transition: .5s ease;
 }
 
 .test-img {
@@ -2655,12 +2648,14 @@ body {
 
 .test-content h3 {
   margin: 10px 0;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
+  color: rgb(179, 23, 23);
+  font-weight: 700;
 }
 
 .test-content p {
   font-size: 0.95rem;
-  color: #555;
+  color: #ababab;
 }
 
 .test-content button {
@@ -2683,8 +2678,8 @@ body {
 }
 
 .more-tests-btn button {
-  color: rgb(170, 8, 8);
-  border: 2px solid rgb(126, 0, 0);
+  color: rgb(255, 247, 247);
+  background-color: rgb(183, 11, 11);
   padding: 12px 25px;
   font-size: 1rem;
   border-radius: 10px;
@@ -2700,7 +2695,6 @@ body {
 
 .arrow-btn {
 /* Primary Red */
-  color: white;
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
@@ -2709,14 +2703,15 @@ body {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.3s ease;
   display: inline-flex;
-  border: 2px solid rgb(146, 9, 9);
   align-items: center;
   gap: 8px;
 }
 
 .arrow-btn:hover {
-  background-color: #ffffff;
-  transform: translateY(-2px);
+  background-color: #0c0c0c;
+  transform: scale(1.08);
+  transition: .5s ease;
+  color: white;
 }
 
 .arrow {
@@ -2739,3 +2734,146 @@ body {
     margin-left: 0;
   }
 }
+
+.top-courses-album {
+  background: #fafafa;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-courses-album h1{
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 50px;
+}
+
+.top-courses-album h1 span{
+  color: rgb(184, 10, 10);
+}
+
+.top-courses-slide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+  gap: 40px;
+  display: none;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: black;
+}
+
+.top-courses-slide.active {
+  display: flex;
+}
+
+.course-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.course-content h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #c61414;
+}
+
+.course-content h2 span{
+  color: rgb(255, 255, 255);
+}
+
+.course-metrics {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.course-metrics div {
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.read-more {
+  padding: 12px 24px;
+  background: #c51616;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.course-image {
+  flex: 1;
+  align-items: end;
+}
+
+.course-image img {
+  width: 90%;
+  height: 400px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.course-logo {
+  height: 90px;
+  margin-bottom: 10px;
+}
+
+/* Controls */
+.slider-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 20px;
+}
+
+.slider-controls button {
+  border: none;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.dots span {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #ccc;
+  border-radius: 50%;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.dots .active {
+  background: #c11313;
+}
+
+.course-metrics div{
+  color: rgb(184, 179, 179);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .top-courses-slide {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .course-image {
+    order: -1;
+  }
+
+  .course-metrics {
+    justify-content: center;
+  }
+}
+

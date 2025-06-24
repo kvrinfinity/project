@@ -101,116 +101,95 @@
 
 </section>
 
-
-<div class="top-courses-wrapper">
-    <h2 class="top-courses-title">Exlore top<span> courses</span></h2>
-    <div class="top-courses-scroll">
-      
-      <!-- Course Card -->
-      <div class="top-courses-card">
-        <span class="course-rank">1</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='APTITUDE.png') }}" alt="Course 1">
-        <div class="course-hover-info">
-          <h4>Full Stack Web Dev</h4>
-          <p>12 Chapters</p>
-          <button>Start Now</button>
-        </div>
+<section class="top-courses-album">
+  <h1>Explore <span> Top Courses</span></h1>
+  <div class="top-courses-slide active">
+    <div class="course-content">
+      <h2><strong>Full Stack Web Development</strong><span> Mastery Program</span></h2>
+      <div class="course-metrics">
+        <div><strong>120+</strong><br> Hours of Learning</div>
+        <div><strong>90%</strong><br> Placement Rate</div>
       </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">2</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/2.png') }}"  alt="Course 2">
-        <div class="course-hover-info">
-          <h4>UI/UX Design</h4>
-          <p>10 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">3</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/3.png') }}" alt="Course 3">
-        <div class="course-hover-info">
-          <h4>Data Science Basics</h4>
-          <p>8 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <!-- Continue for 4 through 10 -->
-      <div class="top-courses-card">
-        <span class="course-rank">4</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/4.png') }}" alt="Course 4">
-        <div class="course-hover-info">
-          <h4>React for Beginners</h4>
-          <p>14 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">5</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/5.png') }}" alt="Course 5">
-        <div class="course-hover-info">
-          <h4>AI Fundamentals</h4>
-          <p>11 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">6</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/6.png') }}" alt="Course 6">
-        <div class="course-hover-info">
-          <h4>DevOps Masterclass</h4>
-          <p>15 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">7</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/7.png') }}" alt="Course 7">
-        <div class="course-hover-info">
-          <h4>Mobile App Dev</h4>
-          <p>13 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">8</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/8.png') }}" alt="Course 8">
-        <div class="course-hover-info">
-          <h4>Cybersecurity 101</h4>
-          <p>9 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">9</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/9.png') }}" alt="Course 9">
-        <div class="course-hover-info">
-          <h4>Python Essentials</h4>
-          <p>7 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
-      <div class="top-courses-card">
-        <span class="course-rank">10</span>
-        <img class="course-thumb" src="{{ url_for('static',filename='images/10.png') }}" alt="Course 10">
-        <div class="course-hover-info">
-          <h4>Machine Learning</h4>
-          <p>10 Chapters</p>
-          <button>Start Now</button>
-        </div>
-      </div>
-
+      <button class="read-more">Explore Course →</button>
+    </div>
+    <div class="course-image">
+      <img src="{{ url_for('static',filename='images/1.png') }}" alt="Course Image" />
     </div>
   </div>
 
+  <div class="top-courses-slide">
+    <div class="course-content">
+      <h2><strong>Data Science</strong><br><span> Career Accelerator</span></h2>
+      <div class="course-metrics">
+        <div><strong>80+</strong><br> Projects Included</div>
+        <div><strong>95%</strong><br> Job Guarantee</div>
+      </div>
+      <button class="read-more">Explore Course →</button>
+    </div>
+    <div class="course-image">
+      <img src="{{ url_for('static',filename='images/2.png') }}" alt="Course Image" />
+    </div>
+  </div>
+
+  <div class="top-courses-slide">
+    <div class="course-content">
+      <h2><strong>UI/UX Design</strong><br> <span>Professional Bootcamp</span></h2>
+      <div class="course-metrics">
+        <div><strong>70+</strong><br> Design Projects</div>
+        <div><strong>100%</strong><br> Portfolio Ready</div>
+      </div>
+      <button class="read-more">Explore Course →</button>
+    </div>
+    <div class="course-image">
+      <img src="{{ url_for('static',filename='images/3.png') }}" alt="Course Image" />
+    </div>
+  </div>
+
+  <div class="slider-controls">
+    <button class="prev">&#10094;</button>
+    <div class="dots" id="albumDots"></div>
+    <button class="next">&#10095;</button>
+  </div>
+</section>
+
+
+<script>
+  const slides = document.querySelectorAll('.top-courses-slide');
+  const dotsContainer = document.getElementById('albumDots');
+  let current = 0;
+
+  function showSlide(index) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+    dotsContainer.querySelectorAll('span').forEach((dot, i) =>
+      dot.classList.toggle('active', i === index)
+    );
+  }
+
+  function nextSlide() {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+  }
+
+  function prevSlide() {
+    current = (current - 1 + slides.length) % slides.length;
+    showSlide(current);
+  }
+
+  document.querySelector('.prev').addEventListener('click', prevSlide);
+  document.querySelector('.next').addEventListener('click', nextSlide);
+
+  // Create dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dot.addEventListener('click', () => {
+      current = i;
+      showSlide(i);
+    });
+    dotsContainer.appendChild(dot);
+  });
+
+  showSlide(current);
+</script>
 
 
   <section class="section-ai-leaders">
@@ -228,9 +207,6 @@
   </section>
 
   <section class="kvr-section">
-  <div class="kvr-left">
-    <img src="{{ url_for('static',filename='gurl.png') }}" alt="KVR Girl" />
-  </div>
 
   <div class="kvr-right">
     <h2>Why Choose <span>KVR Infinity?</span></h2>
