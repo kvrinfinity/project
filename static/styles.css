@@ -21,7 +21,12 @@ body {
   align-items: center;
   padding: 15px 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  position: relative;
+  
+  position: fixed;         /* 🧲 Fixes it to the viewport */
+  top: 0;                  /* 📌 Stick to the top */
+  left: 0;
+  width: 100%;             /* 🌐 Full width */
+  z-index: 1000; 
 }
 .login-wrapper {
   margin-left: auto;
@@ -2447,3 +2452,290 @@ body {
       }
 
     }
+
+    .hero-section {
+      position: relative;
+      background-image: url('images/banner.png'); /* Replace with your image path */
+      background-size: cover;
+      background-position: center;
+      height: 650px;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 5%;
+    }
+
+    .hero-content {
+      max-width: 600px;
+      padding: 2rem;
+      border-radius: 12px;
+    }
+
+    .hero-content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .hero-content h1 span{
+      color: rgb(186, 21, 21);
+    }
+
+    .hero-content p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      color:rgb(129, 129, 129)
+    }
+
+    .hero-content .btn {
+      background-color: #a81717;
+      color: white;
+      padding: 0.9rem 1.6rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .hero-content .btn:hover {
+      background-color: #fdfdfd;
+      color: rgb(147, 22, 22);
+      transform: scale(1.05);
+      transition: .5s ease;
+    }
+
+    @media (max-width: 768px) {
+      .hero-section {
+        height: 600px;
+        padding: 3rem 1rem;
+        background-position: top;
+      }
+
+      .hero-content {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 1.5rem;
+        text-align: center;
+        margin: auto;
+      }
+
+      .hero-content h1 {
+        font-size: 2rem;
+      }
+    }
+
+.section-ai-leaders {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px;
+      flex-wrap: wrap;
+    }
+
+    .ai-leaders-text {
+      flex: 1;
+      min-width: 280px;
+      margin-bottom: 40px;
+    }
+
+    .ai-leaders-text h1 {
+      font-size: 2.8rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .ai-leaders-text h1 span{
+      color: rgb(132, 22, 22);
+    }
+
+    .ai-leaders-text p {
+      font-size: 1.1rem;
+      color: #444;
+      max-width: 500px;
+      margin-bottom: 20px;
+    }
+
+    .ai-leaders-button {
+      background-color: #c11313;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1rem;
+      text-decoration: none;
+      border-radius: 8px;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+
+    .ai-leaders-button:hover {
+      background-color: #ffffff;
+      transform: scale(1.08);
+      border: 2px solid rgb(142, 21, 21);
+      color: rgb(148, 16, 16);
+    }
+
+    .ai-leaders-image {
+      flex: 1;
+      min-width: 280px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ai-leaders-image img {
+      width: 100%;
+      max-width: 450px;
+      border-radius: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .section-ai-leaders {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .ai-leaders-image {
+        margin-top: 20px;
+      }
+    }
+
+.fitness-test-section {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.fitness-test-section h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  font-weight: 600;
+  text-align: left;
+  margin-left: 11%;
+}
+
+.fitness-test-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.fitness-card {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+  max-width: 300px;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.fitness-card:hover {
+  transform: translateY(-5px);
+}
+
+.test-img {
+  width: 95%;
+  height: 180px;
+  margin-left: auto;
+  margin-right: auto;
+  object-fit: cover;
+  margin-top: 2%;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+}
+
+.test-content {
+  padding: 20px;
+}
+
+.test-content h3 {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+
+.test-content p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.test-content button {
+  margin-top: 15px;
+  background-color: rgb(159, 21, 21);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.test-content button:hover{
+  transform: scale(1.08);
+  transition: 0.5s ease;
+}
+.more-tests-btn {
+  margin-top: 30px;
+}
+
+.more-tests-btn button {
+  color: rgb(170, 8, 8);
+  border: 2px solid rgb(126, 0, 0);
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: left;
+  width: 30%;
+  
+}
+.more-tests-btn {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.arrow-btn {
+/* Primary Red */
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  display: inline-flex;
+  border: 2px solid rgb(146, 9, 9);
+  align-items: center;
+  gap: 8px;
+}
+
+.arrow-btn:hover {
+  background-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.arrow {
+  font-size: 1.2rem;
+}
+
+
+@media (max-width: 768px) {
+  .fitness-test-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fitness-card {
+    max-width: 90%;
+  }
+
+  .fitness-card h2{
+    text-align: left;
+    margin-left: 0;
+  }
+}

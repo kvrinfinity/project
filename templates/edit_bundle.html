@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Bundle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #1e3a8a;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 18px;
+      display: block;
+      color: #334155;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #f9fafb;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input[type="file"] {
+      margin-top: 10px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .checkbox-group {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .checkbox-group label {
+      background: #f1f5f9;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      accent-color: #2563eb;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      padding: 12px 20px;
+      margin-top: 25px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1d4ed8;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #64748b;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Edit Bundle</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+      <label for="bundle_name">Bundle Name</label>
+      <input type="text" id="bundle_name" name="bundle_name" value="{{ bundle.bundle_name }}" required>
+
+      <label for="bundle_description">Description</label>
+      <textarea id="bundle_description" name="bundle_description" required>{{ bundle.description }}</textarea>
+
+      <label>Current Bundle Image</label><br>
+      {% if bundle.image_id %}
+        <img src="/image/{{ bundle.image_id }}" alt="Current Image">
+      {% else %}
+        <p style="color: #64748b;">No image uploaded yet.</p>
+      {% endif %}
+
+      <label>Change Image</label>
+      <input type="file" name="bundle_image" accept="image/*">
+
+      <label>Select Courses</label>
+      <div class="checkbox-group">
+        {% for course in courses %}
+        <label>
+          <input type="checkbox" name="selected_courses" value="{{ course._id }}"
+            {% if course._id in bundle.course_ids %}checked{% endif %}>
+          {{ course.course_name }}
+        </label>
+        {% endfor %}
+      </div>
+
+      <button type="submit"><i class="fas fa-save"></i> Update Bundle</button>
+    </form>
+
+    <a href="/admin" class="back-link"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+  </div>
+</body>
+</html>

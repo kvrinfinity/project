@@ -34,9 +34,15 @@
     <a href="{{ url_for('login') }}" class="bold-text">Login</a>
   </div>
 </nav>
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Skills that <span>Start Careers</span></h1>
+      <p>Introducing Career Accelerators – focus on the skills and real-world experience that'll get you noticed.</p>
+      <button class="btn">Explore All Career Accelerators</button>
+    </div>
+  </section>
 
-
-  <section class="hero">
+  <!--<section class="hero">
     <h2>Endless Learning, One Membership</h2>
     <p>Join KVR to access top courses in Aptitude, DSA & OS.</p><br>
     <a href="{{ url_for('login') }}" class="btn">Join Membership</a>
@@ -45,49 +51,56 @@
 <div class="curve-wrapper">
   <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
     <defs>
-      <!-- Gradient fill -->
+
       <linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="#ff4b5c" />
         <stop offset="100%" stop-color="#ff6b81" />
       </linearGradient>
 
-      <!-- Soft glow shadow along the curve -->
+ 
       <filter id="glowShadow" x="-10%" y="-50%" width="120%" height="300%">
         <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="rgba(255, 75, 92, 0.6)" />
       </filter>
     </defs>
 
-    <!-- Curve path -->
+ 
     <path d="M0,20 C480,5 960,5 1440,20"
           stroke="url(#curveGradient)"
           stroke-width="2"
           fill="none"
           filter="url(#glowShadow)" />
   </svg>
-</div>
+</div>-->
 
-<h2>Take a <span style="color: red;">Fitness Test💪</span></h2>
+<!-- FITNESS TEST SECTION -->
+<section class="fitness-test-section">
+  <h2>Take a <span style="color: red;">Fitness Test 💪</span></h2>
 
-<div class="slider" id="fitnessSlider">
-  {% for test in fitness_tests %}
-  <div class="acourse-card">
-    <div class="acourse-inner">
-      <div class="acourse-front">
-        <img src="{{ test.image_url }}" alt="{{ test.test_name }}" />
-        <span>Test</span>
+  <div class="fitness-test-grid">
+    {% for test in fitness_tests[:3] %}
+    <div class="fitness-card">
+      <img src="{{ test.image_url }}" alt="{{ test.test_name }}" class="test-img">
+      <div class="test-content">
         <h3>{{ test.test_name }}</h3>
         <p>🧠 {{ test.questions | length }} Questions</p>
-      </div>
-      <div class="acourse-details-hover">
-        <h3>{{ test.test_name }}</h3>
         <a href="{{ url_for('take_fitness_test', test_id=test._id|string) }}">
           <button>Take Test</button>
         </a>
       </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
+
+  <div class="more-tests-btn">
+  <a href="{{ url_for('login') }}">
+    <button class="arrow-btn">
+      All Fitness Tests <span class="arrow">→</span>
+    </button>
+  </a>
 </div>
+
+</section>
+
 
 <div class="top-courses-wrapper">
     <h2 class="top-courses-title">Exlore top<span> courses</span></h2>
@@ -200,7 +213,19 @@
 
 
 
+  <section class="section-ai-leaders">
+    <div class="ai-leaders-text">
+      <h1>AI for <span>Business Leaders</span></h1>
+      <p>
+        Build an AI-habit for you and your team that builds hands-on skills to help you lead effectively.
+      </p>
+      <a href="#" class="ai-leaders-button">Start Learning →</a>
+    </div>
 
+    <div class="ai-leaders-image">
+      <img src="{{ url_for('static',filename='images/ai-banner.png') }}" alt="AI for Business Leaders">
+    </div>
+  </section>
 
   <section class="kvr-section">
   <div class="kvr-left">

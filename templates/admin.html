@@ -428,6 +428,12 @@ tr:hover {
         </ul>
       </div>
       <div class="bundle-actions">
+        <form method="GET" action="/edit_bundle/{{ bundle._id }}">
+  <button type="submit" class="download-btn">
+    <i class="fas fa-pen"></i> Edit Bundle
+  </button>
+</form>
+
         <form method="POST" action="/delete_bundle">
           <input type="hidden" name="bundle_id" value="{{ bundle._id }}">
           <button type="submit" class="remove-btn" onclick="return confirm('Are you sure to delete this bundle?')">
