@@ -438,6 +438,13 @@ tr:hover {
     </div>
     {% endfor %}
   </div>
+
+  <form method="GET" action="/edit_course/{{ course._id }}" style="display:inline;">
+  <button type="submit" class="download-btn">
+    <i class="fas fa-pen"></i> Edit
+  </button>
+</form>
+
     <script>
   function addFitnessQuestion() {
     const container = document.getElementById('fitness-questions');

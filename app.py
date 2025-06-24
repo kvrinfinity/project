@@ -1117,6 +1117,78 @@ def admin():
         fitness_tests=all_fitness_tests
     )
 
+@app.route('/edit_course/<course_id>', methods=['GET', 'POST'])
+def edit_course(course_id):
+    course = courses_col.find_one({'_id': ObjectId(course_id)})
+    if not course:
+        flash("Course not found", "error")
+        return redirect('/admin')
+
+    if request.method == 'POST':
+        # Update course details
+        course_name = request.form['course_name']
+        main_section = request.form['main_section']
+        description = request.form.getlist('description[]')
+
+        # Optional new image
+        image_file = request.files.get('course_image')
+        image_id = course['course_image_id']
+        if image_file and image_file.filename:
+            image_id = fs.put(image_file, filename=secure_filename(image_file.filename))
+
+        # Parse chapters, videos, quizzes, and final exam
+        chapters = []
+        for i, chapter_name in enumerate(request.form.getlist('chapter_name[]')):
+            v_ts = request.form.getlist(f'video_title_{i}[]')
+            v_fs = request.files.getlist(f'video_file_{i}[]')
+            videos = []
+            for t, vf in zip(v_ts, v_fs):
+                if t and vf.filename:
+                    fid = fs.put(vf, filename=secure_filename(vf.filename))
+                    videos.append({'title': t, 'file_id': fid})
+
+            qs = request.form.getlist(f'quiz_question_{i}[]')
+            qa = request.form.getlist(f'quiz_option_a_{i}[]')
+            qb = request.form.getlist(f'quiz_option_b_{i}[]')
+            qc = request.form.getlist(f'quiz_option_c_{i}[]')
+            qd = request.form.getlist(f'quiz_option_d_{i}[]')
+            qans = request.form.getlist(f'quiz_answer_{i}[]')
+
+            quiz = [
+                {'question': qu, 'options': {'a': a, 'b': b, 'c': c, 'd': d}, 'answer': ans}
+                for qu, a, b, c, d, ans in zip(qs, qa, qb, qc, qd, qans) if qu
+            ]
+            chapters.append({'chapter_name': chapter_name, 'videos': videos, 'quiz': quiz})
+
+        final_exam = [
+            {'question': qu, 'options': {'a': a, 'b': b, 'c': c, 'd': d}, 'answer': ans}
+            for qu, a, b, c, d, ans in zip(
+                request.form.getlist('final_question[]'),
+                request.form.getlist('final_option_a[]'),
+                request.form.getlist('final_option_b[]'),
+                request.form.getlist('final_option_c[]'),
+                request.form.getlist('final_option_d[]'),
+                request.form.getlist('final_answer[]')
+            ) if qu
+        ]
+
+        courses_col.update_one(
+            {'_id': ObjectId(course_id)},
+            {'$set': {
+                'course_name': course_name,
+                'main_section': main_section,
+                'description': description,
+                'course_image_id': image_id,
+                'chapters': chapters,
+                'final_exam': final_exam
+            }}
+        )
+
+        flash("Course updated successfully!", "success")
+        return redirect('/admin')
+
+    return render_template("edit_course.html", course=course)
+
 @app.route('/create-fitness-test', methods=['GET', 'POST'])
 def create_fitness_test():
     if request.method == 'POST':
@@ -1349,123 +1421,6 @@ def get_fitness_test_video(video_id):
         return Response(video.read(), mimetype=video.content_type)
     except:
         abort(404)
-
-
-@app.route('/admin/edit/<course_id>', methods=['GET', 'POST'])
-def edit_course(course_id):
-    course = courses_col.find_one({'_id': ObjectId(course_id)})
-    if not course:
-        flash('Course not found.', 'error')
-        return redirect('/admin')
-
-    if request.method == 'POST':
-        main_section = request.form['main_section']
-        course_name = request.form['course_name']
-        description = request.form.getlist('description[]')
-
-        # Optional: handle image upload
-        if 'course_image' in request.files and request.files['course_image'].filename != '':
-            # Delete old image
-            if 'course_image_id' in course:
-                fs.delete(course['course_image_id'])
-            img_file = request.files['course_image']
-            img_id = fs.put(img_file, filename=secure_filename(img_file.filename))
-            course['course_image_id'] = img_id
-
-        # Update fields
-        course['main_section'] = main_section
-        course['course_name'] = course_name
-        course['description'] = description
-
-        courses_col.replace_one({'_id': course['_id']}, course)
-        flash('Course updated successfully.', 'success')
-        return redirect('/admin')
-
-    return render_template('edit_course.html', course=course)
-
-@app.route('/admin/edit_quiz/<course_id>', methods=['GET', 'POST'])
-def edit_quiz(course_id):
-    course = courses_col.find_one({'_id': ObjectId(course_id)})
-
-    if request.method == 'POST':
-        questions = []
-        num_questions = len(request.form.getlist('question'))
-
-        for i in range(num_questions):
-            question_text = request.form.getlist('question')[i]
-            options = request.form.getlist(f'option{i}')
-            answer = request.form.getlist('answer')[i]
-
-            questions.append({
-                'question': question_text,
-                'options': options,
-                'answer': answer
-            })
-
-        courses_col.update_one({'_id': ObjectId(course_id)}, {'$set': {'quiz': questions}})
-        flash('Quiz updated successfully.', 'success')
-        return redirect('/admin')
-
-    return render_template('edit_quiz.html', course=course)
-
-@app.route('/admin/edit_exam/<course_id>', methods=['GET', 'POST'])
-def edit_exam(course_id):
-    course = courses_col.find_one({'_id': ObjectId(course_id)})
-
-    if request.method == 'POST':
-        final_exam = []
-        num_questions = len(request.form.getlist('question'))
-
-        for i in range(num_questions):
-            question_text = request.form.getlist('question')[i]
-            options = request.form.getlist(f'option{i}')
-            answer = request.form.getlist('answer')[i]
-
-            final_exam.append({
-                'question': question_text,
-                'options': options,
-                'answer': answer
-            })
-
-        courses_col.update_one({'_id': ObjectId(course_id)}, {'$set': {'final_exam': final_exam}})
-        flash('Final exam updated successfully.', 'success')
-        return redirect('/admin')
-
-    return render_template('edit_exam.html', course=course)
-
-@app.route('/admin/edit_videos/<course_id>', methods=['GET', 'POST'])
-def edit_videos(course_id):
-    course = courses_col.find_one({'_id': ObjectId(course_id)})
-
-    if request.method == 'POST':
-        chapters = []
-        total_chapters = int(request.form.get('total_chapters', 0))
-
-        for i in range(total_chapters):
-            chapter_title = request.form.get(f'chapter_title_{i}')
-            total_videos = int(request.form.get(f'total_videos_{i}', 0))
-            videos = []
-
-            for j in range(total_videos):
-                video_title = request.form.get(f'video_title_{i}_{j}')
-                video_url = request.form.get(f'video_url_{i}_{j}')
-                videos.append({
-                    'title': video_title,
-                    'url': video_url
-                })
-
-            chapters.append({
-                'title': chapter_title,
-                'videos': videos
-            })
-
-        courses_col.update_one({'_id': ObjectId(course_id)}, {'$set': {'chapters': chapters}})
-        flash('Videos updated successfully.', 'success')
-        return redirect('/admin')
-
-    return render_template('edit_videos.html', course=course)
-
-
 
 @app.route('/courses')
 def courses():

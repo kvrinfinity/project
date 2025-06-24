@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', Arial, sans-serif;
   line-height: 1.6;
   background-color: #f9f9f9;
   color: #ffffff;
@@ -1560,8 +1560,16 @@ body {
   font-family: 'Segoe UI', sans-serif;
 }
 
+.testimonial-section .heading span{
+  color: rgb(163, 4, 4);
+}
+
+.testimonial-section .heading .highlight{
+  text-decoration: none;
+  font-weight: 700;
+}
 .subtitle {
-  color: #00c27a;
+  color: #030303;
   font-weight: 600;
   letter-spacing: 1px;
 }
@@ -1573,7 +1581,7 @@ body {
 }
 
 .title span {
-  color: #00c27a;
+  color: #000000;
   text-decoration: underline;
 }
 
@@ -1651,7 +1659,7 @@ body {
 }
 
 .heading span {
-  color: #00c97b;
+  color: #880000;
   font-weight: bold;
   letter-spacing: 1px;
 }
@@ -1662,7 +1670,7 @@ body {
 }
 
 .highlight {
-  color: #00c97b;
+  color: #7c0000;
   text-decoration: underline;
 }
 
@@ -1892,7 +1900,7 @@ body {
   padding: 4rem 2rem;
   max-width: 1200px;
   margin: auto;
-  background-color: rgb(255, 224, 224);
+  background-color: rgb(255, 255, 255);
   overflow: hidden;
   gap: 2rem;
   flex-wrap: wrap;
@@ -1931,7 +1939,8 @@ body {
 .text-container h1 {
   font-size: 2rem;
   font-weight: bold;
-  color: #222;
+  color: #000000;
+  font-weight: 700;
   text-align: left;
 }
 
@@ -1945,10 +1954,15 @@ body {
 }
 
 .text-container h2 {
+  font-weight: 700;
   font-size: 1.4rem;
-  color: #d40000;
+  color: #000000;
   margin-top: 1rem;
   text-align: left;
+}
+
+.text-container h1 span{
+  color:rgb(154, 0, 0);
 }
 
 /* Benefits List */
@@ -1959,36 +1973,39 @@ body {
 }
 
 .mobile-benefits li {
-  font-size: 1rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color:rgb(0, 0, 0);
   margin: 0.5rem 0;
   display: flex;
   align-items: center;
-  background-color: rgb(204, 255, 203);
+  background-color: rgb(255, 231, 231);
   padding:10px 10px;
-  border-radius: 15px;
+  border-radius: 10px;
   box-shadow:  0 3px 5px  0 black;
   text-align: center;
   align-items: center;
 }
+
+/**
 .mobile-benefits li:nth-child(1) {
-  background-color: #f6ddff; /* light pink */
+  background-color: #f6ddff;
 }
 .mobile-benefits li:nth-child(2) {
-  background-color: #d0f0fd; /* light blue */
+  background-color: #d0f0fd; 
 }
 .mobile-benefits li:nth-child(3) {
-  background-color: #f0ccf9; /* light green */
+  background-color: #f0ccf9; 
 }
 .mobile-benefits li:nth-child(4) {
-  background-color: #fff1cc; /* light yellow */
-}
-
+  background-color: #fff1cc; 
+*/
 
 .mobile-benefits li:hover{
   transform: scale(1.08);
   transition: 0.5s ease;
-  color: rgb(125, 8, 8);
-  background-color: #c2c1fe;
+  color: rgb(255, 255, 255);
+  background-color: #bd0502;
 }
 
 /* Phone Image */
