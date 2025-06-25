@@ -15,7 +15,10 @@ body {
   align-items: center;
   padding: 15px 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  position: relative;
+   position: fixed; /* 🔄 changed from relative */
+  top: 0; /* 📌 Stick to the top */
+  width: 100%; /* 📐 Full width */
+  z-index: 999;
 }
 
 nav a h1{
@@ -269,7 +272,7 @@ nav a h1{
 }
 
 .team-header h2 span {
-  color: #2971f5;
+  color: #d40909;
 }
 
 .team-header p {

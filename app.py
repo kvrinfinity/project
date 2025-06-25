@@ -139,6 +139,9 @@ def signUp():
 def membership():
     return render_template('membership.html')
 
+@app.route('/contact')
+def contact():
+    return render_template('contactus.html')
 
 @app.route('/payment_success', methods=['POST'])
 def payment_success():

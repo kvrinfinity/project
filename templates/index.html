@@ -14,15 +14,155 @@
     nav a{
       text-decoration: none;
     }
-    .netflix-font {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 35px;
-      color: #e50914; 
-      letter-spacing: 2px;
-    }
 
     .navbar a h1{
+      color: white;
+      font-weight: 600;
+    }
+  
+  </style>
+    <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .team-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .team-title {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .team-subtitle {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 40px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .team-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* 2 per row */
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .team-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 8px 24px rgba(95, 95, 95, 0.1);
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 260px;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-self: center; /* center in grid cell */
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      width: 230px;
+      height: 250px;
+      margin-bottom: 20px;
+    }
+
+    .team-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #eee;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(158, 54, 54, 0.7);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+    }
+
+    .card-img-wrapper:hover .overlay {
+      opacity: 1;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-icons a {
+      background-color: #000;
+      color: white;
+      border-radius: 50%;
+      padding: 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+
+    .social-icons a:hover {
+      background-color: white;
+      color: #ff7b00;
+    }
+
+    .team-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #222;
+    }
+
+    .team-role {
+      font-size: 15px;
+      font-weight: 600;
+      color: #a31611;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .about-us-container {
+      text-align: center;
+    }
+
+    .about-us-btn {
+      background-color: #a31611;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 8px;
       text-decoration: none;
+    }
+
+    .about-us-btn:hover {
+      background-color: #000000;
+      transform: scale(1.08);
+      transition: .5s ease;
+    }
+
+    @media (max-width: 768px) {
+      .team-cards {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -30,10 +170,10 @@
  <nav class="navbar">
   <a href="{{ url_for('index') }}" ><h1 class="netflix-font">KVR Infinity</h1></a>
   <div class="nav-links">
-    <a href="{{ url_for('index') }}">Home</a>
     <a href="{{ url_for('about') }}">About us</a>
     <a href="{{ url_for('display_blogs') }}">Blog</a>
     <a href="{{ url_for('career') }}">Career</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
   </div>
   <div class="login-wrapper">
     <a href="{{ url_for('login') }}" class="bold-text">Login</a>
@@ -256,16 +396,6 @@
    <section class="membership-section">
     <div class="carousel-container">
 
-      <!-- Card 1: General -->
-      <div class="pricing-card active">
-        <h2>General Membership Plan</h2>
-        <p>Unlock premium features with no discounts applied.</p>
-        <div class="pricing-box">
-          <div>Original Price</div>
-          <h3>₹10,000</h3>
-        </div>
-        <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
-      </div>
 
       <!-- Card 2: Early Bird Offer -->
       <div class="pricing-card">
@@ -282,23 +412,84 @@
         <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
       </div>
 
-      <!-- Card 3: Friend Referral -->
-      <div class="pricing-card">
-        <h2>Friend Referral Discount</h2>
-        <p>Your friend invited you! Use their code and get a massive 70% off.</p>
-        <div class="pricing-box">
-          <div>Original Price</div>
-          <h3>₹10,000</h3>
-          <div class="referral-box">
-            <strong>With Referral Code:</strong><br>
-            70% Off — <strong>Pay ₹3,000</strong>
-          </div>
-        </div>
-        <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
+
       </div>
 
     </div>
   </section>
+  <section class="team-section">
+  <h2 class="team-title">Meet Our <span>Beloved Faculty</span></h2>
+  <p class="team-subtitle">
+    Et optio praesent et! Eligendi ab, irure impedit rhoncus, doloremque! Pretium nobis nobis
+    modi ullamco excepturi recusandae et! Nec scelerisque, natus gravida.
+  </p>
+
+  <div class="team-cards">
+    <div class="team-card">
+      <div class="card-img-wrapper">
+        <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
+        <div class="overlay">
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <h3 class="team-name">Donald Huff</h3>
+      <p class="team-role ios">IOS DEVELOPER</p>
+    </div>
+
+    <div class="team-card">
+      <div class="card-img-wrapper">
+        <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 2" class="team-img">
+        <div class="overlay">
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <h3 class="team-name">Angelo Moore</h3>
+      <p class="team-role visual">VISUAL DESIGNER</p>
+    </div>
+
+    <div class="team-card">
+      <div class="card-img-wrapper">
+        <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 3" class="team-img">
+        <div class="overlay">
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <h3 class="team-name">Angelo Moore</h3>
+      <p class="team-role visual">VISUAL DESIGNER</p>
+    </div>
+
+    <div class="team-card">
+      <div class="card-img-wrapper">
+        <img src="{{ url_for('static', filename='alak.jpg') }}" alt="Member 4" class="team-img">
+        <div class="overlay">
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <h3 class="team-name">Alak Majumder</h3>
+      <p class="team-role android">ANDROID DEVELOPER</p>
+    </div>
+  </div>
+
+  <div class="about-us-container">
+    <a href="/about" class="about-us-btn">See About Us</a>
+  </div>
+</section>
 
 <script>
     const cards = document.querySelectorAll('.pricing-card');
@@ -310,78 +501,6 @@
       cards[curr].classList.add('active');
     }, 4000); // Change card every 4 seconds
   </script>
-
-<section class="team-section">
-  <h2 class="team-title">Meet Our Beloved Faculty</h2>
-  <p class="team-subtitle">
-    Et optio praesent et! Eligendi ab, irure impedit rhoncus, doloremque! Pretium nobis nobis
-    modi ullamco excepturi recusandae et! Nec scelerisque, natus gravida.
-  </p>
-  <div class="team-cards">
-  <div class="team-card">
-  <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
-    <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
-    <div class="overlay">
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </div>
-  <h3 class="team-name">Donald Huff</h3>
-  <p class="team-role ios">IOS DEVELOPER</p>
-</div>
-
-    <div class="team-card">
-      <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
-      <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
-      <div class="overlay">
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </div>
-      <h3 class="team-name">Angelo Moore</h3>
-      <p class="team-role visual">VISUAL DESIGNER</p>
-    </div>
-
-    <div class="team-card">
-      <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
-      <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
-      <div class="overlay">
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </div>
-      <h3 class="team-name">Angelo Moore</h3>
-      <p class="team-role visual">VISUAL DESIGNER</p>
-    </div>
-
-
-    <div class="team-card">
-  <div class="card-img-wrapper" style="position:relative; width:230px; height:250px;">
-    <img src="{{ url_for('static', filename='alak.jpg') }}" alt="Member 1" class="team-img">
-    <div class="overlay">
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </div>
-      <h3 class="team-name">Alak Majumder</h3>
-      <p class="team-role android">ANDROID DEVELOPER</p>
-    </div>
-
- <br>
-  
-</section>
 
 
 
@@ -419,7 +538,7 @@
           </div>
         </div>
       </div>
-      <div class="testimonial-card color3">
+      <div class="testimonial-card color1">
         <div class="stars">★★★★★</div>
         <p>Lorem ipsum dolor sit amet, consectetur sadipscing elitr sed diam nonumy eirmod tempor.</p>
         <div class="profile">
@@ -431,7 +550,7 @@
         </div>
       </div>
       <!-- Add 7 more testimonials below -->
-      <div class="testimonial-card color1">
+      <div class="testimonial-card color2">
         <div class="stars">★★★★★</div>
         <p>Lorem ipsum dolor sit amet...</p>
         <div class="profile">
@@ -439,7 +558,7 @@
           <div><h4>Sara Kim</h4><span>Designer</span></div>
         </div>
       </div>
-      <div class="testimonial-card color2">
+      <div class="testimonial-card color1">
         <div class="stars">★★★★★</div>
         <p>Lorem ipsum dolor sit amet...</p>
         <div class="profile">
@@ -447,7 +566,7 @@
           <div><h4>John Lee</h4><span>Engineer</span></div>
         </div>
       </div>
-      <div class="testimonial-card color3">
+      <div class="testimonial-card color2">
         <div class="stars">★★★★★</div>
         <p>Lorem ipsum dolor sit amet...</p>
         <div class="profile">
@@ -471,7 +590,7 @@
           <div><h4>Linda Zhou</h4><span>Entrepreneur</span></div>
         </div>
       </div>
-      <div class="testimonial-card color3">
+      <div class="testimonial-card color1">
         <div class="stars">★★★★★</div>
         <p>Lorem ipsum dolor sit amet...</p>
         <div class="profile">
@@ -479,7 +598,7 @@
           <div><h4>Ravi Teja</h4><span>Coach</span></div>
         </div>
       </div>
-      <div class="testimonial-card color1">
+      <div class="testimonial-card color2">
         <div class="stars">★★★★★</div>
         <p>Lorem ipsum dolor sit amet...</p>
         <div class="profile">
@@ -507,74 +626,62 @@ function scrollRight() {
 
 
 <section class="team-faq-section">
-  <div class="team-image">
-    <img src="{{ url_for('static',filename='faq-team.png') }}" alt="KVR Infinity Team" />
-  </div>
-
   <div class="faq-container">
-    <h2>Frequently Asked Questions</h2>
+    <h2 class="faq-title">FAQs</h2>
+    <p class="faq-description">
+      We're sure you have questions about KVR Infinity, so we've put together some answers to the most frequently asked questions.
+      However, if you still need help, please <a href="/contact">contact us</a>.
+    </p>
 
-    <div class="faq-item">
-      <div class="faq-question">📌 What is KVR Infinity?</div>
-      <div class="faq-answer">KVR Infinity is a digital learning platform that empowers learners with career-boosting content.</div>
+    <div class="faq-item color1">
+      <button class="faq-question">ADMISSIONS <span class="icon">+</span></button>
+      <div class="faq-answer">Details about admissions...</div>
     </div>
 
-    <div class="faq-item">
-      <div class="faq-question">📱 Is the app available?</div>
-      <div class="faq-answer">The mobile app is launching very soon! Stay connected for updates.</div>
+    <div class="faq-item color2">
+      <button class="faq-question">APPLYING THROUGH PORTAL <span class="icon">+</span></button>
+      <div class="faq-answer">Details about applying through portal...</div>
     </div>
 
-    <div class="faq-item">
-      <div class="faq-question">📝 How to register?</div>
-      <div class="faq-answer">Visit the official website, click Sign Up, and follow the easy steps to join us.</div>
+    <div class="faq-item color1">
+      <button class="faq-question">ACADEMIC <span class="icon">+</span></button>
+      <div class="faq-answer">Details about academics...</div>
     </div>
 
-    <div class="faq-item">
-      <div class="faq-question">🎓 What types of courses do you offer?</div>
-      <div class="faq-answer">We provide technical tests, career readiness programs, and company-specific practice modules.</div>
+    <div class="faq-item color2">
+      <button class="faq-question">FEES & FINANCE <span class="icon">+</span></button>
+      <div class="faq-answer">Details about fees and finance...</div>
     </div>
+
+    <div class="faq-item color1">
+      <button class="faq-question">ACADEMIC <span class="icon">+</span></button>
+      <div class="faq-answer">Details about academics...</div>
+    </div>
+    
+    <!-- Add more faq-item blocks as needed -->
   </div>
 </section>
 
+
   <script>
-  document.querySelectorAll(".faq-question").forEach(question => {
-    question.addEventListener("click", () => {
-      question.classList.toggle("active");
-      const answer = question.nextElementSibling;
-      answer.classList.toggle("show");
-    });
-  });
-</script>
+document.querySelectorAll('.faq-question').forEach(button => {
+  button.addEventListener('click', () => {
+    const item = button.parentElement;
+    const isActive = item.classList.contains('active');
 
-<script>
-  // Toggle accordion effect
-document.querySelectorAll('.faq-item').forEach(item => {
-  item.addEventListener('click', () => {
-    item.classList.toggle('active');
+    // Close all
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('active');
+      i.querySelector('.icon').textContent = '+';
+    });
+
+    // Toggle current
+    if (!isActive) {
+      item.classList.add('active');
+      button.querySelector('.icon').textContent = '−';
+    }
   });
 });
-
-// Search functionality (basic filter)
-document.getElementById('searchInput').addEventListener('keyup', function () {
-  let filter = this.value.toLowerCase();
-  document.querySelectorAll('.faq-item').forEach(item => {
-    const question = item.querySelector('.faq-question').textContent.toLowerCase();
-    item.style.display = question.includes(filter) ? '' : 'none';
-  });
-});
-
-</script>
-<script>
-  const faqQuestions = document.querySelectorAll('.faq-question');
-
-  faqQuestions.forEach(question => {
-    question.addEventListener('click', () => {
-      const answer = question.nextElementSibling;
-
-      // Toggle visibility
-      answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
-    });
-  });
 </script>
 
 

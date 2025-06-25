@@ -546,6 +546,10 @@ body {
   margin-bottom: 10px;
 }
 
+.team-title span{
+  color: rgb(225, 4, 4);
+}
+
 .team-subtitle {
   font-size: 18px;
   color: #555;
@@ -556,10 +560,11 @@ body {
 }
 
 .team-cards {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 32px;
-  justify-content: center;
+  justify-items: center; /* centers the cards inside each grid cell */
+  margin-bottom: 40px;
 }
 
 .team-card {
@@ -573,8 +578,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: box-shadow 0.3s;
-  position: relative;
 }
 
 .card-img-wrapper {
@@ -590,20 +593,18 @@ body {
   object-fit: cover;
   border-radius: 16px;
   background: #eee;
-  display: block;
 }
 
 .overlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgb(158, 54, 54); /* Blue overlay */
+  background: rgba(158, 54, 54, 0.7);
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
-  z-index: 2;
 }
 
 .card-img-wrapper:hover .overlay {
@@ -613,15 +614,15 @@ body {
 .social-icons {
   display: flex;
   gap: 12px;
-  z-index: 3;
 }
 
 .social-icons a {
-  background-color: #000000;
+  background-color: #000;
   color: white;
   border-radius: 50%;
   padding: 10px;
   font-size: 16px;
+  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -633,7 +634,6 @@ body {
   color: #ff7b00;
 }
 
-
 .team-name {
   font-size: 20px;
   font-weight: 700;
@@ -644,15 +644,60 @@ body {
 .team-role {
   font-size: 15px;
   font-weight: 600;
-  color: #ff9800;
   letter-spacing: 1px;
   margin: 0;
+  color: #a31611;
 }
 
-.team-role.visual { color: #a31611; }
-.team-role.ios { color: #a31611; }
-.team-role.android { color: #a31611; }
-.team-role.strategist { color: #a31611; }
+.about-us-container {
+  text-align: center;
+}
+
+.about-us-btn {
+  background-color: #a31611;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.about-us-btn:hover {
+  background-color: #ff7b00;
+}
+
+@media (max-width: 768px) {
+  .team-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.about-us-container {
+  text-align: center;
+}
+
+.about-us-btn {
+  background-color: #a31611;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.about-us-btn:hover {
+  background-color: #ff7b00;
+}
+
+@media (max-width: 768px) {
+  .team-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 @media (max-width: 900px) {
   .team-cards {
@@ -1625,7 +1670,7 @@ body {
 }
 
 .text {
-  color: #555;
+  color: #ffffff;
   font-size: 15px;
   margin-bottom: 30px;
 }
@@ -1687,6 +1732,9 @@ body {
   color: #7c0000;
   text-decoration: underline;
 }
+.testimonial-card p{
+  color:white;
+}
 
 .testimonial-container {
   position: relative;
@@ -1718,7 +1766,7 @@ body {
 }
 
 .stars {
-  color: gold;
+  color: rgb(255, 204, 128);
   font-size: 20px;
   margin-bottom: 10px;
 }
@@ -1739,12 +1787,12 @@ body {
 .profile h4 {
   margin: 0;
   font-size: 16px;
-  color: #111;
+  color: #ffffff;
 }
 
 .profile span {
   font-size: 14px;
-  color: #666;
+  color: #cccccc;
 }
 
 .scroll-btn {
@@ -1770,9 +1818,9 @@ body {
 }
 
 /* Optional alternating colors */
-.color1 { background: #fff8f0; }
-.color2 { background: #eef3ff; }
-.color3 { background: #e7fbf1; }
+.color1 { background: #000000; }
+.color2 { background: #c30c0c; }
+
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -1785,126 +1833,77 @@ body {
 }
 
 .team-faq-section {
-  display: flex;
-  flex-direction: row;
-  min-height: 500px;
-  margin-bottom: 2%;
-  border-radius: 25px;
-  width: 95%;
+  background: #fff;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.faq-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: rgb(228, 3, 3);
+}
+
+.faq-description {
+  color: #000000;
+  margin-bottom: 30px;
+  font-size: 16px;
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.team-image {
-  flex: 1;
-  max-width: 50%;
-  overflow: hidden;
-  border-bottom-left-radius: 25px;
-  border-top-left-radius: 25px;
-}
-
-.team-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.faq-container {
-  flex: 1;
-  background-color: #dceefd;
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 300px;
-  border-bottom-right-radius: 25px;
-  border-top-right-radius: 25px;
-}
-
-.faq-container h2 {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  color: #9a0000;
-  text-align: center;
-}
-
-.faq-item {
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 0.7rem;
+.faq-container .faq-item {
+  border-top: 1px solid #ccc;
+  margin-bottom:10px;
 }
 
 .faq-question {
-  font-size: 1.1rem;
-  font-weight: 600;
+  width: 100%;
+  text-align: left;
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+  padding: 16px;
+  font-size: 16px;
+  outline: none;
   cursor: pointer;
-  position: relative;
-  padding-right: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
 }
 
-.faq-question::after {
-  content: '+';
-  position: absolute;
-  right: 0;
-  top: 0;
-  font-size: 1.3rem;
-  transition: transform 0.3s ease;
+.faq-question:hover {
+  background-color: #ffffff;
+  color:rgb(230, 0, 0);
+  transform: scale(1.05);
+  transition: 0.5s ease;
+  border: 1px solid rgb(231, 0, 0);
 }
 
-.faq-question.active::after {
-  content: '−';
+.faq-question .icon {
+  font-size: 20px;
+  color:white;
 }
 
 .faq-answer {
+  padding: 0 16px 16px 16px;
+  background-color: #f9f9f9;
   display: none;
-  font-size: 1rem;
-  margin-top: 0.5rem;
+  font-size: 15px;
   color: #333;
-  transition: all 0.3s ease;
 }
 
-.faq-answer.show {
+.faq-item.active .faq-answer {
   display: block;
 }
 
-/* ✅ Responsive Fix */
-@media screen and (max-width: 768px) {
-  .team-faq-section {
-    flex-direction: column;
-  }
-
-  .team-image {
-    display: none !important;
-  }
-
-  .team-faq-section {
-    flex-direction: column;
-  }
-
-  .faq-container {
-    width: 100%;
-    padding: 2rem 1.5rem;
-  }
-  .faq-container {
-    width: 100% !important;
-    padding: 2rem 1.5rem;
-  }
-
-  .faq-container h2 {
-    font-size: 1.7rem;
-    text-align: center;
-  }
-
-  .faq-question {
-    font-size: 1rem;
-  }
-
-  .faq-answer {
-    font-size: 0.95rem;
-  }
+.faq-item.active .faq-question .icon {
+  content: "-";
+  transform: rotate(45deg);
 }
-
 
 .launch-section {
   position: relative;
@@ -2913,14 +2912,14 @@ body {
     }
 
     .pricing-card h2 {
-      font-size: 1.9rem;
+      font-size: 2rem;
       font-weight: 700;
       margin-bottom: 15px;
       color: #d72017;
     }
 
     .pricing-card p {
-      font-size: 1rem;
+      font-size: 1.5rem;
       margin-bottom: 20px;
       color: #ffffff;
       text-align: center;
@@ -2942,7 +2941,7 @@ body {
 
     .referral-box, .discount-box {
       margin-top: 10px;
-      font-size: 0.95rem;
+      font-size: 1.3rem;
     }
 
     code {
@@ -2961,10 +2960,14 @@ body {
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.3s ease;
+      height: 5%;
     }
 
     .button:hover {
-      background: #5f2cd5;
+      background: #ffffff;
+      color:red;
+      transform: scale(1.08);
+      transition: .5s linear;
     }
 
     @media (max-width: 768px) {
