@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
+
   <title>Blog Articles</title>
   <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
   <style>
@@ -261,6 +263,7 @@ nav a h1{
     <a href="{{ url_for('index') }}">Home</a>
     <a href="{{ url_for('about') }}">About Us</a>
     <a href="{{ url_for('career') }}">Career</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
   </div>
 
   <div class="login-wrapper">
