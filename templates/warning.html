@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Warning</title>
+    <style>
+        .flash-banner {
+            background-color: #ffcc00;
+            color: #000;
+            padding: 15px;
+            margin: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="flash-banner" id="flashBanner">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <h1>Warning Page</h1>
+
+    <script>
+        const banner = document.getElementById("flashBanner");
+
+        if (banner.textContent.trim().length > 0) {
+            banner.style.display = "block";
+
+            // ⏳ After 1 second, hide banner and redirect
+            setTimeout(() => {
+                banner.style.display = "none";
+                window.location.href = "/";
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

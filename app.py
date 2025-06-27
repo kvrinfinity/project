@@ -1,8 +1,9 @@
 from collections import defaultdict
 import datetime
 from email.mime.application import MIMEApplication
-from flask import Flask, Response, abort, make_response, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, Response, abort, get_flashed_messages, make_response, render_template, request, redirect, url_for, session, flash, jsonify
 import os
+import bcrypt
 import random
 import gridfs
 from pymongo import MongoClient
@@ -51,6 +52,8 @@ def send_otp_email(to_email, otp):
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
+
 # MongoDB Setup
 uri = "mongodb+srv://praveen:tHXsIKjbFLMuwki4@cluster0.ct1utq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(uri)
@@ -89,32 +92,37 @@ def delete_expired_memberships():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    delete_expired_memberships()  # 🧹 Clean up expired memberships first
+    delete_expired_memberships()
 
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
 
-        if email == 'admin@kvrinfinity.in' and password == 'admin':
-            return redirect(url_for('admin'))
-        
-        if email == "minali@kvrinfinity.in" and password == 'minali':
-            return redirect(url_for('write_blog'))
-
-        elif email == 'sales@kvrinfinity.in' and password == 'sales':
-            return redirect(url_for('sales_admin_dashboard'))
-
-        user = db.users.find_one({"email": email, "password": password})
-        if user:
+        user = db.users.find_one({"email": email})
+        if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
             session['user_email'] = email
+
+            # Handle roles
+            if user.get('role') == 'admin':
+                session['admin_log'] = True
+                return redirect(url_for('admin'))
+            elif user.get('role') == 'blogger':
+                return redirect(url_for('write_blog'))
+            elif user.get('role') == 'sales':
+                return redirect(url_for('sales_admin_dashboard'))
+
+            # Regular user membership check
             membership = membership_col.find_one({"user_email": email})
             if not membership or membership['valid_till'] < datetime.now():
                 return redirect(url_for('membership'))
+
             return redirect(url_for('home'))
         else:
-            return render_template('login.html',msg='Invalid credintials')
+            return render_template('login.html', msg='Invalid credentials')
 
     return render_template('login.html')
+
+
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -703,6 +711,8 @@ from werkzeug.utils import secure_filename
 
 @app.route('/download_users_csv')
 def download_users_csv():
+    if not session.get('admin_log'):
+        return redirect(url_for('index'))
     from flask import Response
     import csv
     from datetime import datetime
@@ -817,8 +827,8 @@ def process_withdrawal():
         flash("Invalid amount. Please enter a number.", "error")
         return redirect(url_for('request_withdrawal_page'))
 
-    if amount <= 0:
-        flash("Withdrawal amount must be greater than 0.", "error")
+    if amount <= 0 or amount <1000:
+        flash("Withdrawal amount must be greater than 999 Rs.", "error")
         return redirect(url_for('request_withdrawal_page'))
 
     try:
@@ -853,6 +863,8 @@ from bson.objectid import ObjectId
 
 @app.route('/approve-verification', methods=['POST'])
 def approve_verification():
+    if not session.get('admin_log'):
+        return redirect(url_for('index'))
     verification_id = request.form.get('verification_id')
     
     if not verification_id:
@@ -881,6 +893,8 @@ def approve_verification():
 
 @app.route('/approve-withdrawal/<withdrawal_id>', methods=['POST'])
 def approve_withdrawal(withdrawal_id):
+    if not session.get('admin_log'):
+        return redirect(url_for('index'))
     withdrawal = withdrawals_col.find_one({"_id": ObjectId(withdrawal_id)})
 
     if not withdrawal or withdrawal.get("status") != "pending":
@@ -924,6 +938,8 @@ from datetime import datetime
 
 @app.route('/process_withdrawal_admin', methods=['POST'])
 def process_withdrawal_admin():
+    if not session.get('admin_log'):
+        return redirect(url_for('index'))
     withdrawal_id = request.form.get('withdrawal_id')
 
     if not withdrawal_id:

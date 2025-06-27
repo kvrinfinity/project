@@ -1,3 +1,4 @@
+import bcrypt
 from pymongo import MongoClient
 from gridfs import GridFS
 from datetime import datetime, timedelta
@@ -26,14 +27,14 @@ password = "password"
 ref_code = 'kvr1002'
 
 # Insert user
-user_col.insert_one({
+'''user_col.insert_one({
     'fname': fname,
     'lname': lname,
     'email': email,
     'password': password,
     'ref_code': ref_code,
     'enrolled_courses': []
-})
+})'''
 
 # Simulate receipt upload to GridFS
 receipt_content = b"This is a dummy receipt PDF content."
@@ -47,13 +48,22 @@ valid_till = payment_date + timedelta(days=360)
 receipt_id = "RCP" + ''.join(random.choices(string.digits, k=5))
 
 # Insert membership
-membership_col.insert_one({
+'''membership_col.insert_one({
     "user_email": user_email,
     "user_name": user_name,
     "payment_date": payment_date,
     "receipt_id": receipt_id,
     "valid_till": valid_till,
     "receipt_file_id": receipt_file_id
-})
+})'''
+
+users_col = db["users"]
+
+for user in users_col.find():
+    if not user['password'].startswith("$2"):  # Skip if already hashed
+        hashed = bcrypt.hashpw(user['password'].encode(), bcrypt.gensalt()).decode()
+        users_col.update_one({"_id": user['_id']}, {"$set": {"password": hashed}})
+        print(f"Hashed: {user['email']}")
+
 
 print("✅ Dummy user and membership inserted successfully.")
