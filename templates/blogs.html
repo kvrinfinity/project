@@ -252,6 +252,33 @@ nav a h1{
   font-size: 0.9rem;
   margin-top: 10px;
 }
+.blog-paragraph {
+  font-size: 1rem;
+  color: #ffffff;
+  margin-bottom: 10px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;      /* ✅ For WebKit-based browsers */
+  -webkit-box-orient: vertical;
+  line-clamp: 3;              /* ✅ Standard property (future-proof) */
+}
+
+
+.read-more-btn {
+  background: #ff0000;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+.read-more-btn:hover {
+  background: #cc0000;
+}
 
   </style>
 </head>
@@ -279,6 +306,10 @@ nav a h1{
         <span class="blog-tag">Blog</span>
         <h2 class="blog-title">{{ blog.title }}</h2>
         <p class="blog-paragraph">{{ blog.content }}</p>
+          <a href="{{ url_for('blog_detail', blog_id=blog._id) }}">
+              <button class="read-more-btn">Read More</button>
+            </a>
+
         <p class="blog-author">By <a href="{{ blog.linkedin }}" target="_blank">{{ blog.author }}</a></p>
       </div>
     </div>

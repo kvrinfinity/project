@@ -27,9 +27,13 @@ def generate_otp():
 def send_otp_email(to_email, otp):
     subject = "Your OTP for Email Verification"
     body = f"Your OTP is: {otp}"
-    sender_email = "no-reply@kvrinfinity.in"
+    #sender_email = "no-reply@kvrinfinity.in"
         
-    sender_password = "dhsa xczp azcg mpbr" 
+    #sender_password = "dhsa xczp azcg mpbr" 
+    sender_email = "nishankamath@gmail.com"
+    login = sender_email 
+        
+    sender_password = "hxui wjwz adsz vycn"
 
     message = MIMEText(body)
     message['Subject'] = subject
@@ -93,6 +97,9 @@ def login():
 
         if email == 'admin@kvrinfinity.in' and password == 'admin':
             return redirect(url_for('admin'))
+        
+        if email == "minali@kvrinfinity.in" and password == 'minali':
+            return redirect(url_for('write_blog'))
 
         elif email == 'sales@kvrinfinity.in' and password == 'sales':
             return redirect(url_for('sales_admin_dashboard'))
@@ -260,6 +267,7 @@ def blog_image(image_id):
 @app.route('/write-blog', methods=['GET', 'POST'])
 def write_blog():
     if request.method == 'POST':
+        title = request.form['title']  # <-- New line
         content = request.form['content']
         author = request.form['author']
         linkedin = request.form['linkedin']
@@ -274,6 +282,7 @@ def write_blog():
             )
 
         blog_data = {
+            'title': title,  # <-- New line
             'content': content,
             'author': author,
             'linkedin': linkedin,
@@ -286,6 +295,17 @@ def write_blog():
         return redirect(url_for('write_blog'))
 
     return render_template('write_blog.html')
+
+@app.route('/blog/<blog_id>')
+def blog_detail(blog_id):
+    blog = blogs_col.find_one({'_id': ObjectId(blog_id)})
+    if blog:
+        blog['_id'] = str(blog['_id'])
+        blog['image_url'] = f"/blog-image/{blog['image_id']}"
+        return render_template('blog_detail.html', blog=blog)
+    else:
+        return "Blog not found", 404
+
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
