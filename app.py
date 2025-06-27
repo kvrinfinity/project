@@ -1,6 +1,7 @@
 from collections import defaultdict
 import datetime
 from email.mime.application import MIMEApplication
+import re
 from flask import Flask, Response, abort, get_flashed_messages, make_response, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import bcrypt
@@ -95,14 +96,21 @@ def login():
     delete_expired_memberships()
 
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('email').strip()
         password = request.form.get('password')
 
+        # Temporary hardcoded admin login (replace later with DB lookup)
+        if email == 'admin@kvrinfinity.in' and password == 'admin':
+            session['admin_log'] = True
+            session['user_email'] = email
+            return redirect(url_for('admin'))
+
+        # DB user login
         user = db.users.find_one({"email": email})
         if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
             session['user_email'] = email
 
-            # Handle roles
+            # Role-based redirects
             if user.get('role') == 'admin':
                 session['admin_log'] = True
                 return redirect(url_for('admin'))
@@ -111,16 +119,18 @@ def login():
             elif user.get('role') == 'sales':
                 return redirect(url_for('sales_admin_dashboard'))
 
-            # Regular user membership check
+            # Check membership for regular users
             membership = membership_col.find_one({"user_email": email})
             if not membership or membership['valid_till'] < datetime.now():
                 return redirect(url_for('membership'))
 
             return redirect(url_for('home'))
+
         else:
             return render_template('login.html', msg='Invalid credentials')
 
     return render_template('login.html')
+
 
 
 
@@ -571,28 +581,35 @@ def get_refcode():
 
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    fname = request.form.get('fname')
-    lname = request.form.get('lname')
-    email = request.form.get('email')
+    fname = request.form.get('fname', '').strip()
+    lname = request.form.get('lname', '').strip()
+    email = request.form.get('email', '').strip().lower()
     password = request.form.get('password')
-    whatsapp = request.form.get('whatsapp')
+    whatsapp = request.form.get('whatsapp', '').strip()
+
+    # Basic input validation
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return render_template('signup.html', msg="Invalid email format")
 
     if db.users.find_one({'email': email}):
         return render_template('signup.html', msg="User already exists")
 
-    ref_code = get_refcode()
+    # Securely hash the password
+    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
+    ref_code = get_refcode()
     otp = generate_otp()
+
     session['temp_user'] = {
         'fname': fname,
         'lname': lname,
         'email': email,
-        'password': password,
+        'password': hashed_password,
         'ref_code': ref_code,
         'whatsapp': whatsapp
     }
     session['otp'] = otp
-    session['user_name'] = fname + ' ' + lname
+    session['user_name'] = f"{fname} {lname}"
     session['user_email'] = email
     session['otp_mode'] = 'signup'
 
