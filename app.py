@@ -385,6 +385,8 @@ def generate_receipt(member_name, email, phone, amount, receipt_id, transaction_
 
 @app.route('/home')
 def home():
+    if not session.get('user_email'):
+        return redirect(url_for('login'))
     # Fetch top 6 courses with enrollment and chapter count
     top_courses = list(courses_col.aggregate([
         {
@@ -1040,6 +1042,9 @@ def sales_admin_dashboard():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    if not session.get('admin_log'):
+        flash("Unauthorized access")
+        return redirect(url_for('login'))
     if request.method == 'POST':
         # ---------- BUNDLE CREATION ----------
         if 'bundle_name' in request.form:
@@ -2269,6 +2274,13 @@ def nocache(view):
         response.headers["Expires"] = "0"
         return response
     return no_cache
+
+@app.before_request
+def restrict_access():
+    allowed_paths = ['/', '/login', '/signup', '/static']
+    if not session.get('user_email') and not any(request.path.startswith(p) for p in allowed_paths):
+        flash("Please login to continue")
+        return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
