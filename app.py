@@ -2,6 +2,7 @@ from collections import defaultdict
 import datetime
 from email.mime.application import MIMEApplication
 import re
+from time import time
 from flask import Flask, Response, abort, get_flashed_messages, make_response, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import bcrypt
@@ -2299,6 +2300,24 @@ def restrict_access():
         flash("Please login to continue")
         return redirect(url_for('login'))
 
+
+visits = {}
+
+@app.before_request
+def block_attackers():
+    ip = request.remote_addr
+    now = time()
+
+    if ip not in visits:
+        visits[ip] = []
+
+    # Keep only recent requests (last 10 sec)
+    visits[ip] = [t for t in visits[ip] if now - t < 10]
+    visits[ip].append(now)
+
+    if len(visits[ip]) > 20:  # limit: 20 reqs per 10 sec
+        print(f"Blocked IP: {ip}")
+        abort(429, "Too many requests – slow down!")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
