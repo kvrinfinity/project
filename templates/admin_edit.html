@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Employee</title>
+  <style>
+    body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px 40px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border-radius: 12px;
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  color: #222;
+  text-align: center;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+input, select {
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border 0.3s ease-in-out;
+  background-color: #fdfdfd;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+}
+
+button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.btn.back {
+  display: inline-block;
+  text-align: center;
+  background-color: #6c757d;
+  color: white;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+.btn.back:hover {
+  background-color: #5a6268;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✏️ Edit Employee</h1>
+    <form method="POST" class="form-grid">
+      <input name="fname" value="{{ emp.fname }}" required>
+      <input name="lname" value="{{ emp.lname }}" required>
+      <input name="email" type="email" value="{{ emp.email }}" required>
+      <select name="dept" required>
+  <option value="" disabled selected>Select Department</option>
+  <option>Human Resource Department</option>
+  <option>IT Department</option>
+  <option>Operation Department</option>
+  <option>Business Department</option>
+  <option>Digital Marketing</option>
+  <option>Finance Department</option>
+  <option>Executive Department</option>
+  <option>Sales Department</option>
+</select>
+      <input name="joined_at" type="date" value="{{ emp.joined_at }}" required>
+      <button type="submit">💾 Update</button>
+      <a href="{{ url_for('admin_management') }}" class="btn back">⬅ Back</a>
+    </form>
+  </div>
+</body>
+</html>

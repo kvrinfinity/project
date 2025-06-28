@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Management</title>
+  <style>
+    /* style.css */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px 40px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border-radius: 12px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #222;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-top: 30px;
+  color: #444;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border 0.3s ease-in-out;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+}
+
+button {
+  grid-column: span 2;
+  padding: 12px 20px;
+  background-color: #ca0202;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #000000;
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+thead {
+  background-color: #c60000;
+  color: white;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background-color: #000000;
+  color:red;
+}
+
+.btn {
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-right: 5px;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn.edit {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.btn.edit:hover {
+  background-color: #e0a800;
+}
+
+.btn.delete {
+  background-color: #5f0000;
+  color: white;
+}
+
+.btn.delete:hover {
+  background-color: #c82333;
+}
+select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  transition: border 0.3s ease-in-out;
+  appearance: none;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👨‍💼 Admin Management</h1>
+
+    <h2>Add Employee</h2>
+    <form method="POST" class="form-grid">
+      <input name="fname" placeholder="First Name" required>
+      <input name="lname" placeholder="Last Name" required>
+      <input name="email" type="email" placeholder="Email" required>
+      <select name="dept" required>
+  <option value="" disabled selected>Select Department</option>
+  <option>Human Resource Department</option>
+  <option>IT Department</option>
+  <option>Operation Department</option>
+  <option>Business Department</option>
+  <option>Digital Marketing</option>
+  <option>Finance Department</option>
+  <option>Executive Department</option>
+  <option>Sales Department</option>
+</select>
+
+      <input name="joined_at" type="date" required>
+      <button type="submit">➕ Add Employee</button>
+    </form>
+
+    <h2>📋 Employee List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Joined At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in employees %}
+        <tr>
+          <td>{{ e.fname }} {{ e.lname }}</td>
+          <td>{{ e.email }}</td>
+          <td>{{ e.dept }}</td>
+          <td>{{ e.joined_at }}</td>
+          <td>
+            <a href="{{ url_for('admin_edit', emp_id=e._id) }}" class="btn edit">Edit</a>
+            <a href="{{ url_for('admin_delete', emp_id=e._id) }}" class="btn delete">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

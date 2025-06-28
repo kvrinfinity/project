@@ -67,6 +67,9 @@ users_col = db['users']
 fitness_tests_col = db['fitness_test']
 blogs_col = db['blogs']
 membership_col = db["membership"]
+admin_col = db["admin"]
+contact_collection = db["contact-info"]
+
 fs = GridFS(db)
 
 @app.route('/')
@@ -166,9 +169,36 @@ def signUp():
 def membership():
     return render_template('membership.html')
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
+    if request.method == 'POST':
+        data = {
+            "fullname": request.form.get('fullname'),
+            "company": request.form.get('company'),
+            "email": request.form.get('email'),
+            "phone": request.form.get('phone'),
+            "address": request.form.get('address'),
+            "message": request.form.get('message')
+        }
+        print(data)
+        contact_collection.insert_one(data)
+        flash("Thank you! Your message has been received.", "success")
+        return redirect('/contact')
+
     return render_template('contactus.html')
+
+@app.route('/contact_admin')
+def contact_admin():
+    if not session.get('admin_log'):
+        return redirect(url_for('login'))
+    contacts = contact_collection.find()
+    return render_template('contact_admin.html', contacts=contacts)
+
+@app.route('/delete_contact/<id>')
+def delete_contact(id):
+    contact_collection.delete_one({'_id': ObjectId(id)})
+    flash('Contact entry deleted successfully!', 'success')
+    return redirect('/contact_admin')
 
 @app.route('/payment_success', methods=['POST'])
 def payment_success():
@@ -1258,6 +1288,48 @@ def admin():
         bundles=all_bundles,
         fitness_tests=all_fitness_tests
     )
+
+@app.route('/admin-management', methods=['GET', 'POST'])
+def admin_management():
+    if request.method == 'POST':
+        new_employee = {
+            "fname": request.form['fname'],
+            "lname": request.form['lname'],
+            "email": request.form['email'],
+            "dept": request.form['dept'],
+            "joined_at": request.form['joined_at']
+        }
+        admin_col.insert_one(new_employee)
+        return redirect(url_for('admin_management'))
+
+    employees = list(admin_col.find())
+    return render_template("admin_management.html", employees=employees)
+
+# Delete employee
+@app.route('/admin-delete/<string:emp_id>')
+def admin_delete(emp_id):
+    from bson.objectid import ObjectId
+    admin_col.delete_one({"_id": ObjectId(emp_id)})
+    return redirect(url_for('admin_management'))
+
+# Edit employee (GET = show form, POST = update record)
+@app.route('/admin-edit/<string:emp_id>', methods=['GET', 'POST'])
+def admin_edit(emp_id):
+    from bson.objectid import ObjectId
+    emp = admin_col.find_one({"_id": ObjectId(emp_id)})
+
+    if request.method == 'POST':
+        updated = {
+            "fname": request.form['fname'],
+            "lname": request.form['lname'],
+            "email": request.form['email'],
+            "dept": request.form['dept'],
+            "joined_at": request.form['joined_at']
+        }
+        admin_col.update_one({"_id": ObjectId(emp_id)}, {"$set": updated})
+        return redirect(url_for('admin_management'))
+
+    return render_template("admin_edit.html", emp=emp)
 
 @app.route('/edit_course/<course_id>', methods=['GET', 'POST'])
 def edit_course(course_id):
