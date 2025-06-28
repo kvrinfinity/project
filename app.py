@@ -100,7 +100,7 @@ def login():
         email = request.form.get('email').strip()
         password = request.form.get('password')
 
-        # Temporary hardcoded admin login (replace later with DB lookup)
+        # Hardcoded admin login
         if email == 'admin@kvrinfinity.in' and password == 'admin':
             session['admin_log'] = True
             session['user_email'] = email
@@ -108,7 +108,7 @@ def login():
 
         # DB user login
         user = db.users.find_one({"email": email})
-        if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
+        if user and bcrypt.checkpw(password.encode(), user['password']):
             session['user_email'] = email
 
             # Role-based redirects
@@ -120,7 +120,7 @@ def login():
             elif user.get('role') == 'sales':
                 return redirect(url_for('sales_admin_dashboard'))
 
-            # Check membership for regular users
+            # Check membership validity
             membership = membership_col.find_one({"user_email": email})
             if not membership or membership['valid_till'] < datetime.now():
                 return redirect(url_for('membership'))
@@ -131,6 +131,7 @@ def login():
             return render_template('login.html', msg='Invalid credentials')
 
     return render_template('login.html')
+
 
 
 
@@ -659,28 +660,40 @@ def verify_otp():
 
     return redirect(url_for('login'))
 
+from flask import Flask, render_template, request, redirect, url_for, session
+import bcrypt
+
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
-    if not session.get('reset_verified'):
-        return redirect(url_for('forgot_password'))  # prevent direct access
+    # Prevent direct access
+    if not session.get('reset_verified') or not session.get('reset_email'):
+        return redirect(url_for('forgot_password'))
 
-    email = session.get('user_email')
+    email = session.get('reset_email')
 
     if request.method == 'POST':
         new_password = request.form.get('new_password')
 
+        if not new_password:
+            return render_template('reset_password.html', error="Password cannot be empty")
+
+        # Hash the new password
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+
+        # Update in DB
         db.users.update_one(
             {'email': email},
-            {'$set': {'password': new_password}}
+            {'$set': {'password': hashed_password}}
         )
 
-        # Clear session data after reset
+        # Clear reset session flags
         session.pop('reset_verified', None)
         session.pop('reset_email', None)
 
         return redirect(url_for('login'))
 
     return render_template('reset_password.html')
+
 
 
     
@@ -1029,12 +1042,30 @@ def process_withdrawal_admin():
     return redirect(url_for('verifications'))
 
 
-@app.route('/sales_admin',methods=['GET','POST'])
-def sales_admin_dashboard():
+from datetime import datetime
 
+@app.route('/sales_admin', methods=['GET', 'POST'])
+def sales_admin_dashboard():
     users = list(users_col.find())
     verifications = {v['email']: v for v in verifications_col.find()}
     memberships = {m['user_email']: m for m in membership_col.find()}
+    raw_withdrawals = list(withdrawals_col.find())
+
+    withdrawals_list = []
+    for wd in raw_withdrawals:
+        approved_at_dt = wd.get("approved_at")
+        withdrawals_list.append({
+            "email": wd.get("email", "N/A"),
+            "amount": wd.get("amount", "N/A"),
+            "status": wd.get("status", "N/A"),
+            "requested_at": datetime.fromtimestamp(wd.get("requested_at").timestamp()).strftime('%Y-%m-%d %H:%M') if wd.get("requested_at") else "N/A",
+            "approved_at": datetime.fromtimestamp(approved_at_dt.timestamp()).strftime('%Y-%m-%d %H:%M') if approved_at_dt else "N/A",
+            "approved_by": wd.get("approved_by", "N/A"),
+            "approved_at_raw": approved_at_dt if approved_at_dt else datetime.min  # used for sorting
+        })
+
+    # Sort by latest approved_at
+    withdrawals_list.sort(key=lambda x: x['approved_at_raw'], reverse=True)
 
     results = []
     for user in users:
@@ -1055,7 +1086,7 @@ def sales_admin_dashboard():
             "status": verification.get('status', 'N/A')
         })
 
-    return render_template('sales_admin.html', users=results)
+    return render_template('sales_admin.html', users=results, withdrawals=withdrawals_list)
 
 
 @app.route('/admin', methods=['GET', 'POST'])

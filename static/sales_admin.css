@@ -9,7 +9,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-#searchBox {
+#searchBox,#withdrawalSearchBox {
     display: block;
     margin: 0 auto 20px auto;
     width: 60%;
