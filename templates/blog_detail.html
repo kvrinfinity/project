@@ -98,20 +98,228 @@
         flex-direction: column;
       }
     }
+    .navbar {
+      background-color: #000000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .login-wrapper {
+      margin-left: auto;
+      width: 80px;
+      height: 30px;
+      border-radius: 5px;
+      text-align: center;
+      background-color: #800000;
+      font-size: 1.2rem;
+    }
+
+    .login-wrapper:hover {
+      transform: scale(1.1);
+      transition: 0.4s;
+      background: white;
+      color: #800000;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 80px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 25px;
+      transition: color 0.3s ease;
+      font-weight: 400;
+    }
+
+    .nav-links a:hover {
+      color: #e90000;
+      transform: scale(1.2);
+      transition: 0.5s;
+      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.15);
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+      align-items: center;
+    }
+
+    .bold-text {
+      text-align: center;
+      font-weight: 600;
+      text-decoration: none;
+      color: white;
+      display: inline-block;
+      padding: 3px 10px;
+    }
+    .navbar {
+      background-color: #000000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .login-wrapper {
+      margin-left: auto;
+      width: 80px;
+      height: 30px;
+      border-radius: 5px;
+      text-align: center;
+      background-color: #800000;
+      font-size: 1.2rem;
+    }
+
+
+
+    .nav-links {
+      display: flex;
+      gap: 80px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 25px;
+      transition: color 0.3s ease;
+      font-weight: 400;
+    }
+
+    .nav-links a:hover {
+      color: #e90000;
+      transform: scale(1.2);
+      transition: 0.5s;
+      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.15);
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+      align-items: center;
+    }
+
+    .bold-text {
+      text-align: center;
+      font-weight: 600;
+      text-decoration: none;
+      color: white;
+      display: inline-block;
+      padding: 3px 10px;
+    }
+
+    .navbar {
+      background-color: #000000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .login-wrapper {
+      margin-left: auto;
+      width: 80px;
+      height: 30px;
+      border-radius: 5px;
+      text-align: center;
+      background-color: #800000;
+      font-size: 1.2rem;
+      margin-right:3%;
+    }
+
+    .login-wrapper:hover{
+      transform: scale(1.1);
+      transition: 0.4s;
+      background: white;
+      color: #800000;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 80px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 25px;
+      transition: color 0.3s ease;
+      font-weight: 400;
+    }
+
+    .nav-links a:hover {
+      color: #e90000;
+      transform: scale(1.2);
+      transition: 0.5s;
+      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.15);
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+      align-items: center;
+    }
+
+    .bold-text {
+      text-align: center;
+      font-weight: 600;
+      text-decoration: none;
+      color: white;
+      display: inline-block;
+      padding: 3px 10px;
+    }
+
   </style>
+  
 </head>
 <body>
 
 <nav class="navbar">
-  <a href="{{ url_for('index') }}"><strong>KVR Infinity</strong></a>
-  <div>
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('about') }}">About</a>
-    <a href="{{ url_for('career') }}">Careers</a>
-    <a href="{{ url_for('contact') }}">Contact</a>
-    <a href="{{ url_for('login') }}" class="login-wrap">Login</a>
-  </div>
-</nav>
+    <a href="{{ url_for('index') }}"><h1 class="netflix-font">KVR Infinity</h1></a>
+    <div class="nav-links">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('about') }}">About us</a>
+      <a href="{{ url_for('career') }}">Careers</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+    <div class="login-wrapper">
+      <a href="{{ url_for('login') }}" class="bold-text">Login</a>
+    </div>
+  </nav>
 
 <div class="blog-wrapper">
   <h1 class="blog-title">{{ blog.title }}</h1>
