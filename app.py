@@ -27,29 +27,63 @@ from email.mime.multipart import MIMEMultipart
 def generate_otp():
     return str(random.randint(1000, 9999))
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 def send_otp_email(to_email, otp):
-    subject = "Your OTP for Email Verification"
-    body = f"Your OTP is: {otp}"
-    #sender_email = "no-reply@kvrinfinity.in"
-        
-    #sender_password = "dhsa xczp azcg mpbr" 
+    subject = "Your One-Time Password (OTP) - KVR Infinity"
+
     sender_email = "nishankamath@gmail.com"
-    login = sender_email 
-        
     sender_password = "hxui wjwz adsz vycn"
 
-    message = MIMEText(body)
-    message['Subject'] = subject
-    message['From'] = sender_email
-    message['To'] = to_email
+    logo_url = "https://kvrinfinity.in/static/images/logo.png"  # Your hosted logo
+
+    html = f"""
+    <html>
+      <body style="margin:0;padding:0;background-color:#800000;font-family:Segoe UI, sans-serif;">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
+          <div style="background-color:#fff;max-width:400px;width:100%;border-radius:10px;padding:30px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+            
+            <img src="{logo_url}" alt="KVR Infinity Logo" style="height:50px;margin-bottom:20px;" />
+            <h2 style="color:#800000;margin-bottom:10px;">One Time Password</h2>
+            <p style="color:#555;margin:0 0 20px;">Use the OTP below to verify your email address:</p>
+
+            <div style="font-size:36px;font-weight:bold;color:#800000;margin:20px 0;">{otp}</div>
+
+            <p style="font-size:13px;color:#e74c3c;margin-bottom:30px;">Valid for 10 minutes only</p>
+
+            <p style="font-size:12px;color:#999;margin:0;">
+              If you didn't request this, you can ignore it.<br>
+              Need help? <a href="https://kvrinfinity.in/contact">Contact Us</a>
+            </p>
+
+            <hr style="margin:20px 0;border:none;border-top:1px solid #eee;" />
+
+            <p style="font-size:11px;color:#bbb;margin:0;">
+              &copy; 2025 KVR Infinity
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
+    """
+
+    # Compose and send email
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = sender_email
+    message["To"] = to_email
+    message.attach(MIMEText(html, "html"))
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, to_email, message.as_string())
-        print('mail has been sent otp is {message}')
+        print(f"Mail sent to {to_email} with OTP {otp}")
     except Exception as e:
         print("Error sending email:", e)
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -331,11 +365,19 @@ def blog_image(image_id):
 @app.route('/write-blog', methods=['GET', 'POST'])
 def write_blog():
     if request.method == 'POST':
-        title = request.form['title']  # <-- New line
+        title = request.form['title']
         content = request.form['content']
         author = request.form['author']
         linkedin = request.form['linkedin']
         image_file = request.files.get('image')
+
+        subheadings = request.form.getlist('subheadings[]')
+        paragraphs = request.form.getlist('paragraphs[]')
+
+        sections = [
+            {'subheading': sh, 'paragraph': para}
+            for sh, para in zip(subheadings, paragraphs)
+        ]
 
         image_id = None
         if image_file and image_file.filename:
@@ -346,11 +388,12 @@ def write_blog():
             )
 
         blog_data = {
-            'title': title,  # <-- New line
-            'content': content,
+            'title': title,
+            'intro': content,
             'author': author,
             'linkedin': linkedin,
             'image_id': image_id,
+            'sections': sections,  # Save the structured data
             'created_at': datetime.utcnow()
         }
 
@@ -359,6 +402,7 @@ def write_blog():
         return redirect(url_for('write_blog'))
 
     return render_template('write_blog.html')
+
 
 @app.route('/blog/<blog_id>')
 def blog_detail(blog_id):

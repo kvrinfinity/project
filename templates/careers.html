@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
-
   <title>Careers</title>
   <style>
     * {
@@ -17,107 +16,105 @@
     }
 
     .navbar {
-  background-color:  #000000;
-  color: white;
-  display: flex;
-  justify-content: space-between; /* ✅ Keep this only */
-  align-items: center;
-  padding: 15px 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  min-height: 5%;
-  position: fixed;         /* 🧲 Fixes it to the viewport */
-  top: 0;                  /* 📌 Stick to the top */
-  left: 0;
-  width: 100%;             /* 🌐 Full width */
-  z-index: 1000; 
-}
-.login-wrapper {
-  margin-left: auto;
-  width: 80px;
-  height: 30px;
-  border-radius: 5px;
-  text-align: center;
-  background-color: #a70000;
-  font-size: 1.2rem;
-}
-.login-wrapper:hover,.bold-text:hover{
-  transform: scale(1.1);
-  transition: 0.4s;
-  background: rgb(255, 255, 255);
-  color:#680912;
-}
+      background-color: #000000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
 
-.nav-links {
-  display: flex;
-  gap: 80px;
-  justify-content: center;
-  flex: 1;
-}
+    .login-wrapper {
+      margin-left: auto;
+      width: 80px;
+      height: 30px;
+      border-radius: 5px;
+      text-align: center;
+      background-color: #800000;
+      font-size: 1.2rem;
+    }
 
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  font-size: 25px;
-  transition: color 0.3s ease;
-  font-weight: 400;
-}
+    .login-wrapper:hover, .bold-text:hover {
+      transform: scale(1.1);
+      transition: 0.4s;
+      background: white;
+      color: #800000;
+    }
 
-.nav-links a:hover {
-  color: #c00300;
-}
+    .nav-links {
+      display: flex;
+      gap: 80px;
+      justify-content: center;
+      flex: 1;
+    }
 
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 25px;
+      transition: color 0.3s ease;
+      font-weight: 400;
+    }
 
-/* Hover Effects */
-.navbar a:hover {
-  color: #e90000;
-  transform: scale(1.2);
-  transition: 0.5s;
-  box-shadow: 0 2px 8px rgba(229,9,20,0.15);
-}
+    .nav-links a:hover {
+      color: #e90000;
+      transform: scale(1.2);
+      transition: 0.5s;
+      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.15);
+    }
 
+    .navbar h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+      align-items: center;
+    }
 
-.navbar h1 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: bold;
-  align-items: center;
-  
-}
+    .bold-text {
+      text-align: center;
+      font-weight: 600;
+      text-decoration: none;
+      color: white;
+      display: inline-block;
+      padding: 3px 10px;
+    }
 
-.bold-text{
-  text-align: center;
-  font-weight: 600;
-  text-decoration: none;
-  color: white;
-}
-
-
-    
     .career-hero {
       margin-top: 80px;
       text-align: center;
       padding: 50px 20px;
     }
+
     .career-hero h2 {
       font-size: 2rem;
       margin-bottom: 10px;
-      color: rgb(198, 15, 15);
+      color: #800000;
     }
+
     .career-hero p {
       font-size: 1.1rem;
       color: #333;
     }
+
     .career-image-section {
       display: flex;
       flex-direction: column;
       align-items: center;
       margin: 40px 0;
     }
+
     .career-image-section img {
       width: 90%;
       max-width: 800px;
       border-radius: 10px;
     }
+
     .quote-box {
       margin-top: 20px;
       background: #f5f5f5;
@@ -126,18 +123,20 @@
       text-align: center;
       max-width: 500px;
     }
+
     .explore-btn {
       margin: 20px auto;
       padding: 12px 24px;
-      background: #df0e0e;
+      background: #800000;
       color: white;
       border: none;
       font-weight: bold;
       border-radius: 5px;
       cursor: pointer;
     }
+
     .region-section {
-      background-color: #df0101;
+      background-color: #800000;
       color: white;
       display: flex;
       flex-wrap: wrap;
@@ -145,33 +144,44 @@
       align-items: center;
       padding: 50px 20px;
     }
+
     .region-grid {
       display: grid;
       grid-template-columns: repeat(2, 150px);
       gap: 10px;
       margin-right: 40px;
     }
+
     .region-grid div {
       border: 1px solid #fff;
       text-align: center;
       padding: 20px;
-      
     }
+
     .region-text {
       max-width: 300px;
     }
+
     .region-text h3 {
       font-size: 1.8rem;
       margin-bottom: 10px;
     }
-    .contact-btn {
+
+    .contact-link {
+      display: inline-block;
       background: black;
       color: white;
       padding: 10px 20px;
       margin-top: 15px;
       font-weight: bold;
-      border: none;
-      cursor: pointer;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .contact-link:hover {
+      background: white;
+      color: #800000;
+      transition: 0.3s;
     }
 
     @media screen and (max-width: 768px) {
@@ -179,34 +189,37 @@
         flex-direction: column;
         gap: 10px;
       }
+
       .region-section {
         flex-direction: column;
         gap: 30px;
       }
+
       .region-grid {
         grid-template-columns: 1fr 1fr;
         gap: 8px;
       }
     }
-    nav a h1{
-    text-decoration: none;
-    color: white;
-}
+
+    nav a h1 {
+      text-decoration: none;
+      color: white;
+    }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-  <a href="{{ url_for('index') }}" ><h1 class="netflix-font">KVR Infinity</h1></a>
-  <div class="nav-links">
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('about') }}">About us</a>
-    <a href="{{ url_for('display_blogs') }}">Blog</a>
-    <a href="{{ url_for('contact') }}">Contact</a>
 
-  </div>
-  <div class="login-wrapper">
-    <a href="{{ url_for('login') }}" class="bold-text">Login</a>
-  </div>
+  <nav class="navbar">
+    <a href="{{ url_for('index') }}"><h1 class="netflix-font">KVR Infinity</h1></a>
+    <div class="nav-links">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('about') }}">About us</a>
+      <a href="{{ url_for('display_blogs') }}">Blog</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+    <div class="login-wrapper">
+      <a href="{{ url_for('login') }}" class="bold-text">Login</a>
+    </div>
   </nav>
 
   <!-- Careers Section -->
@@ -226,15 +239,21 @@
   <!-- Region Section -->
   <section class="region-section">
     <div class="region-grid">
-      <div>Americas</div>
-      <div>Asia Pacific</div>
+      <div>Graphics Designer</div>
+      <div>Video Editor</div>
       <div>Europe</div>
       <div>Middle East and Africa</div>
     </div>
     <div class="region-text">
       <h3>Let's help you navigate your next</h3>
-      <button class="contact-btn">CONTACT US</button>
+      <a href="mailto:support@kvrinfinity.com?subject=Career%20Support%20Query" 
+          style="display:inline-block;background-color:#000;color:#fff;padding:12px 24px;border-radius:5px;
+          text-decoration:none;font-weight:bold;font-family:'Segoe UI', sans-serif;">
+          CONTACT US
+      </a>
+
     </div>
   </section>
+
 </body>
 </html>
