@@ -94,6 +94,18 @@ def delete_expired_memberships():
     })
     print(f"🧹 Deleted {result.deleted_count} expired memberships.")
 
+@app.route('/privacy-policy')
+def privacy_policy():
+    return render_template('privacy-policy.html')
+
+@app.route('/terms-and-conditions')
+def terms_and_conditions():
+    return render_template('terms-and-conditions.html')
+
+@app.route('/cookies-policy')
+def cookies_policy():
+    return render_template('cookies-policy.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
