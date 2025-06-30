@@ -74,6 +74,41 @@
   background-color: #a3824f;
 }
 
+footer {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: #800000;
+  margin-top: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+footer a {
+  color: #800000;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: 600;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 768px) {
+  footer {
+    font-size: 12px;
+    flex-wrap: wrap;
+    line-height: 1.6;
+  }
+
+  footer a {
+    display: inline-block;
+    margin: 6px;
+  }
+}
+
+
 
   </style>
 </head>
@@ -110,6 +145,13 @@
     </form>
 
   </div>
+  <footer>
+  <a href="#">About Us</a> |
+  <a href="#">Terms and Conditions</a> |
+  <a href="#">Privacy Policy</a> |
+  <a href="#">Cookies Policy</a>
+</footer>
+
 
   <!-- Toggle Password Script -->
   <script>

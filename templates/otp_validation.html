@@ -4,20 +4,181 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
   <title>OTP Verification</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='otp.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #c20303, #2f0101);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .center-wrapper {
+      width: 100%;
+      max-width: 400px;
+      background-color: #ffffff;
+      padding: 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+      color: #800000;
+    }
+
+    h2 {
+      color: #800000;
+      margin-bottom: 10px;
+    }
+
+    .desc {
+      color: #666;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: red;
+      margin-bottom: 15px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    input[type="text"] {
+      padding: 14px 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 14px;
+      background-color: #800000;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #000000;
+    }
+
+    .resend {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .resend a {
+      color: #800000;
+      text-decoration: none;
+    }
+
+    .resend a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: white;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .center-wrapper {
+        padding: 35px 25px;
+        min-height: 450px;
+      }
+
+      input[type="text"],
+      button {
+        font-size: 15px;
+      }
+
+      footer {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .center-wrapper {
+        padding: 30px 20px;
+        min-height: 480px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      footer {
+        font-size: 11px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="background-text">KVR Infinity</div>
 
   <div class="center-wrapper">
+    <div class="icon">📩</div>
+    <h2>Verify Your Email</h2>
+    <div class="desc">We’ve sent a 4-digit OTP to your email address. Please enter it below to verify.</div>
+
+    {% if msg %}
+      <p>{{ msg }}</p>
+    {% endif %}
+
     <form action="/verify_otp" method="POST">
-      <h2>Verify Your Email</h2>
-      {% if msg %}
-        <p style="color: red;">{{ msg }}</p>
-      {% endif %}
       <input type="text" name="otp" placeholder="Enter 4-digit OTP" maxlength="5" required />
       <button type="submit">Verify</button>
     </form>
+
+    <div class="resend">
+      Didn't receive it? <a href="/resend_otp">Resend OTP</a>
+    </div>
   </div>
+
+  <footer>
+    <a href="#">About Us</a> |
+    <a href="#">Terms and Conditions</a> |
+    <a href="#">Privacy Policy</a> |
+    <a href="#">Cookies Policy</a>
+  </footer>
+
 </body>
 </html>
