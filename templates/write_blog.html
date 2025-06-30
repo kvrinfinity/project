@@ -118,8 +118,8 @@
       <label for="title">Blog Title</label>
       <input type="text" name="title" required>
 
-      <label for="content">Intro/Top Content</label>
-      <textarea name="content" rows="5" placeholder="Introduction or top content..." required></textarea>
+      <label for="intro">Intro/Top Content</label>
+      <textarea name="intro" rows="5" placeholder="Introduction or top content..." required></textarea>
 
       <label for="author">Author Name</label>
       <input type="text" name="author" required>
@@ -145,6 +145,35 @@
       <button type="submit">Publish Blog</button>
     </form>
   </div>
+
+    <hr style="margin: 50px 0 20px;">
+<h2 style="color: #800000; text-align:center;">📝 All Blogs</h2>
+
+<div style="overflow-x:auto;">
+  <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.95rem;">
+    <thead>
+      <tr style="background: #800000; color: white;">
+        <th style="padding: 12px; text-align: left;">Title</th>
+        <th style="padding: 12px; text-align: left;">Author</th>
+        <th style="padding: 12px; text-align: left;">Intro Snippet</th>
+        <th style="padding: 12px; text-align: center;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for blog in blogs %}
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 12px;">{{ blog.title }}</td>
+        <td style="padding: 12px;">{{ blog.author }}</td>
+        <td style="padding: 12px;">{{ blog.intro[:100] }}...</td>
+        <td style="padding: 12px; text-align: center;">
+          <a href="{{ url_for('edit_blog', blog_id=blog._id) }}" class="add-btn" style="background:#007bff; padding:6px 12px;">✏️ Edit</a>
+          <a href="{{ url_for('delete_blog', blog_id=blog._id) }}" class="add-btn" style="background:#b00000; padding:6px 12px;" onclick="return confirm('Are you sure?')">🗑️ Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
   <script>
     function addSection() {

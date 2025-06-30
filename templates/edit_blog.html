@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Blog - KVR Infinity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #800000;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      font-weight: 600;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    img.preview {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    .section {
+      margin-top: 20px;
+      border: 1px dashed #ccc;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .add-btn {
+      background: #800000;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background: #a80000;
+    }
+
+    button[type="submit"] {
+      background: #d10000;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background: #a80000;
+    }
+
+    .flash.success {
+      background: #d4edda;
+      color: #155724;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✏️ Edit Blog</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+      <label for="title">Title</label>
+      <input type="text" name="title" value="{{ blog.title }}" required>
+
+      <label for="intro">Intro</label>
+      <textarea name="intro" rows="4" required>{{ blog.intro }}</textarea>
+
+      <label for="author">Author</label>
+      <input type="text" name="author" value="{{ blog.author }}" required>
+
+      <label for="linkedin">LinkedIn URL</label>
+      <input type="url" name="linkedin" value="{{ blog.linkedin }}" required>
+
+      <label>Current Image</label>
+      <img class="preview" src="{{ url_for('blog_image', image_id=blog.image_id) }}" alt="Current Blog Image">
+
+      <label>Replace Image (optional)</label>
+      <input type="file" name="image" accept="image/*">
+
+      <hr style="margin: 30px 0 10px; border: 1px dashed #ccc;">
+
+      <label>Sections</label>
+      <div id="sections">
+        {% for sec in blog.sections %}
+          <div class="section">
+            <input type="text" name="subheadings[]" value="{{ sec.subheading }}" placeholder="Subheading" required>
+            <textarea name="paragraphs[]" rows="4" required>{{ sec.paragraph }}</textarea>
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" class="add-btn" onclick="addSection()">+ Add New Section</button>
+
+      <button type="submit">✅ Update Blog</button>
+    </form>
+  </div>
+
+  <script>
+    function addSection() {
+      const section = document.createElement('div');
+      section.classList.add('section');
+      section.innerHTML = `
+        <input type="text" name="subheadings[]" placeholder="Subheading" required>
+        <textarea name="paragraphs[]" rows="4" placeholder="Paragraph..." required></textarea>
+      `;
+      document.getElementById('sections').appendChild(section);
+    }
+  </script>
+</body>
+</html>

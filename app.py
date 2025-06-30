@@ -149,42 +149,38 @@ def login():
         email = request.form.get('email').strip()
         password = request.form.get('password')
 
-        # Hardcoded admin login
-        if email == 'admin@kvrinfinity.in' and password == 'admin':
-            session['admin_log'] = True
-            session['user_email'] = email
-            return redirect(url_for('admin'))
 
-        # DB user login
+        # ✅ 2. Try login from admin_col
+        admin_user = admin_col.find_one({"email": email})
+        if admin_user and 'password' in admin_user:
+            if bcrypt.checkpw(password.encode(), admin_user['password']):
+                session['user_email'] = email
+                role = admin_user.get('dept')
+
+                if role == 'Administration Department':
+                    session['admin_log'] = True
+                    return redirect(url_for('admin'))
+                elif role == 'Digital Marketing':
+                    return redirect(url_for('write_blog'))
+                elif role == 'Sales Department':
+                    return redirect(url_for('sales_admin_dashboard'))
+
+        # ✅ 3. Regular user login (from db.users)
         user = db.users.find_one({"email": email})
-        if email == 'minali@kvrinfinity.in' and password=='minali':
-            return redirect(url_for('write_blog'))
         if user and bcrypt.checkpw(password.encode(), user['password']):
             session['user_email'] = email
 
-            # Role-based redirects
-            if user.get('role') == 'admin':
-                session['admin_log'] = True
-                return redirect(url_for('admin'))
-            elif user.get('role') == 'blogger':
-                return redirect(url_for('write_blog'))
-            elif user.get('role') == 'Sales Department':
-                return redirect(url_for('sales_admin_dashboard'))
-
-            # Check membership validity
+            # Check for active membership
             membership = membership_col.find_one({"user_email": email})
             if not membership or membership['valid_till'] < datetime.now():
                 return redirect(url_for('membership'))
 
             return redirect(url_for('home'))
 
-        else:
-            return render_template('login.html', msg='Invalid credentials')
+        # ❌ Invalid login
+        return render_template('login.html', msg='Invalid credentials')
 
     return render_template('login.html')
-
-
-
 
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
@@ -366,18 +362,15 @@ def blog_image(image_id):
 def write_blog():
     if request.method == 'POST':
         title = request.form['title']
-        content = request.form['content']
+        content = request.form['intro']
         author = request.form['author']
         linkedin = request.form['linkedin']
         image_file = request.files.get('image')
 
+        # Collect subheadings and paragraphs
         subheadings = request.form.getlist('subheadings[]')
         paragraphs = request.form.getlist('paragraphs[]')
-
-        sections = [
-            {'subheading': sh, 'paragraph': para}
-            for sh, para in zip(subheadings, paragraphs)
-        ]
+        sections = [{'subheading': sh, 'paragraph': para} for sh, para in zip(subheadings, paragraphs)]
 
         image_id = None
         if image_file and image_file.filename:
@@ -387,13 +380,14 @@ def write_blog():
                 content_type=image_file.content_type
             )
 
+        # Prepare blog document
         blog_data = {
             'title': title,
             'intro': content,
             'author': author,
             'linkedin': linkedin,
             'image_id': image_id,
-            'sections': sections,  # Save the structured data
+            'sections': sections,
             'created_at': datetime.utcnow()
         }
 
@@ -401,7 +395,52 @@ def write_blog():
         flash("✅ Blog posted successfully!", "success")
         return redirect(url_for('write_blog'))
 
-    return render_template('write_blog.html')
+    # GET request — load all blogs
+    blogs = list(blogs_col.find().sort("created_at", -1))
+    for blog in blogs:
+        blog['_id'] = str(blog['_id'])
+
+    return render_template('write_blog.html', blogs=blogs)
+
+
+@app.route('/edit-blog/<blog_id>', methods=['GET', 'POST'])
+def edit_blog(blog_id):
+    blog = blogs_col.find_one({"_id": ObjectId(blog_id)})
+
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['intro']
+        author = request.form['author']
+        linkedin = request.form['linkedin']
+        subheadings = request.form.getlist('subheadings[]')
+        paragraphs = request.form.getlist('paragraphs[]')
+
+        sections = [{'subheading': sh, 'paragraph': para} for sh, para in zip(subheadings, paragraphs)]
+
+        update_data = {
+            'title': title,
+            'intro': content,
+            'author': author,
+            'linkedin': linkedin,
+            'sections': sections,
+        }
+
+        blogs_col.update_one({"_id": ObjectId(blog_id)}, {"$set": update_data})
+        flash("✅ Blog updated!", "success")
+        return redirect(url_for('write_blog'))
+
+    blog['_id'] = str(blog['_id'])
+    return render_template('edit_blog.html', blog=blog)
+
+
+@app.route('/delete-blog/<blog_id>')
+def delete_blog(blog_id):
+    blog = blogs_col.find_one({"_id": ObjectId(blog_id)})
+    if blog and blog.get("image_id"):
+        fs.delete(ObjectId(blog['image_id']))
+    blogs_col.delete_one({"_id": ObjectId(blog_id)})
+    flash("🗑️ Blog deleted successfully", "success")
+    return redirect(url_for('write_blog'))
 
 
 @app.route('/blog/<blog_id>')
@@ -1195,7 +1234,7 @@ def admin():
                 image_id = fs.put(image_file, filename=secure_filename(image_file.filename), content_type=image_file.content_type)
             else:
                 flash("Bundle image is required.", "error")
-                return redirect('/admin')
+                return redirect('')
 
             bundles_col.insert_one({
                 'bundle_name': bundle_name,
@@ -1350,18 +1389,24 @@ def admin():
 @app.route('/admin-management', methods=['GET', 'POST'])
 def admin_management():
     if request.method == 'POST':
+        password = request.form['password']
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
         new_employee = {
             "fname": request.form['fname'],
             "lname": request.form['lname'],
             "email": request.form['email'],
             "dept": request.form['dept'],
-            "joined_at": request.form['joined_at']
+            "joined_at": request.form['joined_at'],
+            "password": hashed_password  # 🛡️ store hashed
         }
+
         admin_col.insert_one(new_employee)
         return redirect(url_for('admin_management'))
 
     employees = list(admin_col.find())
     return render_template("admin_management.html", employees=employees)
+
 
 # Delete employee
 @app.route('/admin-delete/<string:emp_id>')
@@ -1384,6 +1429,13 @@ def admin_edit(emp_id):
             "dept": request.form['dept'],
             "joined_at": request.form['joined_at']
         }
+
+        password = request.form.get('password')
+        if password:  # ✅ Only update if password is entered
+            import bcrypt
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            updated['password'] = hashed_password
+
         admin_col.update_one({"_id": ObjectId(emp_id)}, {"$set": updated})
         return redirect(url_for('admin_management'))
 
