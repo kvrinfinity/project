@@ -204,6 +204,21 @@ def forgot_password():
 
     return render_template('forgot_password.html')
 
+@app.route('/resend_otp', methods=['GET'])
+def resend_otp():
+    if 'reset_email' not in session or 'otp_mode' not in session:
+        flash("Session expired. Please try again.", "warning")
+        return redirect(url_for('forgot_password'))
+
+    email = session['reset_email']
+    otp = generate_otp()
+    session['otp'] = otp  # Replace old OTP with new one
+
+    send_otp_email(email, otp)
+
+    flash("A new OTP has been sent to your email.", "info")
+    return render_template('otp_validation.html')
+
 
 @app.route('/signup')
 def signUp():

@@ -7,6 +7,8 @@
 <title>Modern Hero Section</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css?family=Poppins:700,400&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
 <style>
   .cta-btn a{
@@ -24,6 +26,7 @@
     <a href="{{ url_for('index') }}">Home</a>
     <a href="{{ url_for('display_blogs') }}">Blog</a>
     <a href="{{ url_for('career') }}">Career</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
     
   </div>
   <div class="login-wrapper">
@@ -64,27 +67,27 @@
 
   <div class="stats-grid">
     <div class="stat-box dark">
-      <h2>10+</h2>
-      <p>Years of Agency<br />Experience</p>
+      <h2>7+</h2>
+      <p>Years of <br />Experience</p>
     </div>
     <div class="stat-box blue">
-      <h2>30</h2>
-      <p>Good Award Wining<br />Agency</p>
+      <h2>20+</h2>
+      <p>Expert<br />Faculty</p>
     </div>
     <div class="stat-box dark">
-      <h2>7+</h2>
-      <p>Successfully Finished<br />Project</p>
+      <h2>40+</h2>
+      <p>Excinting Courses<br />Coming your way</p>
     </div>
     <div class="stat-box blue">
-      <h2>25</h2>
-      <p>Experience<br />Engineering Members</p>
+      <h2>1000+</h2>
+      <p>Minds Building<br /> Better Future</p>
     </div>
   </div>
 </section>
 
 
-  <h1 style="text-align:center; margin-top: 40px;">Our Squad</h1>
   <section class="team-section">
+    <h1 style="text-align:center; margin-top: 10px;"><span style="color:rgb(223, 1, 1)">OUR</span> SQUAD</h1>
   <div class="team-header">
     <h2>Meet the <span>Minds Powering </span>Our Mission</h2>
     <p>Our team's got your back! Meet the awesome brains and doers who make things happens and keep the mission rolling everyday.</p>
@@ -98,19 +101,19 @@
         <img src="{{ url_for('static', filename='praveen.jpg') }}">
         <h4>Praveen Kumar Kumbakonam</h4>
         <p>CEO</p>
-        <a href="https://www.linkedin.com/in/praveenkumbhakonam/" target="_blank">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/praveenkumbhakonam/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='muskan2.jpeg') }}">
         <h4>Muskan Singh</h4>
         <p>HR</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='nidheesh.jpeg') }}">
         <h4>Nidheesh N A</h4>
         <p>Executive Head</p>
-        <a href="https://linkedin.com/in/alokmajumdar" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/alokmajumdar" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
     </div>
   </div>
@@ -123,13 +126,13 @@
         <img src="{{ url_for('static', filename='vibitha.jpeg') }}">
         <h4>Vibitha</h4>
         <p>H.R Assistant</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='susmitha.jpeg') }}">
         <h4>Sushmitha</h4>
         <p>CEO Assistant</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
     </div>
   </div>
@@ -142,25 +145,25 @@
         <img src="{{ url_for('static', filename='minali.jpg') }}">
         <h4>Minali Rathod</h4>
         <p>Marketing Head</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='anuj.jpeg') }}">
         <h4>Anuj</h4>
         <p>Marketing Assistant</p>
-        <a href="https://www.linkedin.com/in/anuj-jain23/" target="_blank">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/anuj-jain23/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='anjana.jpeg') }}">
         <h4>Anjana</h4>
         <p>Marketing Assistant</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='divin.jpeg') }}">
         <h4>Divin Kori</h4>
         <p>Visual Designer</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
     </div>
   </div>
@@ -173,25 +176,25 @@
         <img src="{{ url_for('static', filename='nishan.jpg') }}">
         <h4>Nishan Kamath</h4>
         <p>Junior Software Developer</p>
-        <a href="https://www.linkedin.com/in/nishan-kamath-b2891b26b/" target="_blank">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/nishan-kamath-b2891b26b/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='harshini.jpeg') }}">
         <h4>Harshini B.T</h4>
         <p>Junior Software Developer</p>
-        <a href="https://www.linkedin.com/in/harshini-bt-94622b247/" target="_blank">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/harshini-bt-94622b247/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='sumedh.jpeg') }}">
         <h4>Sumedh K.S Hathwar</h4>
         <p>Junior Software Developer</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='sathvika.jpeg') }}">
         <h4>Sathwika A</h4>
         <p>Junior Software Developer</p>
-        <a href="https://www.linkedin.com/in/sathwika-a-b079bb367/" target="_blank">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/sathwika-a-b079bb367/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
     </div>
   </div>
@@ -204,13 +207,13 @@
         <img src="{{ url_for('static', filename='amruth.jpeg') }}">
         <h4>Amruth</h4>
         <p>Finance Head</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
       <div class="team-card">
         <img src="{{ url_for('static', filename='shilpa.jpeg') }}">
         <h4>Shilpa</h4>
         <p>Finance(Expenditure)</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
     </div>
   </div>
@@ -223,7 +226,7 @@
         <img src="{{ url_for('static', filename='pavan.jpg') }}">
         <h4>Billa Pavan Kumar</h4>
         <p>Sales Head</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
 
   <div class="department-group">
@@ -233,7 +236,7 @@
         <img src="{{ url_for('static', filename='sanjana.jpeg') }}">
         <h4>Sanjana Mohan</h4>
         <p>Business Analyst</p>
-        <a href="https://linkedin.com/in/meerasharma" target="_blank">LinkedIn</a>
+        <a href="https://linkedin.com/in/meerasharma" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
       </div>
   
   </div>
@@ -279,20 +282,37 @@
     <div class="footer-column">
       <h4>RESOURCES</h4>
       <ul>
-        <li>Blog</li>
-        <li>Help center</li>
-        <li>FAQ</li>
+        <li><a href="{{ url_for('display_blogs') }}">Blog</a></li>
+        <li><a href="{{ url_for('privacy_policy') }}">Privacy & Policy</a></li>
+        <li><a href="{{ url_for('terms_and_conditions') }}">Terms & Conditions</a></li>
+        <li><a href="{{ url_for('cookies_policy') }}">Cookies Policy</a></li>
       </ul>
     </div>
 
     <div class="footer-column">
       <h4>GET IN TOUCH</h4>
       <ul class="social-icons">
-        <li><i class="fab fa-facebook"></i> Twitter</li>
-        <li><i class="fab fa-google"></i> Instagram</li>
-        <li><i class="fab fa-twitter"></i> Facebook</li>
-        <li><i class="fab fa-github"></i> Github</li>
-      </ul>
+  <li>
+    <a href="https://www.facebook.com/share/1YxisyLvjM/" target="_blank">
+      <i class="fab fa-facebook"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://www.instagram.com/kvr_infinity?igsh=cXBrYTMzcGJidnU1&utm_source=qr" target="_blank">
+      <i class="fab fa-instagram"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://whatsapp.com/channel/0029Va5CZ8EFMqrWbQGahy3y" target="_blank">
+      <i class="fab fa-whatsapp"></i> 
+    </a>
+  </li>
+  <li>
+    <a href="https://www.linkedin.com/company/kvr-infinity/" target="_blank">
+      <i class="fab fa-linkedin"></i> 
+    </a>
+  </li>
+</ul>
     </div>
   </div>
 

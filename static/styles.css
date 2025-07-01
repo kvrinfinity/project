@@ -1546,6 +1546,12 @@ body {
   flex: 1 1 200px;
 }
 
+.footer-column  h2{
+  color:rgb(255, 9, 9);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
 .footer-column h4 {
   font-weight: bold;
   margin-bottom: 12px;
@@ -1574,11 +1580,20 @@ body {
   margin-right: 10px;
 }
 
-.social-icons li {
+.social-icons li{
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
+  font-size: 1.2rem;
+}
+
+.social-icons li i{
+  font-size: 1.4rem;
+}
+
+.social-icons li i:hover{
+  color:red;
 }
 
 .footer-bottom {
@@ -1617,6 +1632,10 @@ body {
   text-align: center;
   background: #f9fafc;
   font-family: 'Segoe UI', sans-serif;
+}
+
+.testimonial-section .heading{
+  font-size: 1.5rem;
 }
 
 .testimonial-section .heading span{
@@ -1849,8 +1868,8 @@ body {
 .faq-description {
   color: #000000;
   margin-bottom: 30px;
-  font-size: 16px;
-  max-width: 700px;
+  font-size: 22px;
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -2957,21 +2976,26 @@ body {
       font-family: monospace;
     }
 
-    .button {
-      padding: 12px 24px;
+    .join-button {
+      padding: 10px 20px;
       background: #e30e0e;
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 1.5rem;
       cursor: pointer;
       transition: background 0.3s ease;
       height: 5%;
+      margin-top:30px;
+      margin-left: auto;
+      margin-right: auto;
+      align-items: center;
+      display: block;
     }
 
-    .button:hover {
-      background: #ffffff;
-      color:red;
+    .join-button:hover {
+      background: #000000;
+      color:rgb(255, 255, 255);
       transform: scale(1.08);
       transition: .5s linear;
     }

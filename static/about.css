@@ -261,6 +261,11 @@ nav a h1{
   font-family: sans-serif;
 }
 
+.team-section h1{
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
 .team-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -288,9 +293,12 @@ nav a h1{
 .department-group h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #222;
+  color: #e70000;
 }
 
+.department-group p{
+  color:rgb(223, 1, 1);
+}
 .team-grid {
   display: flex;
   flex-wrap: wrap;
@@ -302,7 +310,7 @@ nav a h1{
   background: #fff;
   border-radius: 20px;
   padding: 1rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
   text-align: center;
   transition: transform 0.3s ease;
   flex: 1 1 280px;
@@ -333,14 +341,20 @@ nav a h1{
 
 .team-card p {
   margin: 0 0 0.5rem;
-  color: #777;
+  color: #d40000;
 }
 
 .team-card a {
   margin-top: auto;
-  color: #1a73e8;
-  font-size: 1.2rem;
+  color: #4e89ff;
+  font-size: 1.7rem;
   text-decoration: none;
+}
+
+.team-card a:hover{
+  color:rgb(189, 6, 6);
+  transform: scale(1.05);
+  transition: .5s linear;
 }
 
 .department-group h3 {
@@ -404,7 +418,10 @@ nav a h1{
 .footer-column.brand p {
   margin: 10px 0;
 }
-
+.footer-column a{
+  color:white;
+  text-decoration: none;
+}
 .footer-column .fa {
   margin-right: 10px;
 }
@@ -431,6 +448,17 @@ nav a h1{
 .footer-bottom a {
   color: #fff;
   text-decoration: underline;
+}
+
+
+
+.social-icons li i{
+  color:white;
+  font-size: 1.4rem;
+}
+
+.social-icons li i:hover{
+  color:red;
 }
 
 /* Responsive */

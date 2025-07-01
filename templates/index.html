@@ -183,9 +183,9 @@
     <div class="hero-content">
       <h1><span>Accelerate </span>Your Career</h1>
       <p style="color: rgb(255, 231, 231)">Kick start your career with practical skills and hands-on experience that make you stand out – plus, refer your friends and earn rewards.</p>
-      <button class="btn">
+      <a href="{{ url_for('login') }}"><button class="btn">
   Ignite your Skills  <i class="fas fa-arrow-right"></i>
-</button>
+</button></a>
 
     </div>
   </section>
@@ -382,18 +382,18 @@
     </div>
 
     <div class="kvr-feature">
-      <i class="fas fa-graduation-cap"></i>
-      <div class="kvr-text">
-        <h4>Crack the Scholarship Interview</h4>
-        <p>Prove your potential and earn a chance to qualify for our exclusive scholarship program.</p>
-      </div>
-    </div>
-
-    <div class="kvr-feature">
       <i class="fas fa-id-card"></i>
       <div class="kvr-text">
         <h4>Start Learning with Membership</h4>
-        <p>Get access to all premium courses for just ₹1499/- and take the next big step in your career.</p>
+        <p>Get access to all premium courses for just ₹10000/- and take the next big step in your career.</p>
+      </div>
+    </div>
+
+   <div class="kvr-feature">
+      <i class="fas fa-user-friends"></i> <!-- You can change icon as needed -->
+      <div class="kvr-text">
+          <h4>Refer and Earn</h4>
+          <p>Invite your friends and earn ₹1000 for each successful referral. Empower others and get rewarded!</p>
       </div>
     </div>
 
@@ -409,30 +409,30 @@
 
   <br>
   
-   <section class="membership-section">
-    <div class="carousel-container">
+  <section class="membership-section">
+  <div class="carousel-container">
+    <h2 class="team-title"><span>Get </span>Membership</h2>
 
-
-      <!-- Card 2: Early Bird Offer -->
-      <div class="pricing-card">
-        <h2>Early Bird Offer</h2>
-        <p>Use early bird code <code>kvr1122</code> to unlock your 40% discount!</p>
-        <div class="pricing-box">
-          <div>Original Price</div>
-          <h3>₹10,000</h3>
-          <div class="discount-box">
-            <strong>Early Bird Code:</strong><br>
-            Use <code>kvr1122</code> — <strong>Pay ₹6,000</strong>
-          </div>
+    <!-- Card 2: Early Bird Offer -->
+    <div class="pricing-card active">
+      <h2>Early Bird Offer</h2>
+      <p>Use early bird code <code>kvr1122</code> to unlock your 40% discount!</p>
+      <div class="pricing-box">
+        <div>Original Price</div>
+        <h3>₹10,000</h3>
+        <div class="discount-box">
+          <strong>Early Bird Code:</strong><br>
+          Use <code>kvr1122</code> — <strong>Pay ₹6,000</strong>
         </div>
-        <a href="{{ url_for('login') }}"><button class="button">Join Now</button></a>
       </div>
+    </div> <!-- End pricing card -->
 
+    <!-- Join Now Button -->
+    <a href="{{ url_for('login') }}"><button class="join-button">Join Now</button></a>
 
-      </div>
-
-    </div>
-  </section>
+  </div> <!-- End carousel-container -->
+</section>
+  <a href="{{ url_for('login') }}"><button class="join-button">Join Now</button></a>
   <section class="team-section">
   <h2 class="team-title">Meet Our <span>Beloved Faculty</span></h2>
   <p class="team-subtitle">
@@ -442,17 +442,15 @@
   <div class="team-cards">
     <div class="team-card">
       <div class="card-img-wrapper">
-        <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 1" class="team-img">
+        <img src="{{ url_for('static', filename='praveen.JPG') }}" alt="Member 1" class="team-img">
         <div class="overlay">
           <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/praveenkumbhakonam/"><i class="fa-brands fa-linkedin"></i></a>
           </div>
         </div>
       </div>
-      <h3 class="team-name">Donald Huff</h3>
-      <p class="team-role ios">IOS DEVELOPER</p>
+      <h3 class="team-name">Praveen </h3>
+      <p class="team-role ios">APTITUDE</p>
     </div>
 
     <div class="team-card">
@@ -460,14 +458,12 @@
         <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 2" class="team-img">
         <div class="overlay">
           <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/praveenkumbhakonam/"><i class="fa-brands fa-linkedin"></i></a>
           </div>
         </div>
       </div>
-      <h3 class="team-name">Angelo Moore</h3>
-      <p class="team-role visual">VISUAL DESIGNER</p>
+      <h3 class="team-name">Karan Raj</h3>
+      <p class="team-role visual">BASIC COMPUTERS</p>
     </div>
 
     <div class="team-card">
@@ -475,14 +471,12 @@
         <img src="{{ url_for('static', filename='girlprofile.jpg') }}" alt="Member 3" class="team-img">
         <div class="overlay">
           <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/praveenkumbhakonam/"><i class="fa-brands fa-linkedin"></i></a>
           </div>
         </div>
       </div>
-      <h3 class="team-name">Angelo Moore</h3>
-      <p class="team-role visual">VISUAL DESIGNER</p>
+      <h3 class="team-name">Padmaja</h3>
+      <p class="team-role visual">SPOKEN ENGLISH</p>
     </div>
 
     <div class="team-card">
@@ -490,14 +484,12 @@
         <img src="{{ url_for('static', filename='alak.jpg') }}" alt="Member 4" class="team-img">
         <div class="overlay">
           <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/alak-majumder-6b825b79/"><i class="fa-brands fa-linkedin"></i></a>
           </div>
         </div>
       </div>
-      <h3 class="team-name">Alak Majumder</h3>
-      <p class="team-role android">ANDROID DEVELOPER</p>
+      <h3 class="team-name">Sandeep Meghwal</h3>
+      <p class="team-role android">DATA SCIENCE</p>
     </div>
   </div>
 
@@ -528,104 +520,102 @@
   </div>
 
   <div class="testimonial-container">
-    
     <div class="testimonial-wrapper" id="testimonialWrapper">
-      <!-- 10 testimonials -->
+      
       <div class="testimonial-card color1">
         <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet, consectetur sadipscing elitr sed diam nonumy eirmod tempor.</p>
+        <p>KVR Infinity’s Aptitude course gave me a solid foundation for my TCS interview. The instructors are patient and cover every concept clearly.</p>
         <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=10" alt="user">
-          <div>
-            <h4>James Simmons</h4>
-            <span>Marketing Expert</span>
-          </div>
+          <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="user">
+          <div><h4>Rahul Deshmukh</h4><span>B.Tech Student</span></div>
         </div>
       </div>
-      <div class="testimonial-card color2">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet, consectetur sadipscing elitr sed diam nonumy eirmod tempor.</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=11" alt="user">
-          <div>
-            <h4>Alex Feroundo</h4>
-            <span>Founder</span>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card color1">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet, consectetur sadipscing elitr sed diam nonumy eirmod tempor.</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=12" alt="user">
-          <div>
-            <h4>Kallu Mastan</h4>
-            <span>Mastan Group</span>
-          </div>
-        </div>
-      </div>
-      <!-- Add 7 more testimonials below -->
-      <div class="testimonial-card color2">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet...</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=13" alt="user">
-          <div><h4>Sara Kim</h4><span>Designer</span></div>
-        </div>
-      </div>
-      <div class="testimonial-card color1">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet...</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=14" alt="user">
-          <div><h4>John Lee</h4><span>Engineer</span></div>
-        </div>
-      </div>
-      <div class="testimonial-card color2">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet...</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=15" alt="user">
-          <div><h4>Priya Nair</h4><span>Student</span></div>
-        </div>
-      </div>
-      <div class="testimonial-card color1">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet...</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=16" alt="user">
-          <div><h4>Akash Mehta</h4><span>Freelancer</span></div>
-        </div>
-      </div>
-      <div class="testimonial-card color2">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet...</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=17" alt="user">
-          <div><h4>Linda Zhou</h4><span>Entrepreneur</span></div>
-        </div>
-      </div>
-      <div class="testimonial-card color1">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet...</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=18" alt="user">
-          <div><h4>Ravi Teja</h4><span>Coach</span></div>
-        </div>
-      </div>
-      <div class="testimonial-card color2">
-        <div class="stars">★★★★★</div>
-        <p>Lorem ipsum dolor sit amet...</p>
-        <div class="profile">
-          <img src="https://i.pravatar.cc/150?img=19" alt="user">
-          <div><h4>Meera Das</h4><span>Mentor</span></div>
-        </div>
-      </div>
-    </div>
 
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>Coming from a commerce background, I was worried about coding. But the step-by-step guidance at KVR Infinity helped me overcome that fear!</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="user">
+          <div><h4>Sneha Reddy</h4><span>Commerce Graduate</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>The Spoken English sessions really helped me during my Wipro HR round. I could speak confidently, and that made all the difference.</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="user">
+          <div><h4>Arun Kumar</h4><span>Engineering Final Year</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>The referral system is amazing! I earned ₹2000 just by inviting friends. Plus, they got access to great courses — win-win!</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/women/64.jpg" alt="user">
+          <div><h4>Priya Sharma</h4><span>Student</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>Thanks to the Aptitude mock tests, I was well prepared for Infosys. It felt like practicing the real thing. Highly recommended!</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/men/61.jpg" alt="user">
+          <div><h4>Manoj Shetty</h4><span>Graduate</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>The Data Science basics were made so simple that I could follow even without any coding background. Now I'm excited for the advanced course!</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="user">
+          <div><h4>Kavya Nair</h4><span>B.Sc. Student</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>I cracked my Capgemini logical test thanks to KVR Infinity. The trainers are supportive, and materials are updated with latest company patterns.</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/men/77.jpg" alt="user">
+          <div><h4>Ritesh Yadav</h4><span>CS Student</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>The one-time verification system before withdrawal made me feel secure. I got ₹3000 from referrals and it was processed smoothly!</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/women/62.jpg" alt="user">
+          <div><h4>Nikita Raj</h4><span>Job Seeker</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color1">
+        <div class="stars">★★★★★</div>
+        <p>KVR Infinity's platform is modern and fast. I like how there's a proper dashboard, referral tracking, and upcoming test schedules.</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="user">
+          <div><h4>Harsh Verma</h4><span>Diploma Holder</span></div>
+        </div>
+      </div>
+
+      <div class="testimonial-card color2">
+        <div class="stars">★★★★★</div>
+        <p>My favorite feature is the real-time feedback during mock tests. I know exactly where to improve. No other platform offers this much support!</p>
+        <div class="profile">
+          <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="user">
+          <div><h4>Anjali Iyer</h4><span>MBA Aspirant</span></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
-  <script>
+<script>
    function scrollLeft() {
   console.log("scroll left clicked");
   const container = document.getElementById('testimonialWrapper');
@@ -650,27 +640,27 @@ function scrollRight() {
 
     <div class="faq-item color1">
       <button class="faq-question">Will someone help me with Resume or Interview prep?<span class="icon">+</span></button>
-      <div class="faq-answer">Details about admissions...</div>
+      <div class="faq-answer">Yep! Our Interview prep course is included in the membershihp</div>
     </div>
 
     <div class="faq-item color2">
       <button class="faq-question">Are there hands on Projects or Assignments?<span class="icon">+</span></button>
-      <div class="faq-answer">Details about applying through portal...</div>
+      <div class="faq-answer">Yes! we've added fun Assignments and real projects in all our courses so you can learn by Doing.</div>
     </div>
 
     <div class="faq-item color1">
       <button class="faq-question">Can I switch courses later?<span class="icon">+</span></button>
-      <div class="faq-answer">Details about academics...</div>
+      <div class="faq-answer">No limits here! Get into every course with one simple membership</div>
     </div>
 
     <div class="faq-item color2">
       <button class="faq-question">Is this certificate valid or recognized by companies?<span class="icon">+</span></button>
-      <div class="faq-answer">Details about fees and finance...</div>
+      <div class="faq-answer">Totally! We offer legit, verified certificates that employers love to see.</div>
     </div>
 
     <div class="faq-item color1">
       <button class="faq-question">Will this help me to get a Job or Internship?<span class="icon">+</span></button>
-      <div class="faq-answer">Details about academics...</div>
+      <div class="faq-answer">We offer comprehensive job preperation courses designed to equip you with the skills and confidence you need to succeed. While we don't assure guaranteed placement, we're committed to supporting you in every step of the way to boost your chances in the Future Job Market.</div>
     </div>
     
     <!-- Add more faq-item blocks as needed -->
@@ -737,25 +727,42 @@ document.querySelectorAll('.faq-question').forEach(button => {
       <h4>RESOURCES</h4>
       <ul>
         <li><a href="{{ url_for('display_blogs') }}">Blog</a></li>
-        <li>Help center</li>
-        <li>FAQ</li>
+        <li><a href="{{ url_for('privacy_policy') }}">Privacy & Policy</a></li>
+        <li><a href="{{ url_for('terms_and_conditions') }}">Terms & Conditions</a></li>
+        <li><a href="{{ url_for('cookies_policy') }}">Cookies Policy</a></li>
       </ul>
     </div>
 
     <div class="footer-column">
       <h4>GET IN TOUCH</h4>
       <ul class="social-icons">
-        <li><i class="fab fa-facebook"></i> Twitter</li>
-        <li><i class="fab fa-google"></i> Instagram</li>
-        <li><i class="fab fa-twitter"></i> Facebook</li>
-        <li><i class="fab fa-github"></i> Github</li>
-      </ul>
+  <li>
+    <a href="https://www.facebook.com/share/1YxisyLvjM/" target="_blank">
+      <i class="fab fa-facebook"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://www.instagram.com/kvr_infinity?igsh=cXBrYTMzcGJidnU1&utm_source=qr" target="_blank">
+      <i class="fab fa-instagram"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://whatsapp.com/channel/0029Va5CZ8EFMqrWbQGahy3y" target="_blank">
+      <i class="fab fa-whatsapp"></i> 
+    </a>
+  </li>
+  <li>
+    <a href="https://www.linkedin.com/company/kvr-infinity/" target="_blank">
+      <i class="fab fa-linkedin"></i> 
+    </a>
+  </li>
+</ul>
+
     </div>
   </div>
 
   <div class="footer-bottom">
     <p>2025 © KVR Infinity - www.kvrinfinity.in</p>
-    <a href="#">Terms Conditions & Policy</a>
   </div>
 </footer>
 
@@ -807,6 +814,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
 </script>
   
 <!--Start of Tawk.to Script-->
+<!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
@@ -818,6 +826,7 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
+<!--End of Tawk.to Script-->
 <!--End of Tawk.to Script-->
 
 </body>

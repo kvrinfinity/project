@@ -984,6 +984,18 @@ body {
 .footer-column {
   flex: 1 1 200px;
 }
+.social-icons li i{
+  font-size: 1.4rem;
+}
+
+.social-icons li i:hover{
+  color:red;
+}
+
+.footer-column a{
+  color:white;
+  text-decoration: none;
+}
 
 .footer-column h4 {
   font-weight: bold;
