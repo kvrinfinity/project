@@ -858,7 +858,7 @@ def apply_referral():
     if ref_code == 'kvr1111':
         discount = 99
         session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
-        return jsonify({'valid': True, 'discount': 99})
+        return jsonify({'valid': True, 'discount': 99.99})
     
 
 

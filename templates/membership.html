@@ -49,8 +49,9 @@
           finalAmount = baseAmount - (baseAmount * 0.70); // ₹3000
           msg.style.color = "green";
           msg.textContent = "Referral code applied! 70% discount.";
-        } else if (data.discount === 99) {
-          finalAmount = baseAmount - (baseAmount * 0.99); // ₹100
+        } else if (data.discount === 99.99) {
+          //finalAmount = baseAmount - (baseAmount * 0.99); // ₹100
+          finalAmount = 100;
           msg.style.color = "green";
           msg.textContent = "Referral code applied! 99% discount.";
         } else if (data.discount === 40) {
