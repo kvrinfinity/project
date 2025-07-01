@@ -8,7 +8,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css?family=Poppins:700,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
-
+<style>
+  .cta-btn a{
+    text-decoration: none;
+    color:white;
+    font-size: 1.4rem;
+  }
+</style>
 
 </head>
 <body>
@@ -33,10 +39,9 @@
       That’s Shapped <span class="blue">Our Success</span>
     </h1>
     <p>
-      SHIFT is an agency studio that brings an innovative approach to the world of UI/UX design. 
-      We are committed to infusing the future into every project we undertake.
+      KVR Infinity is an AI-integrated upskilling and hiring platform designed to bridge the gap between talent and opportunity
     </p>
-    <button class="cta-btn">Get Start a Project</button>
+    <button class="cta-btn"><a href="{{ url_for('login') }}" >Begin Your Journey</a></button>
   </div>
 
   <div class="about-image-card">
@@ -46,13 +51,13 @@
 <section class="stats-section">
   <div class="stats-header">
     <div class="stats-title">
-      <h2>Our agency knows work<br />dominates <span>our lives</span></h1>
+      <h2>Work Shapes Lives.<br /> <span>We Help You to Shape It Right</span></h1>
     </div>
     <div class="stats-subtext">
       <p>
-        We believe that when work is done right—<br />
-        with purpose, creativity, and strategy—it<br />
-        can lead to impactful changes.
+        "Work, when crafted with clarity<br />
+        and purpose, doesn't just fill time<br />
+        -it fuels transformation."
       </p>
     </div>
   </div>
@@ -78,11 +83,11 @@
 </section>
 
 
-  <h1 style="text-align:center; margin-top: 40px;">Meet Our Team</h1>
+  <h1 style="text-align:center; margin-top: 40px;">Our Squad</h1>
   <section class="team-section">
   <div class="team-header">
-    <h2>Engage with Our <span>Creative Team</span></h2>
-    <p>We work to create the most attractive & meaningful place for small businesses. Our Team always ready to help you.</p>
+    <h2>Meet the <span>Minds Powering </span>Our Mission</h2>
+    <p>Our team's got your back! Meet the awesome brains and doers who make things happens and keep the mission rolling everyday.</p>
   </div>
 
   <!-- Executive Department -->
