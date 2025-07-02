@@ -103,6 +103,7 @@ blogs_col = db['blogs']
 membership_col = db["membership"]
 admin_col = db["admin"]
 contact_collection = db["contact-info"]
+book_stalls = db['book_stalls']
 
 fs = GridFS(db)
 
@@ -262,32 +263,30 @@ def delete_contact(id):
 @app.route('/payment_success', methods=['POST'])
 def payment_success():
     try:
-        # 🔓 Get payment and referral info from Razorpay response
+        # 🔓 Get Razorpay data and referral
         data = request.get_json()
         payment_id = data.get('razorpay_payment_id')
         referral_code = data.get('ref_code')
 
-        # 🧾 Default base price if no referral
-        base_price = 10000
-        amount_paid = session.get('amount_paid')
-        if not amount_paid:
-            amount_paid = base_price
+        print("🔔 /payment_success hit with:", data)
 
-        # 👤 Get user info from session
+        # 🧾 Amount paid (from session or fallback)
+        base_price = 10000
+        amount_paid = session.get('amount_paid', base_price)
+
+        # 👤 Logged-in user info
         user_email = session.get('user_email', 'default@email.com')
         user_name = session.get('user_name', 'Valued Member')
-
-        # 📱 Get WhatsApp number from DB
         user_data = users_col.find_one({"email": user_email})
         user_whatsapp = user_data.get("whatsapp", "Not Provided") if user_data else "Not Provided"
 
-        # 🗓 Generate timestamps
+        # 🗓 Timestamp setup
         payment_date = datetime.now()
         valid_till = payment_date + timedelta(days=365)
         receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
         file_name = f"receipt_{receipt_id}.pdf"
 
-        # 📄 Generate Receipt PDF
+        # 🧾 Generate receipt PDF
         generate_receipt(
             member_name=user_name,
             email=user_email,
@@ -298,12 +297,12 @@ def payment_success():
             valid_through=valid_till.strftime('%Y/%m/%d')
         )
 
-        # 💾 Store PDF in GridFS
+        # 💾 Save PDF to GridFS
         fs = gridfs.GridFS(db)
         with open(file_name, 'rb') as f:
             receipt_file_id = fs.put(f, filename=file_name)
 
-        # 🧾 Insert Membership Record
+        # 💼 Add membership record
         membership_col.insert_one({
             "user_email": user_email,
             "user_name": user_name,
@@ -313,7 +312,31 @@ def payment_success():
             "receipt_file_id": receipt_file_id
         })
 
-        # 📧 Compose and send confirmation email
+        # 🎁 Reward referral code owner (+₹1000)
+        if referral_code:
+            ref_user = users_col.find_one({'ref_code': referral_code})
+            if ref_user:
+                users_col.update_one(
+                    {'_id': ref_user['_id']},
+                    {'$inc': {'wallet_balance': 1000}}
+                )
+                print(f"✅ ₹1000 added to wallet of user referrer: {ref_user['email']}")
+            else:
+                ref_stall = book_stalls.find_one({'referral_code': referral_code})
+                if ref_stall:
+                    if 'wallet_balance' not in ref_stall:
+                        book_stalls.update_one(
+                            {'_id': ref_stall['_id']},
+                            {'$set': {'wallet_balance': 1000}}
+                        )
+                    else:
+                        book_stalls.update_one(
+                            {'_id': ref_stall['_id']},
+                            {'$inc': {'wallet_balance': 1000}}
+                        )
+                    print(f"✅ ₹1000 added to wallet of book stall referrer: {ref_stall['stall_name']}")
+
+        # 📧 Email the user with receipt
         subject = "Payment Successful - KVR Infinity Membership"
         body = f"""Hello {user_name},
 
@@ -356,7 +379,7 @@ Team KVR Infinity
         return jsonify({"status": "success", "redirect": "/login"})
 
     except Exception as e:
-        print("❌ Error in payment_success route:", str(e))
+        print("❌ Error in /payment_success:", str(e))
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -536,6 +559,85 @@ def generate_receipt(member_name, email, phone, amount, receipt_id, transaction_
     doc.build(elements)
     print(f"✅ Receipt saved as: {file_name}")
 
+@app.route('/admin/add-referral', methods=['GET', 'POST'])
+def add_referral_code():
+    search_term = ""
+    query = {}
+
+    if request.method == 'POST':
+        if 'search' in request.form:
+            search_term = request.form['search'].strip()
+            if search_term:
+                query = {
+                    "$or": [
+                        {"stall_name": {"$regex": search_term, "$options": "i"}},
+                        {"location": {"$regex": search_term, "$options": "i"}}
+                    ]
+                }
+        else:
+            # Add referral form submission
+            stall_name = request.form['stall_name']
+            location = request.form['location']
+            referral_code = request.form['referral_code']
+
+            if book_stalls.find_one({"referral_code": referral_code}):
+                flash("Referral code already exists!", "danger")
+            else:
+                book_stalls.insert_one({
+                    "stall_name": stall_name,
+                    "location": location,
+                    "referral_code": referral_code,
+                    "created_at": datetime.utcnow()
+                })
+                flash("Referral code added successfully!", "success")
+            return redirect(url_for('add_referral_code'))
+
+    stalls_list = list(book_stalls.find(query).sort("created_at", -1))
+    if not search_term:
+        stalls_list = stalls_list[:5]  # Show only top 5 if not searching
+
+    return render_template("add_referral.html", stalls=stalls_list, search=search_term)
+
+@app.route('/admin/delete-stall', methods=['POST'])
+def delete_stall():
+    stall_id = request.form['stall_id']
+    try:
+        book_stalls.delete_one({'_id': ObjectId(stall_id)})
+        flash('Stall deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting stall: {e}', 'danger')
+    return redirect(url_for('add_referral_code'))
+
+@app.route('/admin/edit-stall', methods=['GET', 'POST'])
+def edit_stall():
+    if request.method == 'POST':
+        # Handle update
+        stall_id = request.form['stall_id']
+        updated_data = {
+            "stall_name": request.form['stall_name'],
+            "location": request.form['location'],
+            "referral_code": request.form['referral_code']
+        }
+        try:
+            book_stalls.update_one({"_id": ObjectId(stall_id)}, {"$set": updated_data})
+            flash("Stall updated successfully!", "success")
+        except Exception as e:
+            flash(f"Error updating stall: {e}", "danger")
+        return redirect(url_for('add_referral_code'))
+
+    else:
+        # Handle edit form rendering
+        stall_id = request.args.get('stall_id')
+        if not stall_id:
+            flash("Missing stall ID", "danger")
+            return redirect(url_for('add_referral_code'))
+
+        stall = book_stalls.find_one({"_id": ObjectId(stall_id)})
+        if not stall:
+            flash("Stall not found", "danger")
+            return redirect(url_for('add_referral_code'))
+
+        return render_template("edit_stall.html", stall=stall)
 
 @app.route('/home')
 def home():
@@ -859,13 +961,11 @@ def apply_referral():
         discount = 99
         session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
         return jsonify({'valid': True, 'discount': 99.99})
-    
-
-
 
     # ✅ Check if referral code exists in database (70% OFF)
     user = db.users.find_one({'ref_code': ref_code})
-    if user:
+    book_stall = book_stalls.find_one({'referral_code':ref_code})
+    if user or book_stall:
         discount = 70
         session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
         return jsonify({'valid': True, 'discount': 70})

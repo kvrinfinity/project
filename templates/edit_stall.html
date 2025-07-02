@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Book Stall</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background: #800000;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #800000;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #800000;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 25px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #5a0000;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      text-decoration: none;
+      color: black;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h1><i class="fas fa-pen-to-square"></i> Edit Book Stall</h1>
+  </div>
+
+  <div class="container">
+    <h2>Update Stall Details</h2>
+    <form method="POST" action="/admin/edit-stall">
+      <input type="hidden" name="stall_id" value="{{ stall._id }}">
+
+      <label for="stall_name">Stall Name</label>
+      <input type="text" id="stall_name" name="stall_name" value="{{ stall.stall_name }}" required>
+
+      <label for="location">Location</label>
+      <input type="text" id="location" name="location" value="{{ stall.location }}" required>
+
+      <label for="referral_code">Referral Code</label>
+      <input type="text" id="referral_code" name="referral_code" value="{{ stall.referral_code }}" required>
+
+      <button type="submit"><i class="fas fa-save"></i> Save Changes</button>
+    </form>
+    <a href="{{ url_for('add_referral_code') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Referral Page</a>
+  </div>
+
+</body>
+</html>

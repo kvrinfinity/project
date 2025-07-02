@@ -19,7 +19,36 @@
       color: white;
       font-weight: 600;
     }
-  
+    .whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background-color: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s;
+}
+
+.whatsapp-float img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.whatsapp-float:hover {
+  background-color: #128C7E;
+}
+
+.whatsapp-float i{
+  font-size: 2rem;
+  color:rgb(255, 255, 255);
+}
   </style>
     <style>
     body {
@@ -813,21 +842,12 @@ document.querySelectorAll('.faq-question').forEach(button => {
   });
 </script>
   
-<!--Start of Tawk.to Script-->
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/686231cb2d3be4190e5cd89a/1iuvp50v3';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
-<!--End of Tawk.to Script-->
+  <a href="https://wa.me/918106147247" 
+   class="whatsapp-float" 
+   target="_blank" 
+   title="Chat with us on WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
 
 </body>
 </html>
