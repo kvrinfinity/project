@@ -9,94 +9,113 @@
 </head>
 <body>
 
-  
-  <div class="payment-box">
-    <h2>Buy Membership - ₹<span id="amount-display">10000</span></h2>
-    <h3>One Year Membership - Unlimited access</h3>
-    <h3>Use '<span>kvr1122</span>' code to get FLAT 40% OFF</h3>
+<div class="payment-box">
+  <h2>Buy Membership - ₹<span id="amount-display">10000</span></h2>
+  <h3>One Year Membership - Unlimited access</h3>
+  <h3>Use '<span>kvr1122</span>' code to get FLAT 40% OFF</h3>
 
+  <input type="text" id="username" placeholder="Enter Your Name" required />
+  <input type="email" id="useremail" placeholder="Enter Your Email" required />
 
-    <input type="text" id="referral-input" placeholder="Enter Referral Code" />
-    <button onclick="applyReferral()">Apply Code</button>
-    <p id="referral-msg" style="color: red;"></p>
+  <input type="text" id="referral-input" placeholder="Enter Referral Code" />
+  <button onclick="applyReferral()">Apply Code</button>
+  <p id="referral-msg" style="color: red;"></p>
 
-    <button id="rzp-button">Pay with Razorpay</button>
-  </div>
+  <button id="rzp-button">Pay with Razorpay</button>
+</div>
 
-  <script>
-  let baseAmount = 10000;
-  let finalAmount = baseAmount;
-  let referralCode = "";
+<script>
+let baseAmount = 10000;
+let finalAmount = baseAmount;
+let referralCode = "";
 
-  function applyReferral() {
-    const code = document.getElementById("referral-input").value;
+function applyReferral() {
+  const code = document.getElementById("referral-input").value;
 
-    fetch('/apply_referral', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ ref_code: code, just_validate: true })
-    })
-    .then(res => res.json())
-    .then(data => {
-      const msg = document.getElementById("referral-msg");
+  fetch('/apply_referral', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ ref_code: code, just_validate: true })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const msg = document.getElementById("referral-msg");
 
-      if (data.valid) {
-        referralCode = code;
+    if (data.valid) {
+      referralCode = code;
 
-        if (data.discount === 70) {
-          finalAmount = baseAmount - (baseAmount * 0.70); // ₹3000
-          msg.style.color = "green";
-          msg.textContent = "Referral code applied! 70% discount.";
-        } else if (data.discount === 99.99) {
-          //finalAmount = baseAmount - (baseAmount * 0.99); // ₹100
-          finalAmount = 1;
-          msg.style.color = "green";
-          msg.textContent = "Referral code applied! 99% discount.";
-        } else if (data.discount === 40) {
-          finalAmount = baseAmount - (baseAmount * 0.40); // ₹6000
-          msg.style.color = "green";
-          msg.textContent = "Referral code applied! 40% discount.";
-        } else {
-          finalAmount = baseAmount;
-          referralCode = "";
-          msg.style.color = "red";
-          msg.textContent = "Invalid discount.";
-        }
+      if (data.discount === 70) {
+        finalAmount = baseAmount - (baseAmount * 0.70); // ₹3000
+        msg.style.color = "green";
+        msg.textContent = "Referral code applied! 70% discount.";
+      } else if (data.discount === 99.99) {
+        finalAmount = 1;
+        msg.style.color = "green";
+        msg.textContent = "Referral code applied! 99% discount.";
+      } else if (data.discount === 40) {
+        finalAmount = baseAmount - (baseAmount * 0.40); // ₹6000
+        msg.style.color = "green";
+        msg.textContent = "Referral code applied! 40% discount.";
       } else {
         finalAmount = baseAmount;
         referralCode = "";
         msg.style.color = "red";
-        msg.textContent = "Invalid referral code.";
+        msg.textContent = "Invalid discount.";
       }
+    } else {
+      finalAmount = baseAmount;
+      referralCode = "";
+      msg.style.color = "red";
+      msg.textContent = "Invalid referral code.";
+    }
 
-      document.getElementById("amount-display").textContent = finalAmount;
-    });
+    document.getElementById("amount-display").textContent = finalAmount;
+  });
+}
+
+function initiateRazorpay() {
+  const userName = document.getElementById("username").value.trim();
+  const userEmail = document.getElementById("useremail").value.trim();
+
+  if (!userName || !userEmail) {
+    alert("Please enter your name and email before proceeding.");
+    return;
   }
 
-  function initiateRazorpay() {
-    const options = {
-      key: "rzp_live_SIz4qyDwIOlUEG",
-      amount: finalAmount * 100, // Razorpay uses paise
-      currency: "INR",
-      name: "KVR Infinity",
-      description: "Membership Plan",
-      handler: function (response) {
-        fetch('/payment_success', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            razorpay_payment_id: response.razorpay_payment_id,
-            ref_code: referralCode
-          })
+  const options = {
+    key: "rzp_live_SIz4qyDwIOlUEG",  // ✅ Replace with your Razorpay key
+    amount: finalAmount * 100,
+    currency: "INR",
+    name: "KVR Infinity",
+    description: "Membership Plan",
+    prefill: {
+      name: userName,
+      email: userEmail
+    },
+    theme: {
+      color: "#3399cc"
+    },
+    handler: function (response) {
+      document.body.innerHTML = "<h2 style='text-align:center;margin-top:20vh;'>Processing Payment...</h2>";
+
+      fetch('/payment_success', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          razorpay_payment_id: response.razorpay_payment_id,
+          ref_code: referralCode,
+          user_name: userName,
+          user_email: userEmail
         })
-        .then(res => res.json())
-        .then(data => {
-          console.log("Response from /payment_success:", data);
-          alert("Payment successful! ID: " + response.razorpay_payment_id);
+      })
+      .then(async (res) => {
+        try {
+          const data = await res.json();
+          console.log("✅ Response from /payment_success:", data);
 
           if (data.redirect) {
             document.body.innerHTML = "<h2 style='text-align:center;margin-top:20vh;'>Redirecting to login...</h2>";
@@ -104,31 +123,28 @@
               window.location.href = data.redirect;
             }, 1500);
           } else {
-            alert("Payment completed, but redirect URL is missing.");
+            alert("Payment completed, but no redirect URL provided.");
           }
-        })
-        .catch(err => {
-          console.error("❌ Error during payment fetch:", err);
-          alert("Something went wrong. Please contact support.");
-        });
-      },
-      prefill: {
-        name: "",
-        email: ""
-      },
-      theme: {
-        color: "#3399cc"
-      }
-    };
-
-    const rzp = new Razorpay(options);
-    rzp.open();
-  }
-
-  document.getElementById('rzp-button').onclick = function(e) {
-    e.preventDefault();
-    initiateRazorpay();
+        } catch (err) {
+          console.error("❌ JSON parse error from /payment_success:", err);
+          alert("Payment done, but something went wrong. Please contact support.");
+        }
+      })
+      .catch(err => {
+        console.error("❌ Error during payment fetch:", err);
+        alert("Something went wrong. Please contact support.");
+      });
+    }
   };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
+document.getElementById('rzp-button').onclick = function(e) {
+  e.preventDefault();
+  initiateRazorpay();
+};
 </script>
 
 </body>

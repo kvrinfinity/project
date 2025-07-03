@@ -182,6 +182,33 @@
     <label>Referral Code</label>
     <input type="text" name="referral_code" required>
 
+    <label>Email</label>
+    <input type="text" name="email" required>
+
+    <label>Password</label>
+    <input type="text" name="password" required>
+
+    <label>WhatsApp Number</label>
+    <input type="text" name="whatsapp" required>
+
+    <label>Account Holder Name</label>
+    <input type="text" name="account_holder" required>
+
+    <label>Account Number</label>
+    <input type="text" name="account_number" required>
+
+    <label>Bank Name</label>
+    <input type="text" name="bank_name" required>
+
+    <label>Branch</label>
+    <input type="text" name="branch" required>
+
+    <label>IFSC Code</label>
+    <input type="text" name="ifsc" required>
+
+    <label>UPI ID</label>
+    <input type="text" name="upi" required>
+
     <button type="submit">Add Referral Code</button>
   </form>
 
@@ -194,37 +221,53 @@
     <h3>{{ search and 'Search Results' or 'Top 5 Latest Book Stalls' }}</h3>
 
     {% if stalls %}
-      <table>
-        <thead>
-          <tr>
-            <th>Stall Name</th>
-            <th>Location</th>
-            <th>Referral Code</th>
-            <th>Created On</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for stall in stalls %}
-          <tr>
-            <td>{{ stall.stall_name }}</td>
-            <td>{{ stall.location }}</td>
-            <td>{{ stall.referral_code }}</td>
-            <td>{{ stall.created_at.strftime('%d %b %Y') }}</td>
-            <td class="action-btns">
-              <form method="GET" action="/admin/edit-stall">
-                <input type="hidden" name="stall_id" value="{{ stall._id }}">
-                <button class="edit-btn">Edit</button>
-              </form>
-              <form method="POST" action="/admin/delete-stall" onsubmit="return confirm('Are you sure you want to delete this stall?')">
-                <input type="hidden" name="stall_id" value="{{ stall._id }}">
-                <button class="delete-btn">Delete</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Stall Name</th>
+          <th>Location</th>
+          <th>Referral Code</th>
+          <th>Email</th>
+          <th>WhatsApp</th>
+          <th>Account Holder</th>
+          <th>Account No.</th>
+          <th>Bank</th>
+          <th>Branch</th>
+          <th>IFSC</th>
+          <th>UPI</th>
+          <th>Created On</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stall in stalls %}
+        <tr>
+          <td>{{ stall.stall_name }}</td>
+          <td>{{ stall.location }}</td>
+          <td>{{ stall.referral_code }}</td>
+          <td>{{ stall.email }}</td>
+          <td>{{ stall.whatsapp }}</td>
+          <td>{{ stall.account_holder }}</td>
+          <td>{{ stall.account_number }}</td>
+          <td>{{ stall.bank_name }}</td>
+          <td>{{ stall.branch }}</td>
+          <td>{{ stall.ifsc }}</td>
+          <td>{{ stall.upi }}</td>
+          <td>{{ stall.created_at.strftime('%d %b %Y') }}</td>
+          <td class="action-btns">
+            <form method="GET" action="/admin/edit-stall">
+              <input type="hidden" name="stall_id" value="{{ stall._id }}">
+              <button class="edit-btn">Edit</button>
+            </form>
+            <form method="POST" action="/admin/delete-stall" onsubmit="return confirm('Are you sure you want to delete this stall?')">
+              <input type="hidden" name="stall_id" value="{{ stall._id }}">
+              <button class="delete-btn">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
     {% else %}
       <p>No stalls found.</p>
     {% endif %}

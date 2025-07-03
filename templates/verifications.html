@@ -2,20 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Withdrawals</title>
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='kvr-logo.png') }}">
-  <title>Admin Verifications</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
+      background-color: #ffffff;
+      color: #000000;
+      font-family: 'Segoe UI', sans-serif;
       padding: 30px;
-      background-color: #f8f9fa;
     }
+
+    h2 {
+      color: #800000;
+      border-bottom: 2px solid #800000;
+      padding-bottom: 10px;
+    }
+
     table {
       font-size: 0.95rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      overflow: hidden;
     }
-    .table th, .table td {
+
+    .table th {
+      background-color: #800000 !important;
+      color: white !important;
+      text-align: center;
+    }
+
+    .table td {
       vertical-align: middle;
+      color: #000;
     }
+
+    .btn-success {
+      background-color: #800000;
+      border-color: #800000;
+    }
+
+    .btn-success:hover {
+      background-color: #a83232;
+      border-color: #a83232;
+    }
+
     @media screen and (max-width: 768px) {
       table {
         font-size: 0.8rem;
@@ -24,91 +55,90 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2 class="mb-4">🔐 Pending User Verifications</h2>
-    {% if pending_verifications %}
-    <table class="table table-bordered table-striped">
-      <thead class="table-dark">
-        <tr>
-          <th>Email</th>
-          <th>Bank Name</th>
-          <th>Branch</th>
-          <th>IFSC</th>
-          <th>Account Number</th>
-          <th>Account Holder</th>
-          <th>UPI</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for v in pending_verifications %}
-        <tr>
-  <td>{{ v.email }}</td>
-  <td>{{ v.bank_name }}</td>
-  <td>{{ v.branch }}</td>
-  <td>{{ v.ifsc }}</td>
-  <td>{{ v.account_number }}</td>
-  <td>{{ v.account_holder }}</td>
-  <td>{{ v.upi }}</td>
-  <td>
-    <form method="POST" action="/approve-verification">
-      <input type="hidden" name="verification_id" value="{{ v._id }}">
-      <button type="submit" class="btn btn-success btn-sm">Approve ✅</button>
-    </form>
-  </td>
-</tr>
 
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-      <p>No pending verifications.</p>
-    {% endif %}
+  <hr class="my-5">
+  <h2>💸 Pending User Withdrawals</h2>
+  {% if pending_user_withdrawals %}
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Amount</th>
+        <th>Account Holder</th>
+        <th>Account Number</th>
+        <th>Bank Name</th>
+        <th>Branch</th>
+        <th>IFSC</th>
+        <th>UPI</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for w in pending_user_withdrawals %}
+      <tr>
+        <td>{{ w.email }}</td>
+        <td>₹{{ w.amount }}</td>
+        <td>{{ w.account_holder }}</td>
+        <td>{{ w.account_number }}</td>
+        <td>{{ w.bank_name }}</td>
+        <td>{{ w.branch }}</td>
+        <td>{{ w.ifsc }}</td>
+        <td>{{ w.upi }}</td>
+        <td>
+          <form action="/process_withdrawal_admin" method="POST">
+            <input type="hidden" name="withdrawal_id" value="{{ w['_id'] }}">
+            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No pending user withdrawals.</p>
+  {% endif %}
 
-    <hr class="my-5">
+  <hr class="my-5">
+  <h2>📚 Pending Book Stall Withdrawals</h2>
+  {% if pending_stall_withdrawals %}
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Amount</th>
+        <th>Account Holder</th>
+        <th>Account Number</th>
+        <th>Bank Name</th>
+        <th>Branch</th>
+        <th>IFSC</th>
+        <th>UPI</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for w in pending_stall_withdrawals %}
+      <tr>
+        <td>{{ w.email }}</td>
+        <td>₹{{ w.amount }}</td>
+        <td>{{ w.account_holder }}</td>
+        <td>{{ w.account_number }}</td>
+        <td>{{ w.bank_name }}</td>
+        <td>{{ w.branch }}</td>
+        <td>{{ w.ifsc }}</td>
+        <td>{{ w.upi }}</td>
+        <td>
+          <form action="/process_withdrawal_stall_admin" method="POST">
+            <input type="hidden" name="withdrawal_id" value="{{ w['_id'] }}">
+            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No pending book stall withdrawals.</p>
+  {% endif %}
 
-    <h2 class="mb-4">💸 Pending Withdrawals</h2>
-    {% if pending_withdrawals %}
-    <table class="table table-bordered table-striped">
-      <thead class="table-dark">
-        <tr>
-          <th>Email</th>
-          <th>Amount</th>
-          <th>Account Holder</th>
-          <th>Account Number</th>
-          <th>Bank Name</th>
-          <th>Branch</th>
-          <th>IFSC</th>
-          <th>UPI</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for w in pending_withdrawals %}
-        <tr>
-          <td>{{ w.user_email or w.email }}</td>
-          <td>₹{{ w.amount }}</td>
-          <td>{{ w.account_holder }}</td>
-          <td>{{ w.account_number }}</td>
-          <td>{{ w.bank_name }}</td>
-          <td>{{ w.branch }}</td>
-          <td>{{ w.ifsc }}</td>
-          <td>{{ w.upi }}</td>
-          <td>
-            <form action="/process_withdrawal_admin" method="POST">
-                <input type="hidden" name="withdrawal_id" value="{{ w['_id'] }}">
-                <button type="submit" class="btn btn-success btn-sm">Approve</button>
-            </form>
-
-
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-      <p>No pending withdrawals.</p>
-    {% endif %}
-  </div>
 </body>
 </html>

@@ -150,8 +150,7 @@ def login():
         email = request.form.get('email').strip()
         password = request.form.get('password')
 
-
-        # ✅ 2. Try login from admin_col
+        # ✅ 1. Admin login
         admin_user = admin_col.find_one({"email": email})
         if admin_user and 'password' in admin_user:
             if bcrypt.checkpw(password.encode(), admin_user['password']):
@@ -166,17 +165,21 @@ def login():
                 elif role == 'Sales Department':
                     return redirect(url_for('sales_admin_dashboard'))
 
-        # ✅ 3. Regular user login (from db.users)
+        # ✅ 2. Regular user login
         user = db.users.find_one({"email": email})
         if user and bcrypt.checkpw(password.encode(), user['password']):
             session['user_email'] = email
-
-            # Check for active membership
             membership = membership_col.find_one({"user_email": email})
             if not membership or membership['valid_till'] < datetime.now():
                 return redirect(url_for('membership'))
-
             return redirect(url_for('home'))
+
+        # ✅ 3. Book stall login
+        stall = book_stalls.find_one({"email": email})
+        if stall and bcrypt.checkpw(password.encode(), stall['password']):
+            session['user_email'] = email
+            session['stall_id'] = str(stall['_id'])
+            return redirect(url_for('stall_dashboard'))
 
         # ❌ Invalid login
         return render_template('login.html', msg='Invalid credentials')
@@ -184,26 +187,45 @@ def login():
     return render_template('login.html')
 
 
+
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('email').strip().lower()
         session['user_email'] = email
 
+        # 1️⃣ Check in users collection
         user = db.users.find_one({'email': email})
-        if not user:
-            return render_template('forgot_password.html', msg="Email not found in our records.")
+        if user:
+            session['otp_target'] = 'user'
+            session['user_name'] = f"{user.get('fname', '')} {user.get('lname', '')}"
 
+        else:
+            # 2️⃣ Check in admin collection
+            admin = admin_col.find_one({'email': email})
+            if admin:
+                session['otp_target'] = 'admin'
+                session['user_name'] = admin.get('name', 'Admin User')
+            else:
+                # 3️⃣ Check in book stalls collection
+                stall = book_stalls.find_one({'email': email})
+                if stall:
+                    session['otp_target'] = 'stall'
+                    session['user_name'] = stall.get('stall_name', 'Book Stall')
+                else:
+                    return render_template('forgot_password.html', msg="Email not found in our records.")
+
+        # ✅ Common OTP setup
         otp = generate_otp()
         session['otp'] = otp
         session['otp_mode'] = 'reset'
         session['reset_email'] = email
-        session['user_name'] = user['fname'] + ' ' + user['lname']  # for personalization
 
-        send_otp_email(email, otp)  # Assuming you already have this function
+        send_otp_email(email, otp)  # You already have this function
         return render_template('otp_validation.html')
 
     return render_template('forgot_password.html')
+
 
 @app.route('/resend_otp', methods=['GET'])
 def resend_otp():
@@ -263,30 +285,30 @@ def delete_contact(id):
 @app.route('/payment_success', methods=['POST'])
 def payment_success():
     try:
-        # 🔓 Get Razorpay data and referral
+        # ✅ FIXED: Get request data first
         data = request.get_json()
+        print("🔔 /payment_success hit with:", data)
+
+        user_email = data.get('user_email', 'guest@kvr.com')
+        user_name = data.get('user_name', 'Guest')
         payment_id = data.get('razorpay_payment_id')
         referral_code = data.get('ref_code')
-
-        print("🔔 /payment_success hit with:", data)
 
         # 🧾 Amount paid (from session or fallback)
         base_price = 10000
         amount_paid = session.get('amount_paid', base_price)
 
-        # 👤 Logged-in user info
-        user_email = session.get('user_email', 'default@email.com')
-        user_name = session.get('user_name', 'Valued Member')
+        # 👤 User info
         user_data = users_col.find_one({"email": user_email})
         user_whatsapp = user_data.get("whatsapp", "Not Provided") if user_data else "Not Provided"
 
-        # 🗓 Timestamp setup
+        # 🗓 Dates
         payment_date = datetime.now()
         valid_till = payment_date + timedelta(days=365)
         receipt_id = f"KVR-{payment_date.strftime('%Y%m%d-%H%M%S')}"
         file_name = f"receipt_{receipt_id}.pdf"
 
-        # 🧾 Generate receipt PDF
+        # 🧾 Generate & save PDF receipt
         generate_receipt(
             member_name=user_name,
             email=user_email,
@@ -297,12 +319,11 @@ def payment_success():
             valid_through=valid_till.strftime('%Y/%m/%d')
         )
 
-        # 💾 Save PDF to GridFS
         fs = gridfs.GridFS(db)
         with open(file_name, 'rb') as f:
             receipt_file_id = fs.put(f, filename=file_name)
 
-        # 💼 Add membership record
+        # 💾 Store membership info
         membership_col.insert_one({
             "user_email": user_email,
             "user_name": user_name,
@@ -312,31 +333,22 @@ def payment_success():
             "receipt_file_id": receipt_file_id
         })
 
-        # 🎁 Reward referral code owner (+₹1000)
+        # 🎁 Reward referral
         if referral_code:
             ref_user = users_col.find_one({'ref_code': referral_code})
             if ref_user:
-                users_col.update_one(
-                    {'_id': ref_user['_id']},
-                    {'$inc': {'wallet_balance': 1000}}
-                )
-                print(f"✅ ₹1000 added to wallet of user referrer: {ref_user['email']}")
+                users_col.update_one({'_id': ref_user['_id']}, {'$inc': {'wallet_balance': 1000}})
+                print(f"✅ ₹1000 added to user: {ref_user['email']}")
             else:
                 ref_stall = book_stalls.find_one({'referral_code': referral_code})
                 if ref_stall:
                     if 'wallet_balance' not in ref_stall:
-                        book_stalls.update_one(
-                            {'_id': ref_stall['_id']},
-                            {'$set': {'wallet_balance': 1000}}
-                        )
+                        book_stalls.update_one({'_id': ref_stall['_id']}, {'$set': {'wallet_balance': 1000}})
                     else:
-                        book_stalls.update_one(
-                            {'_id': ref_stall['_id']},
-                            {'$inc': {'wallet_balance': 1000}}
-                        )
-                    print(f"✅ ₹1000 added to wallet of book stall referrer: {ref_stall['stall_name']}")
+                        book_stalls.update_one({'_id': ref_stall['_id']}, {'$inc': {'wallet_balance': 1000}})
+                    print(f"✅ ₹1000 added to book stall: {ref_stall['stall_name']}")
 
-        # 📧 Email the user with receipt
+        # 📧 Send receipt email
         subject = "Payment Successful - KVR Infinity Membership"
         body = f"""Hello {user_name},
 
@@ -347,16 +359,16 @@ def payment_success():
 💰 Amount Paid: ₹{amount_paid}  
 📱 WhatsApp: {user_whatsapp}
 
-Your receipt is attached with this email.
+Your receipt is attached.
 
-For any support, feel free to reach us at sales@kvrinfinity.in.
+For any help, contact us at sales@kvrinfinity.in.
 
-Warm Regards,  
+Regards,  
 Team KVR Infinity
 """
 
-        sender_email = "no-reply@kvrinfinity.in"
-        sender_password = "dhsa xczp azcg mpbr"
+        sender_email = "nishankamath@gmail.com"
+        sender_password = "hxui wjwz adsz vycn"
 
         message = MIMEMultipart()
         message['Subject'] = subject
@@ -381,6 +393,7 @@ Team KVR Infinity
     except Exception as e:
         print("❌ Error in /payment_success:", str(e))
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 @app.route('/blogs')
@@ -575,48 +588,75 @@ def add_referral_code():
                     ]
                 }
         else:
-            # Add referral form submission
+            # 📥 Collect form data
             stall_name = request.form['stall_name']
             location = request.form['location']
             referral_code = request.form['referral_code']
+            email = request.form.get('email')
+            password = request.form.get('password')
+            whatsapp = request.form.get('whatsapp')
+            account_holder = request.form.get('account_holder')
+            account_number = request.form.get('account_number')
+            bank_name = request.form.get('bank_name')
+            branch = request.form.get('branch')
+            ifsc = request.form.get('ifsc')
+            upi = request.form.get('upi')
 
+            # 🛑 Validate required fields
+            if not email or not password or not whatsapp:
+                flash("Email, Password, and WhatsApp are required!", "danger")
+                return redirect(url_for('add_referral_code'))
+
+            # 🔍 Check for uniqueness
             if book_stalls.find_one({"referral_code": referral_code}):
                 flash("Referral code already exists!", "danger")
+            elif book_stalls.find_one({"email": email}):
+                flash("Email already in use!", "danger")
             else:
+                # 🔐 Hash password
+                hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                 book_stalls.insert_one({
                     "stall_name": stall_name,
                     "location": location,
                     "referral_code": referral_code,
-                    "created_at": datetime.utcnow()
+                    "email": email,
+                    "password": hashed_password,
+                    "whatsapp": whatsapp,
+                    "created_at": datetime.utcnow(),
+                    "wallet_balance": 0,
+                    "account_holder": account_holder,
+                    "account_number": account_number,
+                    "bank_name": bank_name,
+                    "branch": branch,
+                    "ifsc": ifsc,
+                    "upi": upi
                 })
-                flash("Referral code added successfully!", "success")
+                flash("Stall and login credentials added successfully!", "success")
+
             return redirect(url_for('add_referral_code'))
 
     stalls_list = list(book_stalls.find(query).sort("created_at", -1))
     if not search_term:
-        stalls_list = stalls_list[:5]  # Show only top 5 if not searching
+        stalls_list = stalls_list[:5]
 
     return render_template("add_referral.html", stalls=stalls_list, search=search_term)
-
-@app.route('/admin/delete-stall', methods=['POST'])
-def delete_stall():
-    stall_id = request.form['stall_id']
-    try:
-        book_stalls.delete_one({'_id': ObjectId(stall_id)})
-        flash('Stall deleted successfully!', 'success')
-    except Exception as e:
-        flash(f'Error deleting stall: {e}', 'danger')
-    return redirect(url_for('add_referral_code'))
 
 @app.route('/admin/edit-stall', methods=['GET', 'POST'])
 def edit_stall():
     if request.method == 'POST':
-        # Handle update
         stall_id = request.form['stall_id']
         updated_data = {
             "stall_name": request.form['stall_name'],
             "location": request.form['location'],
-            "referral_code": request.form['referral_code']
+            "referral_code": request.form['referral_code'],
+            "email": request.form['email'],
+            "whatsapp": request.form['whatsapp'],
+            "account_holder": request.form.get('account_holder'),
+            "account_number": request.form.get('account_number'),
+            "bank_name": request.form.get('bank_name'),
+            "branch": request.form.get('branch'),
+            "ifsc": request.form.get('ifsc'),
+            "upi": request.form.get('upi')
         }
         try:
             book_stalls.update_one({"_id": ObjectId(stall_id)}, {"$set": updated_data})
@@ -626,7 +666,6 @@ def edit_stall():
         return redirect(url_for('add_referral_code'))
 
     else:
-        # Handle edit form rendering
         stall_id = request.args.get('stall_id')
         if not stall_id:
             flash("Missing stall ID", "danger")
@@ -638,6 +677,7 @@ def edit_stall():
             return redirect(url_for('add_referral_code'))
 
         return render_template("edit_stall.html", stall=stall)
+
 
 @app.route('/home')
 def home():
@@ -884,23 +924,26 @@ def verify_otp():
             'email': user_data['email'],
             'password': user_data['password'],
             'ref_code': user_data['ref_code'],
-            'whatsapp': user_data['whatsapp'],  # ✅ Added field
+            'whatsapp': user_data['whatsapp'],
             'enrolled_courses': []
         })
 
-
+        # Clear signup session data
         session['user_email'] = user_data['email']
         session.pop('otp', None)
         session.pop('otp_mode', None)
         session.pop('temp_user', None)
+
         return redirect(url_for('membership'))
 
-    # ✅ Forgot Password Flow — No New Password Screen, Just login
+    # ✅ Forgot Password Flow for user/admin/stall
     elif mode == 'reset':
-        email = session.get('user_email')
-        session['reset_verified'] = True  # ✅ mark as verified
-        return redirect(url_for('reset_password'))
+        session['reset_verified'] = True
+        # Do NOT clear otp_target or reset_email yet
+        session.pop('otp', None)
+        session.pop('otp_mode', None)
 
+        return redirect(url_for('reset_password'))
 
     return redirect(url_for('login'))
 
@@ -909,11 +952,12 @@ import bcrypt
 
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
-    # Prevent direct access
+    # Block unauthorized access
     if not session.get('reset_verified') or not session.get('reset_email'):
         return redirect(url_for('forgot_password'))
 
     email = session.get('reset_email')
+    target = session.get('otp_target', 'user')  # default to user
 
     if request.method == 'POST':
         new_password = request.form.get('new_password')
@@ -924,16 +968,22 @@ def reset_password():
         # Hash the new password
         hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
 
-        # Update in DB
-        db.users.update_one(
-            {'email': email},
-            {'$set': {'password': hashed_password}}
-        )
+        # 🔄 Update password in the correct collection
+        if target == 'user':
+            db.users.update_one({'email': email}, {'$set': {'password': hashed_password}})
+        elif target == 'admin':
+            admin_col.update_one({'email': email}, {'$set': {'password': hashed_password}})
+        elif target == 'stall':
+            book_stalls.update_one({'email': email}, {'$set': {'password': hashed_password}})
+        else:
+            return render_template('reset_password.html', error="Invalid user type.")
 
-        # Clear reset session flags
+        # ✅ Clear session flags
         session.pop('reset_verified', None)
         session.pop('reset_email', None)
+        session.pop('otp_target', None)
 
+        flash("Password reset successful. You can now log in.", "success")
         return redirect(url_for('login'))
 
     return render_template('reset_password.html')
@@ -1032,18 +1082,28 @@ def request_withdrawal_page():
         return redirect(url_for('login'))
 
     user_email = session['user_email']
+
+    # Check in users collection (regular user)
     user = users_col.find_one({"email": user_email})
 
-    if not user:
-        flash("User not found.", "error")
-        return redirect(url_for('login'))
+    if user:
+        # Regular user must be verified
+        if user.get('is_verified', False):
+            wallet_balance = user.get('wallet_balance', 0)
+            return render_template('withdraw.html', wallet_balance=wallet_balance, user=user)
+        else:
+            flash("Please verify your bank details before requesting a withdrawal.", "info")
+            return redirect(url_for('submit_verification_page'))
 
-    if user.get('is_verified', False):
-        wallet_balance = user.get('wallet_balance', 0)
-        return render_template('withdraw.html', wallet_balance=wallet_balance, user=user)
-    else:
-        flash("Please verify your bank details before requesting a withdrawal.", "info")
-        return redirect(url_for('submit_verification_page'))
+    # Check in book_stalls collection (stall owner)
+    stall = book_stalls.find_one({"email": user_email})
+    if stall:
+        wallet_balance = stall.get('wallet_balance', 0)
+        return render_template('withdraw.html', wallet_balance=wallet_balance, user=stall)
+
+    # If email not found in any collection
+    flash("User not found.", "error")
+    return redirect(url_for('login'))
 
 
 @app.route('/submit-verification', methods=['GET', 'POST'])
@@ -1091,10 +1151,14 @@ def process_withdrawal():
 
     user_email = session['user_email']
     user = users_col.find_one({"email": user_email})
+    stall = book_stalls.find_one({"email": user_email})
 
-    if not user or not user.get('is_verified', False):
-        flash("You are not authorized to withdraw funds or your account is not verified.", "error")
-        return redirect(url_for('request_withdrawal_page'))
+    user_type = 'user' if user else 'stall' if stall else None
+    doc = user if user else stall
+
+    if not doc:
+        flash("User not found.", "error")
+        return redirect(url_for('login'))
 
     try:
         amount = int(request.form['amount'])
@@ -1102,18 +1166,14 @@ def process_withdrawal():
         flash("Invalid amount. Please enter a number.", "error")
         return redirect(url_for('request_withdrawal_page'))
 
-    if amount <= 0 or amount <1000:
-        flash("Withdrawal amount must be greater than 999 Rs.", "error")
+    if amount <= 0 or amount < 1000:
+        flash("Withdrawal amount must be at least ₹1000.", "error")
         return redirect(url_for('request_withdrawal_page'))
 
-    try:
-        current_balance = float(user.get('wallet_balance', 0))
-    except ValueError:
-        flash("Invalid wallet balance format.", "error")
-        return redirect(url_for('request_withdrawal_page'))
+    current_balance = float(doc.get('wallet_balance', 0))
 
     if amount > current_balance:
-        flash(f"❌ Not enough balance. Available: {current_balance}", "error")
+        flash(f"❌ Not enough balance. Available: ₹{current_balance}", "error")
         return redirect(url_for('request_withdrawal_page'))
 
     existing_pending = withdrawals_col.find_one({
@@ -1121,18 +1181,20 @@ def process_withdrawal():
         "status": "pending"
     })
     if existing_pending:
-        flash("You already have a pending withdrawal request. Please wait until it is processed.", "info")
-        return redirect(url_for('user_dashboard'))
+        flash("You already have a pending withdrawal request.", "info")
+        return redirect(url_for('request_withdrawal_page'))
 
     withdrawals_col.insert_one({
         'email': user_email,
         'amount': amount,
         'status': 'pending',
-        'requested_at': datetime.utcnow()
+        'requested_at': datetime.utcnow(),
+        'user_type': user_type
     })
 
-    flash("✅ Withdrawal request submitted! Money will be transferred to your bank account within 24 hours after admin approval.", "success")
-    return redirect(url_for('user_dashboard'))
+    flash("✅ Withdrawal request submitted successfully!", "success")
+    return redirect(url_for('user_dashboard' if user else 'stall_dashboard'))
+
 
 from bson.objectid import ObjectId
 
@@ -1170,28 +1232,31 @@ def approve_verification():
 def approve_withdrawal(withdrawal_id):
     if not session.get('admin_log'):
         return redirect(url_for('index'))
-    withdrawal = withdrawals_col.find_one({"_id": ObjectId(withdrawal_id)})
 
+    withdrawal = withdrawals_col.find_one({"_id": ObjectId(withdrawal_id)})
     if not withdrawal or withdrawal.get("status") != "pending":
         flash("Invalid or already processed withdrawal request.", "error")
         return redirect(url_for('admin'))
 
-    user = users_col.find_one({"email": withdrawal['user_email']})
-    if not user:
+    email = withdrawal['email']
+    user = users_col.find_one({"email": email})
+    stall = book_stalls.find_one({"email": email})
+    doc = user if user else stall
+
+    if not doc:
         flash("User not found.", "error")
         return redirect(url_for('admin'))
 
-    current_balance = float(user.get('wallet_balance', 0))
     amount = withdrawal['amount']
+    current_balance = float(doc.get('wallet_balance', 0))
 
     if current_balance < amount:
-        flash("Insufficient wallet balance at time of approval.", "error")
+        flash("Insufficient wallet balance.", "error")
         return redirect(url_for('admin'))
 
-    users_col.update_one(
-        {"email": withdrawal['email']},
-        {"$inc": {"wallet_balance": -amount}}
-    )
+    # Deduct from correct collection
+    collection = users_col if user else book_stalls
+    collection.update_one({"email": email}, {"$inc": {"wallet_balance": -amount}})
 
     withdrawals_col.update_one(
         {"_id": ObjectId(withdrawal_id)},
@@ -1199,13 +1264,14 @@ def approve_withdrawal(withdrawal_id):
             "$set": {
                 "status": "approved",
                 "approved_at": datetime.utcnow(),
-                "approved_by": session.get('admin_email', 'admin')  # Optional
+                "approved_by": session.get('admin_email', 'admin')
             }
         }
     )
 
-    flash(f"✅ Withdrawal of ₹{amount} approved for {withdrawal['email']}.", "success")
+    flash(f"✅ Withdrawal of ₹{amount} approved for {email}.", "success")
     return redirect(url_for('verifications'))
+
 
 from flask import request, redirect, url_for, flash, session
 from bson import ObjectId
@@ -1283,6 +1349,87 @@ def process_withdrawal_admin():
     flash(f"✅ Withdrawal of ₹{amount} approved for {email}.", "success")
     return redirect(url_for('verifications'))
 
+from bson import ObjectId
+from datetime import datetime
+from flask import request, session, redirect, url_for, flash
+
+@app.route('/process_withdrawal_stall_admin', methods=['POST'])
+def process_withdrawal_stall_admin():
+    if not session.get('admin_log'):
+        return redirect(url_for('index'))
+
+    withdrawal_id = request.form.get('withdrawal_id')
+
+    if not withdrawal_id:
+        flash("Withdrawal ID is missing.", "error")
+        return redirect(url_for('verifications'))
+
+    try:
+        withdrawal = withdrawals_col.find_one({"_id": ObjectId(withdrawal_id)})
+    except Exception as e:
+        print("❌ Error finding withdrawal:", e)
+        flash("Invalid withdrawal ID.", "error")
+        return redirect(url_for('verifications'))
+
+    if not withdrawal:
+        flash("Withdrawal not found.", "error")
+        return redirect(url_for('verifications'))
+
+    if withdrawal.get("status") != "pending":
+        flash("Withdrawal already processed.", "error")
+        return redirect(url_for('verifications'))
+
+    if withdrawal.get("user_type") != "stall":
+        flash("Invalid user type for this route.", "error")
+        return redirect(url_for('verifications'))
+
+    email = withdrawal.get('email')
+    if not email:
+        flash("Email not found in withdrawal record.", "error")
+        return redirect(url_for('verifications'))
+
+    stall_user = book_stalls.find_one({"email": email})
+    if not stall_user:
+        flash("Book stall user not found.", "error")
+        return redirect(url_for('verifications'))
+
+    try:
+        current_balance = float(stall_user.get('wallet_balance', 0))
+        amount = float(withdrawal.get('amount', 0))
+    except Exception as e:
+        print("⚠️ Error converting balance/amount:", e)
+        flash("Invalid balance or amount data.", "error")
+        return redirect(url_for('verifications'))
+
+    if current_balance < amount:
+        flash("Insufficient wallet balance.", "error")
+        return redirect(url_for('verifications'))
+
+    # ✅ FIX: Deduct balance using $set, not $inc (handles string balance)
+    new_balance = current_balance - amount
+    result1 = book_stalls.update_one(
+        {"email": email},
+        {"$set": {"wallet_balance": new_balance}}
+    )
+
+    # Update withdrawal status
+    result2 = withdrawals_col.update_one(
+        {"_id": ObjectId(withdrawal_id)},
+        {
+            "$set": {
+                "status": "approved",
+                "approved_at": datetime.utcnow(),
+                "approved_by": session.get('admin_email', 'admin')
+            }
+        }
+    )
+
+    # Debug output
+    print(f"✅ Deducted ₹{amount} from stall {email}: matched={result1.matched_count}, modified={result1.modified_count}")
+    print(f"🟢 Withdrawal update: matched={result2.matched_count}, modified={result2.modified_count}")
+
+    flash(f"✅ Book Stall withdrawal of ₹{amount} approved for {email}.", "success")
+    return redirect(url_for('verifications'))
 
 from datetime import datetime
 
@@ -1732,40 +1879,63 @@ def create_fitness_test():
 
 @app.route('/verifications')
 def verifications():
-    # Get pending verification requests
+    # Get pending user verification requests
     pending_verifications = list(verifications_col.find({"status": "pending"}))
     for v in pending_verifications:
         v['_id'] = str(v['_id'])
 
-    # Get approved verification details
+    # Get approved user verifications only (not for book stalls)
     approved_verifications = {
         v['email'].strip().lower(): v
         for v in verifications_col.find({"status": "approved"})
     }
 
-    # Get pending withdrawals
-    pending_withdrawals = []
+    # Lists for withdrawals
+    pending_user_withdrawals = []
+    pending_stall_withdrawals = []
+
     for w in withdrawals_col.find({"status": "pending"}):
         email = w['email'].strip().lower()
-        verification = approved_verifications.get(email)
+        user_type = w.get('user_type')
 
-        pending_withdrawals.append({
+        withdrawal_data = {
             '_id': str(w['_id']),
             'user_email': email,
-            'amount': w.get('amount', 0),
-            'account_holder': verification.get('account_holder', 'N/A') if verification else 'N/A',
-            'account_number': verification.get('account_number', 'N/A') if verification else 'N/A',
-            'bank_name': verification.get('bank_name', 'N/A') if verification else 'N/A',
-            'branch': verification.get('branch', 'N/A') if verification else 'N/A',
-            'ifsc': verification.get('ifsc', 'N/A') if verification else 'N/A',
-            'upi': verification.get('upi', 'N/A') if verification else 'N/A'
-        })
+            'amount': w.get('amount', 0)
+        }
+
+        if user_type == 'stall':
+            stall = book_stalls.find_one({"email": email})
+            withdrawal_data.update({
+                'account_holder': stall.get('account_holder', 'N/A') if stall else 'N/A',
+                'account_number': stall.get('account_number', 'N/A') if stall else 'N/A',
+                'bank_name': stall.get('bank_name', 'N/A') if stall else 'N/A',
+                'branch': stall.get('branch', 'N/A') if stall else 'N/A',
+                'ifsc': stall.get('ifsc', 'N/A') if stall else 'N/A',
+                'upi': stall.get('upi', 'N/A') if stall else 'N/A',
+                'email': email
+            })
+            pending_stall_withdrawals.append(withdrawal_data)
+        else:
+            verification = approved_verifications.get(email)
+            withdrawal_data.update({
+                'account_holder': verification.get('account_holder', 'N/A') if verification else 'N/A',
+                'account_number': verification.get('account_number', 'N/A') if verification else 'N/A',
+                'bank_name': verification.get('bank_name', 'N/A') if verification else 'N/A',
+                'branch': verification.get('branch', 'N/A') if verification else 'N/A',
+                'ifsc': verification.get('ifsc', 'N/A') if verification else 'N/A',
+                'upi': verification.get('upi', 'N/A') if verification else 'N/A',
+                'email': email
+            })
+            pending_user_withdrawals.append(withdrawal_data)
 
     return render_template(
         'verifications.html',
         pending_verifications=pending_verifications,
-        pending_withdrawals=pending_withdrawals
+        pending_user_withdrawals=pending_user_withdrawals,
+        pending_stall_withdrawals=pending_stall_withdrawals
     )
+
 
 
 @app.route('/delete_fitness_test/<test_id>', methods=['POST'])
@@ -2046,13 +2216,47 @@ def course_detail(course_id):
     return render_template('course_detail.html', course=course)
 
 
-@app.route('/video/<video_id>')
+from flask import Response, request, abort
+from bson import ObjectId
+
+@app.route("/video/<video_id>")
 def stream_video(video_id):
     try:
-        video_file = fs.get(ObjectId(video_id))
-        return Response(video_file.read(), mimetype='video/mp4')
-    except:
+        gridout = fs.get(ObjectId(video_id))
+        file_size = gridout.length
+
+        range_header = request.headers.get('Range', None)
+        if range_header:
+            # Parse the byte range from header
+            range_match = range_header.strip().split("=")[-1]
+            start_str, end_str = range_match.split("-")
+            start = int(start_str) if start_str else 0
+            end = int(end_str) if end_str else file_size - 1
+
+            if end >= file_size:
+                end = file_size - 1
+
+            chunk_size = end - start + 1
+            gridout.seek(start)
+            data = gridout.read(chunk_size)
+
+            # 206 Partial Content
+            rv = Response(data, 206, mimetype="video/mp4")
+            rv.headers.add("Content-Range", f"bytes {start}-{end}/{file_size}")
+            rv.headers.add("Accept-Ranges", "bytes")
+            rv.headers.add("Content-Length", str(chunk_size))
+        else:
+            # No Range header → serve whole file
+            data = gridout.read()
+            rv = Response(data, 200, mimetype="video/mp4")
+            rv.headers.add("Content-Length", str(file_size))
+
+        return rv
+
+    except Exception as e:
+        print("❌ Error streaming video:", e)
         return "Video not found", 404
+
 
 @app.route('/enroll/<course_id>', methods=['POST'])
 def enroll_course(course_id):
@@ -2490,6 +2694,37 @@ def user_dashboard():
         wallet_balance=wallet_balance,
         valid_till=valid_till
     )
+
+@app.route('/stall_dashboard')
+def stall_dashboard():
+    user_email = session.get('user_email')
+    if not user_email:
+        flash("Please login first.", "error")
+        return redirect(url_for('login'))
+
+    stall = book_stalls.find_one({'email': user_email})
+    if not stall:
+        flash("Book Stall account not found.", "error")
+        return redirect(url_for('login'))
+
+    referral_code = stall.get("referral_code", "")
+    wallet_balance = stall.get("wallet_balance", 0)
+
+    # Find all users who used this referral code
+    referred_users = list(db.membership.find({'ref_code': referral_code}))
+
+    # Check verification
+    verification_status = stall.get('verified', False)
+
+    return render_template(
+        "stall_dashboard.html",
+        stall=stall,
+        wallet_balance=wallet_balance,
+        referral_code=referral_code,
+        referred_users=referred_users,
+        verified=verification_status
+    )
+
 
 @app.route('/download_receipt')
 def download_receipt():

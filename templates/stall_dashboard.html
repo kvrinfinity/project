@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Stall Dashboard - KVR Infinity</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #800000;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+      font-size: 20px;
+      color: #800000;
+      margin-bottom: 10px;
+    }
+
+    .info-block {
+      margin-bottom: 25px;
+    }
+
+    .info-block p {
+      font-size: 16px;
+      margin: 5px 0;
+    }
+
+    .referral-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .referral-list li {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .referral-list li:last-child {
+      border-bottom: none;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #800000;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .btn:hover {
+      background-color: #5a0000;
+    }
+
+    .alert {
+      padding: 10px;
+      background: #ffe6e6;
+      border: 1px solid #ffcccc;
+      color: #b30000;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h1><i class="fas fa-store"></i> Book Stall Dashboard</h1>
+    <a href="/logout" style="color: white; text-decoration: none;">Logout</a>
+  </div>
+
+  <div class="container">
+
+    <div class="info-block">
+      <h2>👋 Welcome, {{ stall.stall_name }}</h2>
+      <p><strong>📍 Location:</strong> {{ stall.location }}</p>
+      <p><strong>📧 Email:</strong> {{ stall.email }}</p>
+      <p><strong>💸 Wallet Balance:</strong> ₹{{ wallet_balance }}</p>
+      <p><strong>🏷️ Referral Code:</strong> <code>{{ referral_code }}</code></p>
+    </div>
+
+    <div class="info-block">
+      <h3 class="section-title">👥 Users Who Used Your Referral Code</h3>
+      {% if referred_users %}
+        <ul class="referral-list">
+          {% for user in referred_users %}
+            <li>
+              👤 <strong>{{ user.user_name.split()[0].capitalize() }}</strong> ({{ user.user_email }})<br>
+              <small>Joined: {{ user.payment_date.strftime('%d %b %Y') }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="alert">No users have used your referral code yet.</div>
+      {% endif %}
+    </div>
+
+    <a href="{{ url_for('request_withdrawal_page') }}" class="btn">💵 Request Withdrawal</a>
+
+  </div>
+
+</body>
+</html>

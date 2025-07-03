@@ -89,7 +89,6 @@
     .back-link:hover {
       text-decoration: underline;
     }
-
   </style>
 </head>
 <body>
@@ -112,8 +111,34 @@
       <label for="referral_code">Referral Code</label>
       <input type="text" id="referral_code" name="referral_code" value="{{ stall.referral_code }}" required>
 
+      <label for="email">Email</label>
+      <input type="text" id="email" name="email" value="{{ stall.email }}" required>
+
+      <label for="whatsapp">WhatsApp</label>
+      <input type="text" id="whatsapp" name="whatsapp" value="{{ stall.whatsapp }}" required>
+
+      <!-- Newly added financial details -->
+      <label for="account_holder">Account Holder Name</label>
+      <input type="text" id="account_holder" name="account_holder" value="{{ stall.account_holder }}" required>
+
+      <label for="account_number">Account Number</label>
+      <input type="text" id="account_number" name="account_number" value="{{ stall.account_number }}" required>
+
+      <label for="bank_name">Bank Name</label>
+      <input type="text" id="bank_name" name="bank_name" value="{{ stall.bank_name }}" required>
+
+      <label for="branch">Branch</label>
+      <input type="text" id="branch" name="branch" value="{{ stall.branch }}" required>
+
+      <label for="ifsc">IFSC Code</label>
+      <input type="text" id="ifsc" name="ifsc" value="{{ stall.ifsc }}" required>
+
+      <label for="upi">UPI ID</label>
+      <input type="text" id="upi" name="upi" value="{{ stall.upi }}" required>
+
       <button type="submit"><i class="fas fa-save"></i> Save Changes</button>
     </form>
+
     <a href="{{ url_for('add_referral_code') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Referral Page</a>
   </div>
 
