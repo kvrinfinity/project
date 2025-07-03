@@ -221,11 +221,11 @@
   div.innerHTML = `
     <input type="text" name="video_title_${index}[]" placeholder="Video Title" required />
     <input type="file" name="video_file_${index}[]" accept="video/*" required />
-    <input type="hidden" name="video_file_id_${index}[]" value="">
     <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
   `;
   container.appendChild(div);
 }
+
 
 
     function addQuizInput(index) {

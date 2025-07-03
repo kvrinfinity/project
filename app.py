@@ -1715,9 +1715,9 @@ def edit_course(course_id):
         main_section = request.form['main_section']
         description = request.form.getlist('description[]')
 
-        # Update image if new one provided
+        # Update image if a new one is uploaded
         image_file = request.files.get('course_image')
-        image_id = course['course_image_id']
+        image_id = course.get('course_image_id')
         if image_file and image_file.filename:
             image_id = fs.put(image_file, filename=secure_filename(image_file.filename))
 
@@ -1731,16 +1731,27 @@ def edit_course(course_id):
             video_files = request.files.getlist(f'video_file_{i}[]')
             video_ids = request.form.getlist(f'video_file_id_{i}[]')
 
-            for title, file, vid in zip(video_titles, video_files, video_ids):
-                if title:
-                    if file and file.filename:
-                        fid = fs.put(file, filename=secure_filename(file.filename))
-                    else:
-                        fid = ObjectId(vid) if vid else None
-                    if fid:
-                        videos.append({'title': title, 'file_id': fid})
+            for j in range(len(video_titles)):
+                title = video_titles[j]
+                file = video_files[j] if j < len(video_files) else None
+                vid = video_ids[j] if j < len(video_ids) else None
 
-            # Quiz
+                if not title:
+                    continue
+
+                fid = None
+                if file and file.filename:
+                    fid = fs.put(file, filename=secure_filename(file.filename))
+                elif vid:
+                    try:
+                        fid = ObjectId(vid)
+                    except:
+                        fid = None
+
+                if fid:
+                    videos.append({'title': title, 'file_id': fid})
+
+            # Process quiz
             qs = request.form.getlist(f'quiz_question_{i}[]')
             qa = request.form.getlist(f'quiz_option_a_{i}[]')
             qb = request.form.getlist(f'quiz_option_b_{i}[]')
@@ -1768,6 +1779,7 @@ def edit_course(course_id):
             ) if qu
         ]
 
+        # Update the course document
         courses_col.update_one(
             {'_id': ObjectId(course_id)},
             {'$set': {
@@ -1784,6 +1796,7 @@ def edit_course(course_id):
         return redirect('/admin')
 
     return render_template("edit_course.html", course=course)
+
 
 
 @app.route('/create-fitness-test', methods=['GET', 'POST'])

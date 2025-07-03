@@ -50,8 +50,8 @@
   <a href="{{ url_for('home') }}" ><h1 class="netflix-font">KVR Infinity</h1></a>
 
   <div class="nav-links">
-    <a href="{{ url_for('home') }}">home</a>
-    <a href="{{ url_for('courses') }}">courses</a>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('courses') }}">Courses</a>
   </div>
 
   <a href="{{ url_for('user_dashboard') }}" class="profile">
@@ -74,7 +74,7 @@
         {"image": "advertisment.jpg", "title": "Professional Courses", "text": "Expert-led training programs"},
         {"image": "banner.jpg", "title": "Online Learning", "text": "Flexible learning at your pace"} ] %}
       <div class="slider-image animate-blur-in">
-        <img src="{{ url_for('static', filename=slide.image) }}" alt="Slide Image">
+        <img src="{{ url_for('static', filename='images/home-banner2.JPG') }}" alt="Slide Image">
         <div class="slider-text">
           <h2>{{ slide.title }}</h2>
           <p>{{ slide.text }}</p>
