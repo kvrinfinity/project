@@ -2232,43 +2232,55 @@ def course_detail(course_id):
 from flask import Response, request, abort
 from bson import ObjectId
 
+from flask import Response, request, stream_with_context
+from bson import ObjectId
+
 @app.route("/video/<video_id>")
 def stream_video(video_id):
     try:
         gridout = fs.get(ObjectId(video_id))
         file_size = gridout.length
 
-        range_header = request.headers.get('Range', None)
+        range_header = request.headers.get("Range", None)
         if range_header:
-            # Parse the byte range from header
             range_match = range_header.strip().split("=")[-1]
             start_str, end_str = range_match.split("-")
             start = int(start_str) if start_str else 0
             end = int(end_str) if end_str else file_size - 1
-
-            if end >= file_size:
-                end = file_size - 1
-
             chunk_size = end - start + 1
+
             gridout.seek(start)
-            data = gridout.read(chunk_size)
 
-            # 206 Partial Content
-            rv = Response(data, 206, mimetype="video/mp4")
-            rv.headers.add("Content-Range", f"bytes {start}-{end}/{file_size}")
-            rv.headers.add("Accept-Ranges", "bytes")
-            rv.headers.add("Content-Length", str(chunk_size))
+            def generate():
+                remaining = chunk_size
+                while remaining > 0:
+                    chunk = gridout.read(min(4096, remaining))
+                    if not chunk:
+                        break
+                    yield chunk
+                    remaining -= len(chunk)
+
+            response = Response(stream_with_context(generate()), status=206, mimetype='video/mp4')
+            response.headers.add("Content-Range", f"bytes {start}-{end}/{file_size}")
+            response.headers.add("Accept-Ranges", "bytes")
+            response.headers.add("Content-Length", str(chunk_size))
         else:
-            # No Range header → serve whole file
-            data = gridout.read()
-            rv = Response(data, 200, mimetype="video/mp4")
-            rv.headers.add("Content-Length", str(file_size))
+            def generate():
+                while True:
+                    chunk = gridout.read(4096)
+                    if not chunk:
+                        break
+                    yield chunk
 
-        return rv
+            response = Response(stream_with_context(generate()), mimetype='video/mp4')
+            response.headers.add("Content-Length", str(file_size))
+
+        return response
 
     except Exception as e:
-        print("❌ Error streaming video:", e)
+        print("❌ Error in stream_video:", e)
         return "Video not found", 404
+
 
 
 @app.route('/enroll/<course_id>', methods=['POST'])
