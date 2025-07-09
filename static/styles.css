@@ -2117,9 +2117,13 @@ body {
       color: #e63946;
     }
 
-    .kvr-right p {
-      color: #010101;
+    .kvr-right p,.just-p {
+      color: #fffefe;
       margin-bottom: 2rem;
+    }
+
+    .just-p{
+      text-align: center;
     }
 
     .kvr-feature {
@@ -2134,7 +2138,7 @@ body {
 
     .kvr-feature:hover{
       transform: scale(1.1);
-      transition: 0.5s ease;
+      transition: 0.7s ease;
       background-color: rgb(168, 0, 0);
       color:white;
     }
@@ -2167,6 +2171,16 @@ body {
       flex-direction: column;
     }
 
+    .kvr-feature:hover h4,
+.kvr-feature:hover p,
+.kvr-feature:hover i {
+  color: white;
+}
+
+  .kvr-feature:hover i{
+    background-color: white;
+    color:red;
+  }
     @media (max-width: 768px) {
       .kvr-section {
         flex-direction: column;
@@ -2602,8 +2616,9 @@ body {
 
     .ai-leaders-image img {
       width: 100%;
-      max-width: 450px;
+      max-width: 500px;
       border-radius: 20px;
+      transform: rotate(-2deg);
     }
 
     @media (max-width: 768px) {

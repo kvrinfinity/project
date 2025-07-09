@@ -77,7 +77,22 @@
       <label>Main Section</label>
       <select name="main_section" required>
         {% set current_section = course.main_section %}
-        {% for section in ['aptitude', 'english and communication', 'computers'] %}
+        {% for section in [
+    'aptitude',
+    'english and communication',
+    'computers',
+    'Java',
+    'Python',
+    'Placement Training',
+    'Internships',
+    'Future Courses',
+    'Personality Development',
+    'Business Administration',
+    '10+2',
+    'Futuristic Courses',
+    'Misch',
+    'website & app building'
+  ] %}
           <option value="{{ section }}" {% if section == current_section %}selected{% endif %}>{{ section|capitalize }}</option>
         {% endfor %}
       </select>
