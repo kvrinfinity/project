@@ -192,8 +192,6 @@ def login():
 
     return render_template('login.html')
 
-
-
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -212,14 +210,22 @@ def forgot_password():
             if admin:
                 session['otp_target'] = 'admin'
                 session['user_name'] = admin.get('name', 'Admin User')
+
             else:
                 # 3️⃣ Check in book stalls collection
                 stall = book_stalls.find_one({'email': email})
                 if stall:
                     session['otp_target'] = 'stall'
                     session['user_name'] = stall.get('stall_name', 'Book Stall')
+
                 else:
-                    return render_template('forgot_password.html', msg="Email not found in our records.")
+                    # 4️⃣ Check in super_admins collection ✅
+                    super_admin = super_admins.find_one({'email': email})
+                    if super_admin:
+                        session['otp_target'] = 'super_admin'
+                        session['user_name'] = super_admin.get('name', 'Super Admin')
+                    else:
+                        return render_template('forgot_password.html', msg="Email not found in our records.")
 
         # ✅ Common OTP setup
         otp = generate_otp()
@@ -227,7 +233,7 @@ def forgot_password():
         session['otp_mode'] = 'reset'
         session['reset_email'] = email
 
-        send_otp_email(email, otp)  # You already have this function
+        send_otp_email(email, otp)  # Existing reusable function
         return render_template('otp_validation.html')
 
     return render_template('forgot_password.html')
@@ -1140,7 +1146,7 @@ def reset_password():
             return render_template('reset_password.html', error="Password cannot be empty")
 
         # Hash the new password
-        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode()
 
         # 🔄 Update password in the correct collection
         if target == 'user':
@@ -1149,6 +1155,8 @@ def reset_password():
             admin_col.update_one({'email': email}, {'$set': {'password': hashed_password}})
         elif target == 'stall':
             book_stalls.update_one({'email': email}, {'$set': {'password': hashed_password}})
+        elif target == 'super_admin':
+            super_admins.update_one({'email': email}, {'$set': {'password': hashed_password}})
         else:
             return render_template('reset_password.html', error="Invalid user type.")
 
@@ -1161,6 +1169,7 @@ def reset_password():
         return redirect(url_for('login'))
 
     return render_template('reset_password.html')
+
 
 
 
