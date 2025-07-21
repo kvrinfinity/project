@@ -167,8 +167,9 @@ def login():
                     return redirect(url_for('sales_admin_dashboard'))
                 
         admin = super_admins.find_one({"email": email})
-        if admin and bcrypt.checkpw(password.encode(), admin['password'].encode()):
-            session['super_admin_id'] = str(admin['_id'])
+        if admin and bcrypt.checkpw(password.encode(), admin['password'].encode('utf-8')):
+
+            session['user_email'] = email
             return redirect(url_for('super_admin_dashboard'))
 
         # ✅ 2. Regular user login
@@ -811,7 +812,7 @@ def edit_super_admin():
 @app.route('/super-admin/dashboard', methods=['GET', 'POST'])
 def super_admin_dashboard():
     if 'super_admin_id' not in session:
-        return redirect(url_for('super_admin_login'))
+        return redirect(url_for('login'))
 
     super_admin_id = session['super_admin_id']
     super_admin = super_admins.find_one({"_id": ObjectId(super_admin_id)})
@@ -1146,7 +1147,7 @@ def reset_password():
             return render_template('reset_password.html', error="Password cannot be empty")
 
         # Hash the new password
-        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode()
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
 
         # 🔄 Update password in the correct collection
         if target == 'user':
@@ -1171,9 +1172,6 @@ def reset_password():
     return render_template('reset_password.html')
 
 
-
-
-    
 @app.route('/apply_referral', methods=['POST'])
 def apply_referral():
     data = request.get_json()
@@ -1266,11 +1264,12 @@ def request_withdrawal_page():
 
     user_email = session['user_email']
 
-    # Check in users collection (regular user)
+    # Check user type
     user = users_col.find_one({"email": user_email})
+    stall = book_stalls.find_one({"email": user_email})
+    super_admin = super_admins.find_one({"email": user_email})
 
     if user:
-        # Regular user must be verified
         if user.get('is_verified', False):
             wallet_balance = user.get('wallet_balance', 0)
             return render_template('withdraw.html', wallet_balance=wallet_balance, user=user)
@@ -1278,13 +1277,14 @@ def request_withdrawal_page():
             flash("Please verify your bank details before requesting a withdrawal.", "info")
             return redirect(url_for('submit_verification_page'))
 
-    # Check in book_stalls collection (stall owner)
-    stall = book_stalls.find_one({"email": user_email})
     if stall:
         wallet_balance = stall.get('wallet_balance', 0)
         return render_template('withdraw.html', wallet_balance=wallet_balance, user=stall)
 
-    # If email not found in any collection
+    if super_admin:
+        wallet_balance = super_admin.get('wallet_balance', 0)
+        return render_template('withdraw.html', wallet_balance=wallet_balance, user=super_admin)
+
     flash("User not found.", "error")
     return redirect(url_for('login'))
 
@@ -1333,11 +1333,14 @@ def process_withdrawal():
         return redirect(url_for('login'))
 
     user_email = session['user_email']
+
+    # Determine user type
     user = users_col.find_one({"email": user_email})
     stall = book_stalls.find_one({"email": user_email})
+    super_admin = super_admins.find_one({"email": user_email})
 
-    user_type = 'user' if user else 'stall' if stall else None
-    doc = user if user else stall
+    user_type = 'user' if user else 'stall' if stall else 'super_admin' if super_admin else None
+    doc = user or stall or super_admin
 
     if not doc:
         flash("User not found.", "error")
@@ -1354,11 +1357,11 @@ def process_withdrawal():
         return redirect(url_for('request_withdrawal_page'))
 
     current_balance = float(doc.get('wallet_balance', 0))
-
     if amount > current_balance:
         flash(f"❌ Not enough balance. Available: ₹{current_balance}", "error")
         return redirect(url_for('request_withdrawal_page'))
 
+    # Check if there is already a pending withdrawal
     existing_pending = withdrawals_col.find_one({
         "email": user_email,
         "status": "pending"
@@ -1376,7 +1379,15 @@ def process_withdrawal():
     })
 
     flash("✅ Withdrawal request submitted successfully!", "success")
-    return redirect(url_for('user_dashboard' if user else 'stall_dashboard'))
+
+    # Redirect accordingly
+    if user:
+        return redirect(url_for('user_dashboard'))
+    elif stall:
+        return redirect(url_for('stall_dashboard'))
+    else:
+        return redirect(url_for('super_admin_dashboard'))
+
 
 
 from bson.objectid import ObjectId
