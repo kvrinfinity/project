@@ -104,6 +104,7 @@ membership_col = db["membership"]
 admin_col = db["admin"]
 contact_collection = db["contact-info"]
 book_stalls = db['book_stalls']
+super_admins = db["super_admins"]
 
 fs = GridFS(db)
 
@@ -164,6 +165,11 @@ def login():
                     return redirect(url_for('write_blog'))
                 elif role == 'Sales Department':
                     return redirect(url_for('sales_admin_dashboard'))
+                
+        admin = super_admins.find_one({"email": email})
+        if admin and bcrypt.checkpw(password.encode(), admin['password'].encode()):
+            session['super_admin_id'] = str(admin['_id'])
+            return redirect(url_for('super_admin_dashboard'))
 
         # ✅ 2. Regular user login
         user = db.users.find_one({"email": email})
@@ -335,6 +341,11 @@ def payment_success():
 
         # 🎁 Reward referral
         if referral_code:
+            user_referral_code = request.form.get("referral_code")
+
+            if user_referral_code:
+                credit_wallet_for_referral(user_referral_code)
+
             ref_user = users_col.find_one({'ref_code': referral_code})
             if ref_user:
                 users_col.update_one({'_id': ref_user['_id']}, {'$inc': {'wallet_balance': 1000}})
@@ -394,6 +405,28 @@ Team KVR Infinity
         print("❌ Error in /payment_success:", str(e))
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
+def credit_wallet_for_referral(referral_code):
+    stall = book_stalls.find_one({"referral_code": referral_code})
+    if not stall:
+        print(f"❌ No stall found for referral code {referral_code}")
+        return
+
+    # 💰 Credit Book Stall ₹1000
+    book_stalls.update_one(
+        {"_id": stall["_id"]},
+        {"$inc": {"wallet_balance": 1000}}
+    )
+    print(f"✅ ₹1000 credited to Book Stall: {stall.get('stall_name')}")
+
+    # 💰 Credit Super Admin ₹1000 if exists
+    super_admin_id = stall.get("joined_by")
+    if super_admin_id:
+        super_admins.update_one(
+            {"_id": ObjectId(super_admin_id)},
+            {"$inc": {"wallet_balance": 1000}}
+        )
+        print(f"✅ ₹1000 credited to Super Admin: {super_admin_id}")
 
 
 @app.route('/blogs')
@@ -602,19 +635,18 @@ def add_referral_code():
             ifsc = request.form.get('ifsc')
             upi = request.form.get('upi')
 
-            # 🛑 Validate required fields
             if not email or not password or not whatsapp:
                 flash("Email, Password, and WhatsApp are required!", "danger")
                 return redirect(url_for('add_referral_code'))
 
-            # 🔍 Check for uniqueness
             if book_stalls.find_one({"referral_code": referral_code}):
                 flash("Referral code already exists!", "danger")
             elif book_stalls.find_one({"email": email}):
                 flash("Email already in use!", "danger")
             else:
-                # 🔐 Hash password
                 hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+                super_admin_id = session.get("super_admin_id")  # 🔐 Assume login session if super admin
                 book_stalls.insert_one({
                     "stall_name": stall_name,
                     "location": location,
@@ -629,8 +661,10 @@ def add_referral_code():
                     "bank_name": bank_name,
                     "branch": branch,
                     "ifsc": ifsc,
-                    "upi": upi
+                    "upi": upi,
+                    "joined_by": ObjectId(super_admin_id) if super_admin_id else None  # 🆕 track who added
                 })
+
                 flash("Stall and login credentials added successfully!", "success")
 
             return redirect(url_for('add_referral_code'))
@@ -640,6 +674,7 @@ def add_referral_code():
         stalls_list = stalls_list[:5]
 
     return render_template("add_referral.html", stalls=stalls_list, search=search_term)
+
 
 @app.route('/admin/edit-stall', methods=['GET', 'POST'])
 def edit_stall():
@@ -677,6 +712,145 @@ def edit_stall():
             return redirect(url_for('add_referral_code'))
 
         return render_template("edit_stall.html", stall=stall)
+
+@app.route('/admin/add-super-admin', methods=['GET', 'POST'])
+def add_super_admin():
+    search_term = ""
+    query = {}
+
+    if request.method == 'POST':
+        if 'search' in request.form:
+            search_term = request.form['search'].strip()
+            if search_term:
+                query = {
+                    "$or": [
+                        {"email": {"$regex": search_term, "$options": "i"}},
+                        {"whatsapp": {"$regex": search_term, "$options": "i"}}
+                    ]
+                }
+        else:
+            data = {
+                "name":request.form['name'],
+                "email": request.form['email'],
+                "password": request.form['password'],
+                "whatsapp": request.form['whatsapp'],
+                "account_holder": request.form['account_holder'],
+                "account_number": request.form['account_number'],
+                "bank_name": request.form['bank_name'],
+                "branch": request.form['branch'],
+                "ifsc": request.form['ifsc'],
+                "upi": request.form['upi'],
+                "created_at": datetime.utcnow(),
+                "role": "super_admin",
+                "wallet_balance": 0
+            }
+
+            if not data["email"] or not data["password"]:
+                flash("Email and Password are required!", "danger")
+                return redirect(url_for('add_super_admin'))
+
+            if super_admins.find_one({"email": data["email"]}):
+                flash("Email already registered as super admin!", "danger")
+                return redirect(url_for('add_super_admin'))
+
+            data["password"] = bcrypt.hashpw(data["password"].encode(), bcrypt.gensalt()).decode()
+            super_admins.insert_one(data)
+            flash("Super admin added successfully!", "success")
+            return redirect(url_for('add_super_admin'))
+
+    super_admin_list = list(super_admins.find(query).sort("created_at", -1))
+    if not search_term:
+        super_admin_list = super_admin_list[:5]
+
+    return render_template("add_super_admin.html", super_admins=super_admin_list, search=search_term)
+
+
+@app.route('/admin/edit-super-admin', methods=['GET', 'POST'])
+def edit_super_admin():
+    if request.method == 'POST':
+        super_admin_id = request.form['super_admin_id']
+        updated_data = {
+            "name": request.form['name'],
+            "email": request.form['email'],
+            "whatsapp": request.form['whatsapp'],
+            "account_holder": request.form['account_holder'],
+            "account_number": request.form['account_number'],
+            "bank_name": request.form['bank_name'],
+            "branch": request.form['branch'],
+            "ifsc": request.form['ifsc'],
+            "upi": request.form['upi']
+        }
+
+        try:
+            super_admins.update_one({"_id": ObjectId(super_admin_id)}, {"$set": updated_data})
+            flash("Super admin updated successfully!", "success")
+        except Exception as e:
+            flash(f"Error updating super admin: {e}", "danger")
+
+        return redirect(url_for('add_super_admin'))
+
+    else:
+        super_admin_id = request.args.get('super_admin_id')
+        if not super_admin_id:
+            flash("Missing super admin ID", "danger")
+            return redirect(url_for('add_super_admin'))
+
+        admin = super_admins.find_one({"_id": ObjectId(super_admin_id)})
+        if not admin:
+            flash("Super admin not found", "danger")
+            return redirect(url_for('add_super_admin'))
+
+        return render_template("edit_super_admin.html", admin=admin)
+    
+@app.route('/super-admin/dashboard', methods=['GET', 'POST'])
+def super_admin_dashboard():
+    if 'super_admin_id' not in session:
+        return redirect(url_for('super_admin_login'))
+
+    super_admin_id = session['super_admin_id']
+    super_admin = super_admins.find_one({"_id": ObjectId(super_admin_id)})
+
+    if request.method == 'POST':
+        # Collect stall data
+        stall_data = {
+            "stall_name": request.form['stall_name'],
+            "location": request.form['location'],
+            "referral_code": request.form['referral_code'],
+            "email": request.form['email'],
+            "password": bcrypt.hashpw(request.form['password'].encode(), bcrypt.gensalt()).decode(),
+            "whatsapp": request.form['whatsapp'],
+            "account_holder": request.form['account_holder'],
+            "account_number": request.form['account_number'],
+            "bank_name": request.form['bank_name'],
+            "branch": request.form['branch'],
+            "ifsc": request.form['ifsc'],
+            "upi": request.form['upi'],
+            "created_at": datetime.utcnow(),
+            "wallet_balance": 0,
+            "added_by_super_admin": super_admin_id  # Link to super admin
+        }
+
+        # Check duplicate referral_code or email
+        if book_stalls.find_one({"referral_code": stall_data['referral_code']}):
+            flash("Referral code already exists!", "danger")
+        elif book_stalls.find_one({"email": stall_data['email']}):
+            flash("Email already in use!", "danger")
+        else:
+            # Insert book stall
+            book_stalls.insert_one(stall_data)
+
+            # Also update super admin's list of added referrals
+            super_admins.update_one(
+                {"_id": ObjectId(super_admin_id)},
+                {"$addToSet": {"referral_codes": stall_data["referral_code"]}}
+            )
+
+            flash("Book stall added successfully!", "success")
+            return redirect(url_for('super_admin_dashboard'))
+
+    stalls = list(book_stalls.find({"added_by_super_admin": super_admin_id}).sort("created_at", -1))
+    return render_template("super_admin_dashboard.html", super_admin=super_admin, stalls=stalls)
+
 
 
 @app.route('/home')
