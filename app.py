@@ -166,11 +166,20 @@ def login():
                 elif role == 'Sales Department':
                     return redirect(url_for('sales_admin_dashboard'))
                 
-        admin = super_admins.find_one({"email": email})
-        if admin and bcrypt.checkpw(password.encode(), admin['password'].encode('utf-8')):
+       # ✅ 2. Super admin login
+        super_admin = super_admins.find_one({"email": email})
+        if super_admin:
+            stored_password = super_admin['password']
+            print(f"User trying: {email}, found super admin: {super_admin is not None}")
+            print(f"Stored hash: {stored_password}")
+            print(f"Password match: {bcrypt.checkpw(password.encode(), stored_password.encode('utf-8'))}")
 
-            session['user_email'] = email
-            return redirect(url_for('super_admin_dashboard'))
+            # Check if password is stored as string
+            if isinstance(stored_password, str):
+                if bcrypt.checkpw(password.encode(), stored_password.encode('utf-8')):
+                    session['user_email'] = email
+                    return redirect(url_for('super_admin_dashboard'))
+
 
         # ✅ 2. Regular user login
         user = db.users.find_one({"email": email})
@@ -760,7 +769,9 @@ def add_super_admin():
                 flash("Email already registered as super admin!", "danger")
                 return redirect(url_for('add_super_admin'))
 
+            print(data['password'])
             data["password"] = bcrypt.hashpw(data["password"].encode(), bcrypt.gensalt()).decode()
+            print(data['password'])
             super_admins.insert_one(data)
             flash("Super admin added successfully!", "success")
             return redirect(url_for('add_super_admin'))
@@ -809,13 +820,33 @@ def edit_super_admin():
 
         return render_template("edit_super_admin.html", admin=admin)
     
+@app.route('/admin/delete-super-admin', methods=['POST'])
+def delete_super_admin():
+    super_admin_id = request.form.get('super_admin_id')
+
+    if not super_admin_id:
+        flash("Missing super admin ID", "danger")
+        return redirect(url_for('add_super_admin'))
+
+    try:
+        result = super_admins.delete_one({"_id": ObjectId(super_admin_id)})
+        if result.deleted_count == 1:
+            flash("Super admin deleted successfully!", "success")
+        else:
+            flash("Super admin not found!", "warning")
+    except Exception as e:
+        flash(f"Error deleting super admin: {e}", "danger")
+
+    return redirect(url_for('add_super_admin'))
+
+    
 @app.route('/super-admin/dashboard', methods=['GET', 'POST'])
 def super_admin_dashboard():
-    if 'super_admin_id' not in session:
+    if 'user_email' not in session:
         return redirect(url_for('login'))
 
-    super_admin_id = session['super_admin_id']
-    super_admin = super_admins.find_one({"_id": ObjectId(super_admin_id)})
+    super_admin = session['user_email']
+    super_admin = super_admins.find_one({"email": super_admin})
 
     if request.method == 'POST':
         # Collect stall data
@@ -834,7 +865,7 @@ def super_admin_dashboard():
             "upi": request.form['upi'],
             "created_at": datetime.utcnow(),
             "wallet_balance": 0,
-            "added_by_super_admin": super_admin_id  # Link to super admin
+            "added_by_super_admin": super_admin  # Link to super admin
         }
 
         # Check duplicate referral_code or email
@@ -848,14 +879,14 @@ def super_admin_dashboard():
 
             # Also update super admin's list of added referrals
             super_admins.update_one(
-                {"_id": ObjectId(super_admin_id)},
+                {"email": super_admin},
                 {"$addToSet": {"referral_codes": stall_data["referral_code"]}}
             )
 
             flash("Book stall added successfully!", "success")
             return redirect(url_for('super_admin_dashboard'))
 
-    stalls = list(book_stalls.find({"added_by_super_admin": super_admin_id}).sort("created_at", -1))
+    stalls = list(book_stalls.find({"added_by_super_admin": super_admin}).sort("created_at", -1))
     return render_template("super_admin_dashboard.html", super_admin=super_admin, stalls=stalls)
 
 
