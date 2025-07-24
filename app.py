@@ -2174,6 +2174,85 @@ def verifications():
         pending_stall_withdrawals=pending_stall_withdrawals
     )
 
+@app.route('/edit-fitness-test/<test_id>', methods=['GET', 'POST'])
+def edit_fitness_test(test_id):
+    test = fitness_tests_col.find_one({'_id': ObjectId(test_id)})
+    if not test:
+        flash("❌ Fitness test not found.", "danger")
+        return redirect('/create-fitness-test')
+
+    if request.method == 'POST':
+        test_name = request.form['test_name']
+        test_image = request.files.get('test_image')
+        test_video = request.files.get('fitness_video')
+
+        updated_data = {'test_name': test_name, 'questions': [], 'updated_at': datetime.utcnow()}
+
+        # If new image uploaded, replace it
+        if test_image and test_image.filename:
+            if test.get('image_id'):
+                fs.delete(test['image_id'])
+            updated_data['image_id'] = fs.put(test_image, filename=secure_filename(test_image.filename))
+
+        else:
+            updated_data['image_id'] = test.get('image_id')
+
+        # Same for video
+        if test_video and test_video.filename:
+            if test.get('video_id'):
+                fs.delete(test['video_id'])
+            updated_data['video_id'] = fs.put(test_video, filename=secure_filename(test_video.filename))
+        else:
+            updated_data['video_id'] = test.get('video_id')
+
+        total_questions = len(request.form.getlist('ft_answer[]'))
+
+        for i in range(total_questions):
+            q_text = request.form.getlist('ft_question[]')[i]
+            q_img_file = request.files.getlist('ft_question_image[]')[i]
+            question = {}
+
+            if q_text:
+                question['text'] = q_text
+
+            if q_img_file and q_img_file.filename:
+                q_img_id = fs.put(q_img_file, filename=secure_filename(q_img_file.filename))
+                question['image_id'] = q_img_id
+            elif 'existing_q_img_ids[]' in request.form:
+                q_img_id = request.form.getlist('existing_q_img_ids[]')[i]
+                if q_img_id:
+                    question['image_id'] = ObjectId(q_img_id)
+
+            options = {}
+            for opt in ['a', 'b', 'c', 'd']:
+                opt_text = request.form.getlist(f'ft_option_{opt}[]')[i]
+                opt_file = request.files.getlist(f'ft_option_{opt}_img[]')[i]
+                option = {}
+
+                if opt_text:
+                    option['text'] = opt_text
+
+                if opt_file and opt_file.filename:
+                    option['image_id'] = fs.put(opt_file, filename=secure_filename(opt_file.filename))
+                else:
+                    opt_img_id_list = request.form.getlist(f'existing_ft_option_{opt}_img_ids[]')
+                    if len(opt_img_id_list) > i and opt_img_id_list[i]:
+                        option['image_id'] = ObjectId(opt_img_id_list[i])
+
+                options[opt] = option
+
+            updated_data['questions'].append({
+                'question': question,
+                'options': options,
+                'answer': request.form.getlist('ft_answer[]')[i],
+                'company': request.form.getlist('ft_company[]')[i]
+            })
+
+        fitness_tests_col.update_one({'_id': ObjectId(test_id)}, {'$set': updated_data})
+        flash("✅ Fitness test updated successfully!", "success")
+        return redirect('/create-fitness-test')
+
+    return render_template('edit_fitest.html', test=test)
 
 
 @app.route('/delete_fitness_test/<test_id>', methods=['POST'])
