@@ -1,4 +1,4 @@
-"""import pandas as pd
+import pandas as pd
 import bcrypt
 import random
 import string
@@ -23,24 +23,22 @@ membership_collection = db['membership']
 
 # Default password
 default_password = 'password'
-hashed_pw = bcrypt.hashpw(default_password.encode(), bcrypt.gensalt()).decode()
+hashed_pw = bcrypt.hashpw(default_password.encode(), bcrypt.gensalt())
 
 fs = GridFS(db)
 
 # Constants
 amount = 1500
 today = datetime.now()
-validity = today + timedelta(days=360)
+validity = today + timedelta(days=365)
 # Sample user data from the image
 users = [
-    ("SHAIK", "SAMEER", "shaiksameer786iei@gmail.com", "8186022964"),
-    ("LOKACHARI", "POORNIMA", "47poornima@gmail.com", "8179552589"),
-    ("SALAPAKSHI", "ARUN KUMAR", "arunpandu2224@gmail.com", "9392353054"),
-    ("KOTAKONDLA", "SAI SIRI", "ksaisiri2304@gmail.com", "7288027554"),
-    ("ANNAM", "VIJAY CHARAN", "vijaycharanannam@gmail.com", "7207617461"),
-    ("KARRE", "PULLAIAH", "pullaiahkph@gmail.com", "8074231454"),
-    ("GUDUR", "MANIKANTA", "aiml.manikanta@gmail.com", "9014228681")
+    ("KAPPALA", "MANJUNATH", "manjukappala249@gmail.com", "7993969357"),
+    ("THANIKACHALAM", "BADRINATH", "badriraj79@gmail.com", "9676145125"),
+    ("DIVITI", "NEERAJ", "nneraj8870@gmail.com", "7569846711"),
+    ("SAI", "DEDEPYA", "saidedepyagadamsetty@gmail.com", "7416932712")
 ]
+
 
 def generate_receipt(member_name, email, phone, amount, receipt_id, transaction_date, valid_through):
     buffer = BytesIO()
@@ -174,3 +172,4 @@ for user in all_users:
         print(f"✅ Updated password for: {email}")
     else:
         print(f"⚠️ Password not updated for: {email}")
+"""

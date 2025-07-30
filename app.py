@@ -364,15 +364,15 @@ def payment_success():
 
             ref_user = users_col.find_one({'ref_code': referral_code})
             if ref_user:
-                users_col.update_one({'_id': ref_user['_id']}, {'$inc': {'wallet_balance': 1000}})
+                users_col.update_one({'_id': ref_user['_id']}, {'$inc': {'wallet_balance': 500}})
                 print(f"✅ ₹1000 added to user: {ref_user['email']}")
             else:
                 ref_stall = book_stalls.find_one({'referral_code': referral_code})
                 if ref_stall:
                     if 'wallet_balance' not in ref_stall:
-                        book_stalls.update_one({'_id': ref_stall['_id']}, {'$set': {'wallet_balance': 1000}})
+                        book_stalls.update_one({'_id': ref_stall['_id']}, {'$set': {'wallet_balance': 500}})
                     else:
-                        book_stalls.update_one({'_id': ref_stall['_id']}, {'$inc': {'wallet_balance': 1000}})
+                        book_stalls.update_one({'_id': ref_stall['_id']}, {'$inc': {'wallet_balance': 500}})
                     print(f"✅ ₹1000 added to book stall: {ref_stall['stall_name']}")
 
         # 📧 Send receipt email
@@ -431,7 +431,7 @@ def credit_wallet_for_referral(referral_code):
     # 💰 Credit Book Stall ₹1000
     book_stalls.update_one(
         {"_id": stall["_id"]},
-        {"$inc": {"wallet_balance": 1000}}
+        {"$inc": {"wallet_balance": 500}}
     )
     print(f"✅ ₹1000 credited to Book Stall: {stall.get('stall_name')}")
 
@@ -440,7 +440,7 @@ def credit_wallet_for_referral(referral_code):
     if super_admin_id:
         super_admins.update_one(
             {"_id": ObjectId(super_admin_id)},
-            {"$inc": {"wallet_balance": 1000}}
+            {"$inc": {"wallet_balance": 500}}
         )
         print(f"✅ ₹1000 credited to Super Admin: {super_admin_id}")
 
@@ -1258,7 +1258,7 @@ def download_users_csv():
     memberships = {m['user_email']: m for m in membership_col.find()}
 
     # CSV Header
-    header = ['Name', 'Email', 'WhatsApp Number', 'Payment Date', 'Valid Till']
+    header = ['Name', 'Email', 'WhatsApp Number', 'Payment Date', 'Valid Till','wallet_balance']
 
     def generate():
         yield ','.join(header) + '\n'
@@ -1266,6 +1266,7 @@ def download_users_csv():
             name = f"{user.get('fname', '')} {user.get('lname', '')}"
             email = user.get('email', '')
             whatsapp = user.get('whatsapp', '')
+            balance = user.get('wallet_balance','')
 
             membership = memberships.get(email, {})
             payment_date = membership.get('payment_date')
@@ -1275,7 +1276,7 @@ def download_users_csv():
             payment_str = payment_date.strftime("%Y-%m-%d") if payment_date else ''
             valid_str = valid_till.strftime("%Y-%m-%d") if valid_till else ''
 
-            row = [name, email, whatsapp, payment_str, valid_str]
+            row = [name, email, whatsapp, payment_str, valid_str,balance]
             yield ','.join(row) + '\n'
 
     return Response(generate(), mimetype='text/csv', headers={
