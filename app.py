@@ -143,6 +143,11 @@ def cookies_policy():
     return render_template('cookies-policy.html')
 
 
+from flask import render_template, request, session, redirect, url_for, flash
+from datetime import datetime
+import bcrypt
+import base64
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     delete_expired_memberships()
@@ -151,10 +156,24 @@ def login():
         email = request.form.get('email').strip()
         password = request.form.get('password')
 
+        # Helper: normalize password from DB
+        def get_stored_bytes(stored):
+            if isinstance(stored, bytes):
+                return stored
+            if isinstance(stored, str):
+                try:
+                    # try base64 decode first (if stored as base64 string)
+                    return base64.b64decode(stored.encode('utf-8'))
+                except Exception:
+                    # fallback: treat it as utf-8 string
+                    return stored.encode('utf-8')
+            return None
+
         # ✅ 1. Admin login
         admin_user = admin_col.find_one({"email": email})
         if admin_user and 'password' in admin_user:
-            if bcrypt.checkpw(password.encode(), admin_user['password']):
+            stored_pw = get_stored_bytes(admin_user['password'])
+            if stored_pw and bcrypt.checkpw(password.encode(), stored_pw):
                 session['user_email'] = email
                 role = admin_user.get('dept')
 
@@ -165,42 +184,40 @@ def login():
                     return redirect(url_for('write_blog'))
                 elif role == 'Sales Department':
                     return redirect(url_for('sales_admin_dashboard'))
-                
-       # ✅ 2. Super admin login
+
+        # ✅ 2. Super admin login
         super_admin = super_admins.find_one({"email": email})
-        if super_admin:
-            stored_password = super_admin['password']
-            print(f"User trying: {email}, found super admin: {super_admin is not None}")
-            print(f"Stored hash: {stored_password}")
-            print(f"Password match: {bcrypt.checkpw(password.encode(), stored_password.encode('utf-8'))}")
+        if super_admin and 'password' in super_admin:
+            stored_pw = get_stored_bytes(super_admin['password'])
+            if stored_pw and bcrypt.checkpw(password.encode(), stored_pw):
+                session['user_email'] = email
+                return redirect(url_for('super_admin_dashboard'))
 
-            # Check if password is stored as string
-            if isinstance(stored_password, str):
-                if bcrypt.checkpw(password.encode(), stored_password.encode('utf-8')):
-                    session['user_email'] = email
-                    return redirect(url_for('super_admin_dashboard'))
-
-
-        # ✅ 2. Regular user login
+        # ✅ 3. Regular user login
         user = db.users.find_one({"email": email})
-        if user and bcrypt.checkpw(password.encode(), user['password']):
-            session['user_email'] = email
-            membership = membership_col.find_one({"user_email": email})
-            if not membership or membership['valid_till'] < datetime.now():
-                return redirect(url_for('membership'))
-            return redirect(url_for('home'))
+        if user and 'password' in user:
+            stored_pw = get_stored_bytes(user['password'])
+            if stored_pw and bcrypt.checkpw(password.encode(), stored_pw):
+                session['user_email'] = email
+                membership = membership_col.find_one({"user_email": email})
+                if not membership or membership['valid_till'] < datetime.now():
+                    return redirect(url_for('membership'))
+                return redirect(url_for('home'))
 
-        # ✅ 3. Book stall login
+        # ✅ 4. Book stall login
         stall = book_stalls.find_one({"email": email})
-        if stall and bcrypt.checkpw(password.encode(), stall['password']):
-            session['user_email'] = email
-            session['stall_id'] = str(stall['_id'])
-            return redirect(url_for('stall_dashboard'))
+        if stall and 'password' in stall:
+            stored_pw = get_stored_bytes(stall['password'])
+            if stored_pw and bcrypt.checkpw(password.encode(), stored_pw):
+                session['user_email'] = email
+                session['stall_id'] = str(stall['_id'])
+                return redirect(url_for('stall_dashboard'))
 
         # ❌ Invalid login
         return render_template('login.html', msg='Invalid credentials')
 
     return render_template('login.html')
+
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -1223,6 +1240,10 @@ def apply_referral():
         discount = 99
         session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
         return jsonify({'valid': True, 'discount': 99.99})
+    if ref_code == 'kvr0000':
+        discount = 100
+        session['amount_paid'] = int(base_price - (base_price * (discount / 100)))
+        return jsonify({'valid': True, 'discount': 100})
 
     # ✅ Check if referral code exists in database (70% OFF)
     user = db.users.find_one({'ref_code': ref_code})
@@ -1258,30 +1279,43 @@ def download_users_csv():
     memberships = {m['user_email']: m for m in membership_col.find()}
 
     # CSV Header
-    header = ['Name', 'Email', 'WhatsApp Number', 'Payment Date', 'Valid Till','wallet_balance']
+    header = ['Name', 'Email', 'WhatsApp Number', 'Payment Date', 'Valid Till', 'Wallet Balance']
 
     def generate():
         yield ','.join(header) + '\n'
         for user in users:
-            name = f"{user.get('fname', '')} {user.get('lname', '')}"
+            name = f"{user.get('fname', '')} {user.get('lname', '')}".strip()
             email = user.get('email', '')
             whatsapp = user.get('whatsapp', '')
-            balance = user.get('wallet_balance','')
+            balance = str(user.get('wallet_balance', ''))  # ensure string
 
             membership = memberships.get(email, {})
             payment_date = membership.get('payment_date')
             valid_till = membership.get('valid_till')
 
-            # Format dates
-            payment_str = payment_date.strftime("%Y-%m-%d") if payment_date else ''
-            valid_str = valid_till.strftime("%Y-%m-%d") if valid_till else ''
+            # Handle dates safely
+            payment_str = ''
+            if payment_date:
+                if isinstance(payment_date, datetime):
+                    payment_str = payment_date.strftime("%Y-%m-%d")
+                else:
+                    payment_str = str(payment_date)
 
-            row = [name, email, whatsapp, payment_str, valid_str,balance]
+            valid_str = ''
+            if valid_till:
+                if isinstance(valid_till, datetime):
+                    valid_str = valid_till.strftime("%Y-%m-%d")
+                else:
+                    valid_str = str(valid_till)
+
+            # Convert everything to string before joining
+            row = [str(x) for x in [name, email, whatsapp, payment_str, valid_str, balance]]
             yield ','.join(row) + '\n'
 
     return Response(generate(), mimetype='text/csv', headers={
         'Content-Disposition': 'attachment; filename=users_membership_data.csv'
     })
+
 
 
 verifications_col = db["verifications"]

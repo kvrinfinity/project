@@ -78,22 +78,14 @@
       <select name="main_section" required>
         {% set current_section = course.main_section %}
         {% for section in [
-    'aptitude',
-    'english and communication',
-    'computers',
-    'Java',
-    'Python',
-    'Placement Training',
-    'Internships',
-    'Future Courses',
-    'Personality Development',
-    'Business Administration',
-    '10+2',
-    'Futuristic Courses',
-    'Misch',
-    'website & app building'
-  ] %}
-          <option value="{{ section }}" {% if section == current_section %}selected{% endif %}>{{ section|capitalize }}</option>
+          'aptitude','english and communication','computers','Java','Python',
+          'Placement Training','Internships','Future Courses',
+          'Personality Development','Business Administration','10+2',
+          'Futuristic Courses','Misch','website & app building'
+        ] %}
+          <option value="{{ section }}" {% if section == current_section %}selected{% endif %}>
+            {{ section|capitalize }}
+          </option>
         {% endfor %}
       </select>
 
@@ -122,6 +114,7 @@
       <button type="button" onclick="addDescriptionPoint()">➕ Add Outcome</button>
 
       <!-- Chapters -->
+      <h3>Chapters</h3>
       <div id="chapters">
         {% for chapter in course.chapters %}
           {% set ch_index = loop.index0 %}
@@ -130,26 +123,21 @@
             <input type="text" name="chapter_name[]" value="{{ chapter.chapter_name }}" required>
 
             <!-- Videos -->
-            <!-- Videos -->
-<label>Videos</label>
-<div id="videos_container_{{ ch_index }}">
-  {% for video in chapter.videos %}
-  <div class="video-group">
-    <p><strong>{{ video.title }}</strong></p>
-    <video src="/video/{{ video.file_id }}" controls width="300"></video><br>
-
-    <!-- hidden input to preserve existing file ID -->
-    <input type="hidden" name="video_file_id_{{ ch_index }}[]" value="{{ video.file_id }}">
-
-    <label>Change Video:</label>
-    <input type="text" name="video_title_{{ ch_index }}[]" value="{{ video.title }}" required>
-    <input type="file" name="video_file_{{ ch_index }}[]" accept="video/*">
-    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
-  </div>
-  {% endfor %}
-</div>
-<button type="button" class="add-video-btn" data-index="{{ ch_index }}">➕ Add Video</button>
-
+            <label>Videos</label>
+            <div id="videos_container_{{ ch_index }}">
+              {% for video in chapter.videos %}
+              <div class="video-group">
+                <p><strong>{{ video.title }}</strong></p>
+                <video src="/video/{{ video.file_id }}" controls width="300"></video><br>
+                <input type="hidden" name="video_file_id_{{ ch_index }}[]" value="{{ video.file_id }}">
+                <label>Change Video:</label>
+                <input type="text" name="video_title_{{ ch_index }}[]" value="{{ video.title }}" required>
+                <input type="file" name="video_file_{{ ch_index }}[]" accept="video/*">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+              </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="add-video-btn" data-index="{{ ch_index }}">➕ Add Video</button>
 
             <!-- Quizzes -->
             <label>Quiz Questions</label>
@@ -174,6 +162,7 @@
           </div>
         {% endfor %}
       </div>
+      <button type="button" onclick="addChapter()">➕ Add Chapter</button>
 
       <!-- Final Exam -->
       <h3>Final Exam Questions</h3>
@@ -203,21 +192,36 @@
 
   <!-- Script Handlers -->
   <script>
-    // Add video
-    document.querySelectorAll('.add-video-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        const index = parseInt(this.dataset.index);
+    // Safe default for chapter count
+    let chapterCount = parseInt("{{ course.chapters|length|default(0) }}");
+
+    // Add new chapter
+    function addChapter() {
+      const chaptersContainer = document.getElementById('chapters');
+      const index = chapterCount++;
+      const div = document.createElement('div');
+      div.className = 'chapter';
+      div.innerHTML = `
+        <label>Chapter Name</label>
+        <input type="text" name="chapter_name[]" placeholder="Chapter Name" required>
+
+        <label>Videos</label>
+        <div id="videos_container_${index}"></div>
+        <button type="button" class="add-video-btn" data-index="${index}">➕ Add Video</button>
+
+        <label>Quiz Questions</label>
+        <div id="quiz_container_${index}"></div>
+        <button type="button" class="add-quiz-btn" data-index="${index}">➕ Add Quiz</button>
+      `;
+      chaptersContainer.appendChild(div);
+
+      div.querySelector('.add-video-btn').addEventListener('click', function () {
         addVideoInput(index);
       });
-    });
-
-    // Add quiz
-    document.querySelectorAll('.add-quiz-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        const index = parseInt(this.dataset.index);
+      div.querySelector('.add-quiz-btn').addEventListener('click', function () {
         addQuizInput(index);
       });
-    });
+    }
 
     function addDescriptionPoint() {
       const container = document.getElementById('description_container');
@@ -230,18 +234,16 @@
     }
 
     function addVideoInput(index) {
-  const container = document.getElementById(`videos_container_${index}`);
-  const div = document.createElement('div');
-  div.className = 'video-group';
-  div.innerHTML = `
-    <input type="text" name="video_title_${index}[]" placeholder="Video Title" required />
-    <input type="file" name="video_file_${index}[]" accept="video/*" required />
-    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
-  `;
-  container.appendChild(div);
-}
-
-
+      const container = document.getElementById(`videos_container_${index}`);
+      const div = document.createElement('div');
+      div.className = 'video-group';
+      div.innerHTML = `
+        <input type="text" name="video_title_${index}[]" placeholder="Video Title" required />
+        <input type="file" name="video_file_${index}[]" accept="video/*" required />
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+      `;
+      container.appendChild(div);
+    }
 
     function addQuizInput(index) {
       const container = document.getElementById(`quiz_container_${index}`);
