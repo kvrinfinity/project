@@ -243,6 +243,7 @@
         <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
       `;
       container.appendChild(div);
+      div.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function addQuizInput(index) {
@@ -264,6 +265,7 @@
         </select>
         <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>`;
       container.appendChild(div);
+      div.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function addFinalExamQuestion() {
@@ -285,7 +287,25 @@
         </select>
         <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>`;
       container.appendChild(div);
+      div.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    // Attach handlers for existing Add Quiz and Add Video buttons
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.add-video-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = this.getAttribute('data-index');
+          addVideoInput(index);
+        });
+      });
+
+      document.querySelectorAll('.add-quiz-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = this.getAttribute('data-index');
+          addQuizInput(index);
+        });
+      });
+    });
   </script>
 </body>
 </html>

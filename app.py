@@ -87,6 +87,7 @@ def send_otp_email(to_email, otp):
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024 * 1024  # 10 GB
 
 
 
@@ -324,7 +325,7 @@ def delete_contact(id):
 @app.route('/payment_success', methods=['POST'])
 def payment_success():
     try:
-        # ✅ FIXED: Get request data first
+        # ✅ Get request data
         data = request.get_json()
         print("🔔 /payment_success hit with:", data)
 
@@ -333,7 +334,7 @@ def payment_success():
         payment_id = data.get('razorpay_payment_id')
         referral_code = data.get('ref_code')
 
-        # 🧾 Amount paid (from session or fallback)
+        # 🧾 Amount paid (default ₹10000 if not found in session)
         base_price = 10000
         amount_paid = session.get('amount_paid', base_price)
 
@@ -372,7 +373,7 @@ def payment_success():
             "receipt_file_id": receipt_file_id
         })
 
-        # 🎁 Reward referral
+        # 🎁 Referral logic
         if referral_code:
             user_referral_code = request.form.get("referral_code")
 
@@ -392,7 +393,7 @@ def payment_success():
                         book_stalls.update_one({'_id': ref_stall['_id']}, {'$inc': {'wallet_balance': 500}})
                     print(f"✅ ₹1000 added to book stall: {ref_stall['stall_name']}")
 
-        # 📧 Send receipt email
+        # 📧 User Email
         subject = "Payment Successful - KVR Infinity Membership"
         body = f"""Hello {user_name},
 
@@ -430,6 +431,48 @@ Team KVR Infinity
             server.sendmail(sender_email, user_email, message.as_string())
 
         print(f"✅ Email sent to {user_email}")
+
+        # 📧 Sales Email
+        sales_email = "sales@kvrinfinity.in"
+        sales_subject = f"New Membership Purchase - {user_name}"
+        sales_body = f"""Hello Team,
+
+A new KVR Infinity Membership has been purchased.
+
+👤 User Details:
+- Name: {user_name}
+- Email: {user_email}
+- WhatsApp: {user_whatsapp}
+- Payment ID: {payment_id}
+- Referral Code: {referral_code if referral_code else 'Not Provided'}
+- Receipt ID: {receipt_id}
+- Amount Paid: ₹{amount_paid}
+- Payment Date: {payment_date.strftime('%d-%m-%Y %H:%M:%S')}
+- Valid Till: {valid_till.strftime('%d-%m-%Y')}
+
+The receipt is attached.
+
+Regards,
+KVR Infinity System
+"""
+
+        sales_message = MIMEMultipart()
+        sales_message['Subject'] = sales_subject
+        sales_message['From'] = sender_email
+        sales_message['To'] = sales_email
+        sales_message.attach(MIMEText(sales_body, 'plain'))
+
+        with open(file_name, 'rb') as f:
+            part = MIMEApplication(f.read(), _subtype='pdf')
+            part.add_header('Content-Disposition', 'attachment', filename=file_name)
+            sales_message.attach(part)
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, sales_email, sales_message.as_string())
+
+        print(f"✅ Sales email sent to {sales_email}")
+
         os.remove(file_name)
 
         return jsonify({"status": "success", "redirect": "/login"})
@@ -437,6 +480,7 @@ Team KVR Infinity
     except Exception as e:
         print("❌ Error in /payment_success:", str(e))
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 def credit_wallet_for_referral(referral_code):

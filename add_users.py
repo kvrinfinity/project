@@ -33,23 +33,7 @@ today = datetime.now()
 validity = today + timedelta(days=365)
 # Sample user data from the image
 users = [
-    ("Vibitha", "Pallath", "vibithapallath2024@gmail.com", "9495114932"),
-    ("Sushmitha", "Durgam", "durgamsushmitha300@gmail.com", "8106665752"),
-    ("Anjana Unnikrishnan", "unnikrishnan", "anjanaunnikrishnan7474@gmail.com", "7736387474"),
-    ("Reema", "Maimoona", "reemabasheer135@gmail.com", "9481338450"),
-    ("Shilpa", "R", "shilpaakku665@gmail.com", "8590028531"),
-    ("Sanjana", "Mohan", "sanjanamohan3@gmail.com", "9048981482"),
-    ("Anuj", "Jain", "badkulanuj23@gmail.com", "7869150941"),
-    ("Minali", "Rathod", "minalirathod2021@gmail.com", "7625026620"),
-    ("Jaya", "Prakash", "jayaprakash14414325@gmail.com", "8331829897"),
-    ("Rajesh", "Raghunthan", "rajeshraghu77@gmail.com", "9840503597"),
-    ("Reshmi", "S", "reshmi.cse.1234@gmail.com", "9518901441"),
-    ("A Jacob", "selvan", "jacobselvan.a@gmail.com", "9092405555"),
-    ("Amruth", "G", "amruthreddy005@gmail.com", "9047033261"),
-    ("Muskan", "Singh", "smuskanofficial07@gmail.com", "8618053868"),
-    ("Nidheesh", "N A", "nidheeshamin74@gmail.com", "7411390475"),
-    ("Thudamaladinne", "praveena", "thudamaladinnepraveena@gmail.com", "7660052169"),
-    ("Ashok", "Kumar", "ashokkumar10272006@gmail.com", "8309444165"),
+    ("Billa", "Bhagya", "billabhagya19@gmail.com", "9977128999"),
     
 ]
 

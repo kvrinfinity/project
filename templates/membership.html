@@ -6,6 +6,14 @@
   <title>Membership - KVR Infinity</title>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='membership.css') }}">
+  <style>
+    #processing-msg {
+      text-align: center;
+      margin-top: 20vh;
+      font-size: 20px;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
 
@@ -23,6 +31,9 @@
 
   <button id="rzp-button">Pay with Razorpay</button>
 </div>
+
+<!-- Processing message -->
+<div id="processing-msg" style="display:none;"></div>
 
 <script>
 let baseAmount = 10000;
@@ -94,17 +105,15 @@ function initiateRazorpay() {
       name: userName,
       email: userEmail
     },
-    theme: {
-      color: "#3399cc"
-    },
+    theme: { color: "#3399cc" },
     handler: function (response) {
-      document.body.innerHTML = "<h2 style='text-align:center;margin-top:20vh;'>Processing Payment...</h2>";
+      const msgBox = document.getElementById("processing-msg");
+      msgBox.style.display = "block";
+      msgBox.innerHTML = "<h2>Processing Payment...</h2>";
 
       fetch('/payment_success', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           razorpay_payment_id: response.razorpay_payment_id,
           ref_code: referralCode,
@@ -118,21 +127,21 @@ function initiateRazorpay() {
           console.log("✅ Response from /payment_success:", data);
 
           if (data.redirect) {
-            document.body.innerHTML = "<h2 style='text-align:center;margin-top:20vh;'>Redirecting to login...</h2>";
+            msgBox.innerHTML = "<h2>Redirecting to login...</h2>";
             setTimeout(() => {
               window.location.href = data.redirect;
             }, 1500);
           } else {
-            alert("Payment completed, but no redirect URL provided.");
+            msgBox.innerHTML = "<h2>Payment completed, but redirect failed.</h2>";
           }
         } catch (err) {
           console.error("❌ JSON parse error from /payment_success:", err);
-          alert("Payment done, but something went wrong. Please contact support.");
+          msgBox.innerHTML = "<h2>Payment done, but something went wrong. Please contact support.</h2>";
         }
       })
       .catch(err => {
         console.error("❌ Error during payment fetch:", err);
-        alert("Something went wrong. Please contact support.");
+        msgBox.innerHTML = "<h2>Something went wrong. Please contact support.</h2>";
       });
     }
   };
